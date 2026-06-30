@@ -142,16 +142,17 @@ export function AdminServicesPage() {
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditSvc(svc)}>
-                      <Edit className="h-3.5 w-3.5" />
+                    <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setEditSvc(svc)} aria-label="Edit service">
+                      <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-rose-600"
+                      className="h-9 w-9 text-rose-600"
                       onClick={() => setDeleteSvc(svc)}
+                      aria-label="Delete service"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>

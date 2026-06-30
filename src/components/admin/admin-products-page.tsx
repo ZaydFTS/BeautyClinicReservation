@@ -252,18 +252,20 @@ export function AdminProductsPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-7 w-7"
+                              className="h-9 w-9"
                               onClick={() => setEditP(p)}
+                              aria-label="Edit product"
                             >
-                              <Edit className="h-3.5 w-3.5" />
+                              <Edit className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-7 w-7 text-rose-600"
+                              className="h-9 w-9 text-rose-600"
                               onClick={() => setDeleteP(p)}
+                              aria-label="Delete product"
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>

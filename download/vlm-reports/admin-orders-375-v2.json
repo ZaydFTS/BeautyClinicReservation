@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "- Table horizontal overflow (columns exceed screen width)  \n- Columns truncated (e.g., Order #, Customer, Items, price values cut off)  \n- Action button size (if present, likely too small for touch)  \n- Sticky header overlap (if header is sticky, may cover table content)  \n- Sidebar (if present, not optimized for mobile, causing layout issues)",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782776232,
+  "id": "202606300736541e04710e773b409e",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "202606300736541e04710e773b409e",
+  "usage": {
+    "completion_tokens": 80,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 365,
+    "prompt_tokens_details": {
+      "cached_tokens": 4
+    },
+    "total_tokens": 445
+  }
+}

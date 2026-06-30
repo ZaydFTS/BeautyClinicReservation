@@ -1,12 +1,11 @@
 "use client"
 
-import Link from "next/link"
 import { useNav } from "@/store/nav"
 import { useCart } from "@/store/cart"
 import { CLINIC_NAME } from "@/lib/constants"
 import {
   Sparkles, Menu, ShoppingCart, Calendar, Phone, MapPin,
-  Instagram, Facebook, Mail, X,
+  Instagram, Facebook, Mail,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -25,6 +24,7 @@ const NAV_LINKS: { label: string; route: Parameters<ReturnType<typeof useNav>["n
 
 export function CustomerHeader() {
   const navigate = useNav((s) => s.navigate)
+  const currentRoute = useNav((s) => s.route)
   const cartCount = useCart((s) => s.items.reduce((n, i) => n + i.quantity, 0))
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -34,10 +34,12 @@ export function CustomerHeader() {
         {/* Logo */}
         <button
           onClick={() => navigate({ name: "home" })}
-          className="flex items-center gap-2 transition-opacity hover:opacity-80"
+          className="flex items-center gap-2 transition-transform hover:scale-[1.02]"
+          aria-label="Home"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-white shadow-sm">
+          <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-white shadow-sm">
             <Sparkles className="h-5 w-5" />
+            <span className="absolute inset-0 rounded-full bg-gradient-to-br from-rose-400 to-rose-600 opacity-0 blur-md transition-opacity hover:opacity-50" />
           </div>
           <div className="hidden sm:block">
             <div className="text-base font-semibold leading-tight text-foreground">
@@ -49,19 +51,25 @@ export function CustomerHeader() {
           </div>
         </button>
 
-        {/* Desktop nav */}
+        {/* Desktop nav with animated underline */}
         <nav className="hidden items-center gap-1 md:flex">
-          {NAV_LINKS.map((link) => (
-            <Button
-              key={link.label}
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(link.route)}
-              className="text-sm font-medium"
-            >
-              {link.label}
-            </Button>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const isActive = currentRoute.name === link.route.name
+            return (
+              <button
+                key={link.label}
+                onClick={() => navigate(link.route)}
+                data-active={isActive}
+                className={`nav-underline relative rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "text-rose-600"
+                    : "text-foreground/80 hover:text-rose-600"
+                }`}
+              >
+                {link.label}
+              </button>
+            )
+          })}
         </nav>
 
         {/* Right actions */}
@@ -70,12 +78,12 @@ export function CustomerHeader() {
             variant="ghost"
             size="icon"
             onClick={() => navigate({ name: "cart" })}
-            className="relative"
-            aria-label="Cart"
+            className="relative transition-transform hover:scale-105"
+            aria-label={`Cart${cartCount > 0 ? ` with ${cartCount} items` : ""}`}
           >
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white">
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 animate-scale-in items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white shadow-sm">
                 {cartCount}
               </span>
             )}
@@ -84,7 +92,7 @@ export function CustomerHeader() {
           <Button
             size="sm"
             onClick={() => navigate({ name: "booking" })}
-            className="hidden bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 sm:inline-flex"
+            className="btn-shimmer hidden bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 sm:inline-flex"
           >
             <Calendar className="mr-1.5 h-4 w-4" />
             Book Now
@@ -93,7 +101,7 @@ export function CustomerHeader() {
           {/* Mobile menu */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Menu">
+              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -114,7 +122,7 @@ export function CustomerHeader() {
                 <div className="my-2 h-px bg-border" />
                 <SheetClose asChild>
                   <Button
-                    className="bg-gradient-to-r from-rose-500 to-rose-600"
+                    className="btn-shimmer bg-gradient-to-r from-rose-500 to-rose-600"
                     onClick={() => navigate({ name: "booking" })}
                   >
                     <Calendar className="mr-2 h-4 w-4" />

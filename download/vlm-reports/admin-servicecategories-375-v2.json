@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "Horizontal overflow: No (content fits 375px width). Table/grid issues: No (no tables/grids). Action button size: \"Book this treatment\" buttons may be too small for touch targets.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782776248,
+  "id": "20260630073725ae7a4f229a714caf",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "20260630073725ae7a4f229a714caf",
+  "usage": {
+    "completion_tokens": 45,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 2570,
+    "prompt_tokens_details": {
+      "cached_tokens": 17
+    },
+    "total_tokens": 2615
+  }
+}

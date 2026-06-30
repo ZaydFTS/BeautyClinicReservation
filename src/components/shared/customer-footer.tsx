@@ -27,14 +27,14 @@ export function CustomerFooter() {
             <div className="flex gap-2 pt-2">
               <a
                 href="#"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-100 text-rose-600 transition hover:bg-rose-200"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 text-rose-600 transition-all hover:bg-rose-200 hover:scale-110"
                 aria-label="Instagram"
               >
                 <Instagram className="h-4 w-4" />
               </a>
               <a
                 href="#"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-100 text-rose-600 transition hover:bg-rose-200"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-100 text-rose-600 transition-all hover:bg-rose-200 hover:scale-110"
                 aria-label="Facebook"
               >
                 <Facebook className="h-4 w-4" />

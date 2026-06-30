@@ -285,16 +285,17 @@ export function AdminSlotsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-8 w-8"
                             onClick={() => setEditSlot(slot)}
+                            aria-label="Edit slot"
                           >
-                            <Edit className="h-3 w-3" />
+                            <Edit className="h-3.5 w-3.5" />
                           </Button>
                           {!appt && slot.status === "AVAILABLE" && (
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6 text-amber-600"
+                              className="h-8 w-8 text-amber-600"
                               onClick={() =>
                                 blockMutation.mutate({
                                   id: slot.id,
@@ -303,15 +304,16 @@ export function AdminSlotsPage() {
                                 })
                               }
                               title="Block"
+                              aria-label="Block slot"
                             >
-                              <XCircle className="h-3 w-3" />
+                              <XCircle className="h-3.5 w-3.5" />
                             </Button>
                           )}
                           {!appt && slot.status === "BLOCKED" && (
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6 text-emerald-600"
+                              className="h-8 w-8 text-emerald-600"
                               onClick={() =>
                                 blockMutation.mutate({
                                   id: slot.id,
@@ -320,18 +322,20 @@ export function AdminSlotsPage() {
                                 })
                               }
                               title="Unblock"
+                              aria-label="Unblock slot"
                             >
-                              <Clock className="h-3 w-3" />
+                              <Clock className="h-3.5 w-3.5" />
                             </Button>
                           )}
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 text-rose-600"
+                            className="h-8 w-8 text-rose-600"
                             onClick={() => setDeleteSlot(slot)}
                             disabled={!!appt}
+                            aria-label="Delete slot"
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
                       </div>

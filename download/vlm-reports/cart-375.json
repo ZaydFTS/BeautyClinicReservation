@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "- Table/list layout: No cart items (empty state), so no table/list issues here.  \n- Touch targets: \"Continue shopping\" button is ~375px wide (full-width) but may lack minimum 48x48px padding; navigation icons (cart, menu) are small (~24x24px) for touch.  \n- Button sizes: \"Continue shopping\" is full-width but may not meet minimum 44x44px height (needs padding/height check).  \n- Overflow: No visible overflow (content fits 375px width).  \n- Sticky totals: No totals (empty cart), so no sticky total issues.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782775937,
+  "id": "20260630073213a9162646ed6247d8",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "20260630073213a9162646ed6247d8",
+  "usage": {
+    "completion_tokens": 134,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 648,
+    "prompt_tokens_details": {
+      "cached_tokens": 16
+    },
+    "total_tokens": 782
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "This is a **working admin calendar page** (not an error page).  \n\n### Visible UI Elements:  \n- Header: “Glow Admin” (with a menu icon), “Calendar” title, and a subtitle about dragging appointments.  \n- Filter/View Controls: “All services” dropdown, “Today”/date range (“Jun 29 – Jul 5, 2026”), and view toggles (Day/Week/Month).  \n- Status Tabs: “Available slot,” “Booked,” “Completed,” and “Blocked / Holiday” legend.  \n- Calendar Grid: A weekly calendar (Mon 29–Sun 5) with time slots (9:00 AM, 12:00 PM, 3:00 PM, 5:00 PM) for each day. Slots show statuses (e.g., “Available,” “Blocked,” or “Booked” with customer/service details like “Sophia Wilson - Full Leg Laser Waxing”).  \n- Day Headers: Labeled days (Mon, Tue, Wed, Thu, Fri, Sat, Sun) with dates.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782776165,
+  "id": "20260630073556067d38687236486b",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "20260630073556067d38687236486b",
+  "usage": {
+    "completion_tokens": 224,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 4955,
+    "prompt_tokens_details": {
+      "cached_tokens": 5
+    },
+    "total_tokens": 5179
+  }
+}

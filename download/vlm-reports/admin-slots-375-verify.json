@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "The screenshot displays a **Next.js error overlay** (a runtime error page) from a development environment. It is not a working admin page.  \n\n### Visible Elements:  \n- **Header**: Shows \"Next.js 16.3 (stale) Turbopack\" (indicating the Next.js version and bundler).  \n- **Error Type**: \"Runtime TypeError\" in red text.  \n- **Error Message**: \"Cannot read properties of undefined (reading 'name')\" (verbatim).  \n- **File/Code Context**: A snippet from `src/components/admin/admin-calendar-page.tsx` (line 627:41) with highlighted code:  \n  - Line 625: `<div classNa`  \n  - Line 626: `<div classNa`  \n  - Line 627: `(appt.serv:` (with a `>` indicator for the current error line)  \n  - Line 628: `</div>`  \n  - Line 629: `</div>`  \n  - Line 630: `)`  \n- **Call Stack Section**: Labeled \"Call Stack\" with a \"Show 14 ignore-listed frame(s)\" toggle, and a stack trace entry: `<unknown>` → `src/components/admin/admin-calendar-page.tsx (627:41)`.  \n- **Footer**: A red button labeled \"N 1 Issue ×\" (to dismiss the error).  \n\n\nThis is a runtime error page, not a functional admin page.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782775989,
+  "id": "20260630073303c9babfb693824f4f",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "20260630073303c9babfb693824f4f",
+  "usage": {
+    "completion_tokens": 309,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 369,
+    "prompt_tokens_details": {
+      "cached_tokens": 7
+    },
+    "total_tokens": 678
+  }
+}

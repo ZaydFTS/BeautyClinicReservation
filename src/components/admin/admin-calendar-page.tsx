@@ -168,7 +168,7 @@ export function AdminCalendarPage() {
     }
     const appt = allAppointments.find((a) => a.id === apptId)
     if (!appt) return
-    if (targetSlot.serviceId !== appt.service.id) {
+    if (appt.service && targetSlot.serviceId !== appt.service.id) {
       toast.error("Target slot must be for the same service")
       return
     }
@@ -534,7 +534,7 @@ function MonthView({
                         : "bg-slate-100 text-slate-600"
                     } hover:opacity-80`}
                   >
-                    {formatTime(appt.slot.startTime)} {appt.customer.name.split(" ")[0]}
+                    {formatTime(appt.slot?.startTime)} {appt.customer?.name?.split(" ")[0] || "Customer"}
                   </div>
                 ))}
                 {appts.length > 3 && (
@@ -622,9 +622,9 @@ function WeekView({
                         <div className="font-semibold">
                           {formatTime(slot.startTime)}
                         </div>
-                        <div className="truncate">{appt.customer.name}</div>
+                        <div className="truncate">{appt.customer?.name || "Customer"}</div>
                         <div className="truncate text-[10px] opacity-75">
-                          {appt.service.name}
+                          {appt.service?.name || "Service"}
                         </div>
                       </div>
                     )
@@ -740,13 +740,13 @@ function DayView({
                       className="cursor-pointer"
                     >
                       <div className="flex items-center justify-between">
-                        <div className="font-medium text-sm">{appt.customer.name}</div>
+                        <div className="font-medium text-sm">{appt.customer?.name || "Customer"}</div>
                         <Badge className={APPOINTMENT_STATUS_COLOR[appt.status]} variant="outline">
                           {APPOINTMENT_STATUS_LABEL[appt.status]}
                         </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground truncate">
-                        {appt.service.name} · {appt.customer.phone}
+                        {appt.service?.name || "Service"} · {appt.customer?.phone || ""}
                       </div>
                     </div>
                   ) : (

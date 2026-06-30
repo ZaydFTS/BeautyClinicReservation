@@ -156,7 +156,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
 
       <div className="mt-8 grid gap-6 lg:grid-cols-3">
         {/* Left: service + date + slots */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-6 min-w-0">
           {/* Service selection */}
           <Card>
             <CardHeader>
@@ -242,7 +242,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
               </div>
 
               {/* Quick date chips */}
-              <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+              <div className="mt-3 flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
                 {Array.from({ length: 7 }).map((_, i) => {
                   const d = addDays(today, i)
                   const isSelected = sameDay(d, selectedDate)
@@ -250,7 +250,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                     <button
                       key={i}
                       onClick={() => setSelectedDate(d)}
-                      className={`flex min-w-16 flex-col items-center rounded-lg border p-2 transition ${
+                      className={`flex-shrink-0 flex min-w-14 sm:min-w-16 flex-col items-center rounded-lg border p-2 transition ${
                         isSelected
                           ? "border-rose-500 bg-rose-50 text-rose-700"
                           : "border-border hover:border-rose-300"
@@ -307,18 +307,20 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                                 key={slot.id}
                                 onClick={() => isAvailable && setSelectedSlotId(slot.id)}
                                 disabled={!isAvailable}
-                                className={`flex flex-col items-center rounded-lg border-2 p-2 transition ${
+                                className={`relative flex min-h-[44px] flex-col items-center justify-center rounded-lg border-2 p-2 transition-all ${
                                   isSelected
-                                    ? "border-rose-500 bg-rose-500 text-white"
+                                    ? "border-rose-500 bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-md shadow-rose-500/30 scale-105"
                                     : isAvailable
-                                    ? "border-border hover:border-rose-300 hover:bg-rose-50"
+                                    ? "border-border hover:border-rose-300 hover:bg-rose-50 hover:scale-[1.02]"
                                     : "cursor-not-allowed border-border bg-muted opacity-50"
                                 }`}
                               >
                                 <span className="text-sm font-semibold">
                                   {formatTime(slot.startTime)}
                                 </span>
-                                {isSelected && <Check className="mt-0.5 h-3 w-3" />}
+                                {isSelected && (
+                                  <Check className="absolute -right-1 -top-1 h-4 w-4 rounded-full bg-white p-0.5 text-rose-600 shadow" />
+                                )}
                               </button>
                             )
                           })}

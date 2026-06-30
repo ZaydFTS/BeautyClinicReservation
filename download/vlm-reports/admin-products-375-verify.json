@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "The screenshot shows a **Next.js error overlay** (a development error page). It is not a working admin page.  \n\n### Visible elements:  \n- **Header**: Shows \"Next.js 16.3 (stale) Turbopack\" (with a warning icon).  \n- **Error type**: \"Runtime TypeError\" in red.  \n- **Error message**: \"Cannot read properties of undefined (reading 'name')\" (verbatim).  \n- **File/line reference**: \"src/components/admin/admin-calendar-page.tsx (627:41) @ <unknown>\".  \n- **Code snippet**: A portion of the file with line numbers (625–630) and code (e.g., `<div className...`, `</div>`).  \n- **Call Stack section**: Labeled \"Call Stack\" with \"22 Show 14 ignore-listed frame(s)\" and a stack trace entry: \"<unknown> src/components/admin/admin-calendar-page.tsx (627:41)\".  \n- **Footer**: A red button labeled \"1 Issue\" with an \"X\" to close the overlay.  \n\n\nThis is a React/Next.js development error page displaying a runtime type error, including the error message, file context, and call stack.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782776005,
+  "id": "2026063007331568fe6831d3f44a9b",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "2026063007331568fe6831d3f44a9b",
+  "usage": {
+    "completion_tokens": 255,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 369,
+    "prompt_tokens_details": {
+      "cached_tokens": 5
+    },
+    "total_tokens": 624
+  }
+}
