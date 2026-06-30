@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Calendar, Clock, Search, ArrowRight } from "lucide-react"
+import { Calendar, Clock, Search, ArrowRight, Sparkles } from "lucide-react"
 import { useState } from "react"
 
 interface Service {
@@ -99,41 +99,57 @@ export function ServicesPage() {
           filtered.map((svc) => (
             <Card
               key={svc.id}
-              className="group flex flex-col overflow-hidden transition hover:shadow-lg"
+              className="card-hover group relative flex flex-col gap-0 overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm transition-all duration-300 hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10"
             >
-              <CardHeader className="bg-gradient-to-br from-rose-50 to-rose-100/50 pb-3">
-                <div className="flex items-start justify-between">
-                  <Badge variant="secondary" className="bg-white/80 text-rose-700">
+              <CardHeader className="relative overflow-hidden bg-gradient-to-br from-rose-50 via-rose-50 to-amber-50/50 p-5 pb-4">
+                {/* Decorative orb */}
+                <div
+                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-rose-300/40 via-rose-200/30 to-amber-200/20 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+                  aria-hidden
+                />
+                <Sparkles
+                  className="pointer-events-none absolute right-4 top-4 h-5 w-5 text-rose-400/40 transition-colors group-hover:text-rose-400/70"
+                  aria-hidden
+                />
+                <div className="relative flex items-start justify-between gap-3">
+                  <Badge
+                    variant="outline"
+                    className="border-white/60 bg-white/70 px-2.5 py-1 text-xs font-medium text-rose-700 shadow-sm backdrop-blur-md"
+                  >
                     {svc.category}
                   </Badge>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-rose-600">{formatMoney(svc.price)}</div>
-                    <div className="flex items-center justify-end gap-1 text-xs text-muted-foreground">
+                    <div className="text-gradient-rose text-2xl font-bold tracking-tight">
+                      {formatMoney(svc.price)}
+                    </div>
+                    <div className="mt-0.5 flex items-center justify-end gap-1 text-xs text-rose-700/70">
                       <Clock className="h-3 w-3" />
                       {svc.durationMin} min
                     </div>
                   </div>
                 </div>
-                <CardTitle className="mt-3 text-xl">{svc.name}</CardTitle>
+                <CardTitle className="relative mt-3 text-xl font-semibold tracking-tight transition-colors group-hover:text-rose-700">
+                  {svc.name}
+                </CardTitle>
                 {svc.description && (
-                  <CardDescription className="mt-1 line-clamp-3">
+                  <CardDescription className="relative mt-1.5 line-clamp-3 leading-relaxed">
                     {svc.description}
                   </CardDescription>
                 )}
               </CardHeader>
               <CardContent className="flex-1" />
-              <CardFooter className="flex gap-2 p-4 pt-0">
+              <CardFooter className="flex gap-2 p-5 pt-0">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1"
+                  className="flex-1 border-rose-200/70 text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                   onClick={() => navigate({ name: "service_detail", serviceId: svc.id })}
                 >
                   Details
                 </Button>
                 <Button
                   size="sm"
-                  className="flex-1 bg-rose-500 hover:bg-rose-600"
+                  className="flex-1 bg-gradient-to-r from-rose-500 to-rose-600 shadow-sm shadow-rose-500/20 transition-all hover:from-rose-600 hover:to-rose-700 hover:shadow-md hover:shadow-rose-500/30"
                   onClick={() => navigate({ name: "booking", serviceId: svc.id })}
                 >
                   <Calendar className="mr-1.5 h-4 w-4" />

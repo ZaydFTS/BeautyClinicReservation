@@ -61,21 +61,42 @@ export function ServiceDetailPage({ route }: { route: Extract<Route, { name: "se
 
       <div className="grid gap-8 md:grid-cols-2">
         {/* Left: hero image / illustration */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-100 via-rose-50 to-amber-50 p-8">
-          <div className="absolute inset-0 opacity-30">
-            <Sparkles className="absolute right-8 top-8 h-20 w-20 text-rose-300" />
-            <Sparkles className="absolute bottom-12 left-8 h-12 w-12 text-amber-300" />
-          </div>
-          <div className="relative flex h-full flex-col items-center justify-center text-center">
-            <Badge variant="secondary" className="mb-3 bg-white/80 text-rose-700">
+        <div className="relative overflow-hidden rounded-2xl border border-rose-100/70 bg-gradient-to-br from-rose-100 via-rose-50 to-amber-50 p-8 shadow-sm">
+          {/* Layered decorative orbs */}
+          <div
+            className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-gradient-to-br from-rose-300/50 to-amber-200/30 blur-3xl"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute -bottom-20 -left-12 h-56 w-56 rounded-full bg-gradient-to-br from-rose-200/40 to-amber-100/30 blur-3xl"
+            aria-hidden
+          />
+          {/* Sparkles accents */}
+          <Sparkles className="pointer-events-none absolute right-6 top-6 h-16 w-16 text-rose-300/50" aria-hidden />
+          <Sparkles className="pointer-events-none absolute bottom-8 left-6 h-10 w-10 text-amber-300/60" aria-hidden />
+          {/* Subtle dot pattern */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage: "radial-gradient(circle, oklch(0.5 0.2 350) 1px, transparent 1px)",
+              backgroundSize: "16px 16px",
+            }}
+            aria-hidden
+          />
+
+          <div className="relative flex h-full min-h-[280px] flex-col items-center justify-center text-center">
+            <Badge
+              variant="outline"
+              className="mb-4 border-white/60 bg-white/70 px-3 py-1 text-xs font-medium text-rose-700 shadow-sm backdrop-blur-md"
+            >
               {svc.category}
             </Badge>
-            <h2 className="text-2xl font-bold">{svc.name}</h2>
-            <div className="mt-4 text-4xl font-bold text-rose-600">
+            <h2 className="text-balance text-2xl font-bold tracking-tight">{svc.name}</h2>
+            <div className="text-gradient-rose mt-4 text-5xl font-bold tracking-tight">
               {formatMoney(svc.price)}
             </div>
-            <div className="mt-2 flex items-center gap-1 text-sm text-muted-foreground">
-              <Clock className="h-4 w-4" />
+            <div className="mt-3 flex items-center gap-1.5 rounded-full border border-rose-200/60 bg-white/60 px-3 py-1 text-xs font-medium text-rose-700 backdrop-blur-sm">
+              <Clock className="h-3.5 w-3.5" />
               {svc.durationMin} minutes
             </div>
           </div>

@@ -51,30 +51,34 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div className="flex h-full flex-col bg-sidebar">
-      {/* Logo */}
-      <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-white">
+      {/* Logo / Brand */}
+      <div className="flex h-16 items-center gap-2.5 border-b border-sidebar-border px-4">
+        <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-rose-400 to-rose-600 text-white shadow-sm shadow-rose-500/30">
           <Sparkles className="h-4 w-4" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="truncate text-sm font-semibold">{CLINIC_NAME.split(" ")[0]} Admin</div>
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          <div className="truncate text-sm font-bold tracking-tight">{CLINIC_NAME.split(" ")[0]} Admin</div>
+          <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">
             Management Portal
           </div>
         </div>
         {onNavigate && (
           <SheetClose asChild>
-            <Button variant="ghost" size="icon" className="h-7 w-7 md:hidden">
+            <Button variant="ghost" size="icon" className="h-7 w-7 md:hidden" aria-label="Close menu">
               <X className="h-4 w-4" />
             </Button>
           </SheetClose>
         )}
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 overflow-y-auto p-3">
-        <div className="space-y-1">
-          {NAV_ITEMS.map((item) => {
+      {/* Nav — grouped with section labels */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
+        {/* Section: Overview */}
+        <div className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+          Overview
+        </div>
+        <div className="space-y-0.5">
+          {NAV_ITEMS.slice(0, 4).map((item) => {
             const isActive = currentRoute.name === item.route.name
             const showBadge = item.route.name === "admin_products" && lowStockCount > 0
             return (
@@ -86,17 +90,17 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                 }}
                 className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
                   isActive
-                    ? "bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-md shadow-rose-500/20"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:translate-x-0.5"
+                    ? "bg-gradient-to-r from-rose-500 to-rose-600 font-medium text-white shadow-sm shadow-rose-500/25"
+                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
                 }`}
               >
                 {isActive && (
-                  <span className="absolute left-0 top-1/2 h-6 -translate-y-1/2 w-1 rounded-r-full bg-white/80" />
+                  <span className="absolute -left-3 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r-full bg-rose-500" />
                 )}
-                <item.icon className={`h-4 w-4 flex-shrink-0 transition-transform ${isActive ? "" : "group-hover:scale-110"}`} />
-                <span className="flex-1 text-left font-medium">{item.label}</span>
+                <item.icon className={`h-[18px] w-[18px] flex-shrink-0 transition-transform ${isActive ? "" : "group-hover:scale-110"}`} />
+                <span className="flex-1 text-left">{item.label}</span>
                 {showBadge && (
-                  <Badge variant="secondary" className="bg-rose-500 text-white">
+                  <Badge variant="secondary" className="h-5 min-w-5 bg-rose-500 px-1.5 text-[10px] font-bold text-white">
                     {lowStockCount}
                   </Badge>
                 )}
@@ -104,31 +108,122 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             )
           })}
         </div>
+
+        {/* Section: Catalog */}
+        <div className="mb-1 mt-5 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+          Catalog
+        </div>
+        <div className="space-y-0.5">
+          {NAV_ITEMS.slice(4, 7).map((item) => {
+            const isActive = currentRoute.name === item.route.name
+            return (
+              <button
+                key={item.label}
+                onClick={() => {
+                  navigate(item.route)
+                  onNavigate?.()
+                }}
+                className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
+                  isActive
+                    ? "bg-gradient-to-r from-rose-500 to-rose-600 font-medium text-white shadow-sm shadow-rose-500/25"
+                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                }`}
+              >
+                {isActive && (
+                  <span className="absolute -left-3 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r-full bg-rose-500" />
+                )}
+                <item.icon className={`h-[18px] w-[18px] flex-shrink-0 transition-transform ${isActive ? "" : "group-hover:scale-110"}`} />
+                <span className="flex-1 text-left">{item.label}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Section: Insights */}
+        <div className="mb-1 mt-5 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+          Insights
+        </div>
+        <div className="space-y-0.5">
+          {NAV_ITEMS.slice(7, 9).map((item) => {
+            const isActive = currentRoute.name === item.route.name
+            return (
+              <button
+                key={item.label}
+                onClick={() => {
+                  navigate(item.route)
+                  onNavigate?.()
+                }}
+                className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
+                  isActive
+                    ? "bg-gradient-to-r from-rose-500 to-rose-600 font-medium text-white shadow-sm shadow-rose-500/25"
+                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                }`}
+              >
+                {isActive && (
+                  <span className="absolute -left-3 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r-full bg-rose-500" />
+                )}
+                <item.icon className={`h-[18px] w-[18px] flex-shrink-0 transition-transform ${isActive ? "" : "group-hover:scale-110"}`} />
+                <span className="flex-1 text-left">{item.label}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Section: System */}
+        <div className="mb-1 mt-5 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+          System
+        </div>
+        <div className="space-y-0.5">
+          {NAV_ITEMS.slice(9).map((item) => {
+            const isActive = currentRoute.name === item.route.name
+            return (
+              <button
+                key={item.label}
+                onClick={() => {
+                  navigate(item.route)
+                  onNavigate?.()
+                }}
+                className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
+                  isActive
+                    ? "bg-gradient-to-r from-rose-500 to-rose-600 font-medium text-white shadow-sm shadow-rose-500/25"
+                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                }`}
+              >
+                {isActive && (
+                  <span className="absolute -left-3 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r-full bg-rose-500" />
+                )}
+                <item.icon className={`h-[18px] w-[18px] flex-shrink-0 transition-transform ${isActive ? "" : "group-hover:scale-110"}`} />
+                <span className="flex-1 text-left">{item.label}</span>
+              </button>
+            )
+          })}
+        </div>
       </nav>
 
-      {/* User */}
+      {/* User card */}
       <div className="border-t border-sidebar-border p-3">
-        <div className="flex items-center gap-2 rounded-lg p-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-100 text-rose-700 text-xs font-bold">
+        <div className="flex items-center gap-2.5 rounded-xl bg-sidebar-accent/50 p-2.5">
+          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-xs font-bold text-white shadow-sm">
             {admin?.name?.[0]?.toUpperCase() || "A"}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="truncate text-sm font-medium">{admin?.name || "Admin"}</div>
-            <div className="truncate text-xs text-muted-foreground">{admin?.email}</div>
+            <div className="truncate text-sm font-semibold">{admin?.name || "Admin"}</div>
+            <div className="truncate text-[11px] text-muted-foreground">{admin?.email}</div>
           </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 flex-shrink-0 text-muted-foreground hover:bg-rose-100 hover:text-rose-600"
+            onClick={async () => {
+              await logout()
+              navigate({ name: "home" })
+            }}
+            aria-label="Sign out"
+            title="Sign out"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mt-1 w-full justify-start text-muted-foreground hover:text-rose-600"
-          onClick={async () => {
-            await logout()
-            navigate({ name: "home" })
-          }}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign out
-        </Button>
       </div>
     </div>
   )

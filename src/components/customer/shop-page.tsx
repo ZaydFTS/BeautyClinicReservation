@@ -128,14 +128,15 @@ export function ShopPage() {
       </div>
 
       {/* Grid */}
-      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="stagger-children mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {isLoading ? (
           Array.from({ length: 8 }).map((_, i) => (
-            <Card key={i}>
+            <Card key={i} className="overflow-hidden rounded-2xl border-rose-100/70">
               <div className="aspect-square shimmer" />
-              <CardContent className="p-3">
+              <CardContent className="space-y-2 p-4">
+                <div className="h-2.5 w-1/3 shimmer rounded-full" />
                 <div className="h-3 w-2/3 shimmer rounded" />
-                <div className="mt-2 h-4 w-1/3 shimmer rounded" />
+                <div className="h-4 w-1/3 shimmer rounded" />
               </CardContent>
             </Card>
           ))
@@ -147,54 +148,85 @@ export function ShopPage() {
           products.map((p) => (
             <Card
               key={p.id}
-              className="group cursor-pointer overflow-hidden transition hover:shadow-lg"
+              className="card-hover group relative cursor-pointer overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm transition-all duration-300 hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10"
               onClick={() => navigate({ name: "product_detail", productId: p.id })}
             >
-              <div className="relative aspect-square overflow-hidden bg-rose-50">
+              {/* Image area */}
+              <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-rose-100 via-rose-50 to-amber-50/60">
+                {/* Decorative orb */}
+                <div
+                  className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br from-rose-300/40 via-rose-200/30 to-amber-200/20 opacity-70 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+                  aria-hidden
+                />
                 {p.imageUrl ? (
-                   
                   <img
                     src={p.imageUrl}
                     alt={p.name}
-                    className="h-full w-full object-cover transition group-hover:scale-105"
+                    className="relative h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <Leaf className="h-12 w-12 text-rose-300" />
+                  <div className="relative flex h-full items-center justify-center">
+                    <Leaf className="h-14 w-14 text-rose-300/70" />
                   </div>
                 )}
+                {/* Subtle bottom gradient for depth */}
+                <div
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/5 to-transparent"
+                  aria-hidden
+                />
+
+                {/* Low-stock badge — amber gradient pill */}
                 {p.stock <= 5 && p.stock > 0 && (
-                  <Badge variant="secondary" className="absolute left-2 top-2 bg-amber-100 text-amber-800">
+                  <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-amber-200/60 bg-gradient-to-r from-amber-200/90 to-amber-100/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-amber-800 shadow-sm backdrop-blur-sm">
+                    <span className="h-1 w-1 rounded-full bg-amber-500" />
                     Only {p.stock} left
-                  </Badge>
+                  </div>
                 )}
+
+                {/* Out-of-stock — elegant overlay */}
                 {p.stock === 0 && (
-                  <Badge variant="secondary" className="absolute left-2 top-2 bg-rose-100 text-rose-700">
-                    Out of stock
-                  </Badge>
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[2px]">
+                    <span className="rounded-full border border-rose-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-rose-700 shadow-sm">
+                      Out of stock
+                    </span>
+                  </div>
+                )}
+
+                {/* Premium add-to-cart CTA — icon that morphs to labeled button on hover */}
+                {p.stock > 0 && (
+                  <div className="absolute inset-x-3 bottom-3 flex justify-end">
+                    <Button
+                      size="sm"
+                      className="h-10 gap-0 overflow-hidden rounded-full bg-white/90 px-2.5 text-rose-700 shadow-lg shadow-rose-500/20 backdrop-blur-md transition-all duration-300 hover:bg-white group-hover:gap-2 group-hover:bg-gradient-to-r group-hover:from-rose-500 group-hover:to-rose-600 group-hover:text-white group-hover:shadow-md group-hover:shadow-rose-500/30"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleAdd(p)
+                      }}
+                      aria-label={`Add ${p.name} to cart`}
+                    >
+                      <Plus className="h-4 w-4 shrink-0" />
+                      <span className="max-w-0 overflow-hidden whitespace-nowrap pr-1 text-xs font-semibold opacity-0 transition-all duration-300 group-hover:max-w-[100px] group-hover:opacity-100">
+                        Add
+                      </span>
+                    </Button>
+                  </div>
                 )}
               </div>
-              <CardContent className="p-3">
-                <div className="line-clamp-2 text-sm font-medium">{p.name}</div>
+
+              {/* Info */}
+              <CardContent className="space-y-1.5 p-4">
                 {p.category && (
-                  <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <div className="text-[10px] font-medium uppercase tracking-wider text-rose-700/60">
                     {p.category.name}
                   </div>
                 )}
-                <div className="mt-2 flex items-center justify-between gap-2">
-                  <span className="text-base sm:text-lg font-bold text-rose-600 truncate">{formatMoney(p.price)}</span>
-                  <Button
-                    size="icon"
-                    className="h-10 w-10 shrink-0 bg-rose-500 hover:bg-rose-600"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleAdd(p)
-                    }}
-                    disabled={p.stock === 0}
-                    aria-label={`Add ${p.name} to cart`}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
+                <div className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-snug tracking-tight transition-colors group-hover:text-rose-700">
+                  {p.name}
+                </div>
+                <div className="pt-1">
+                  <span className="text-gradient-rose text-base font-bold tracking-tight sm:text-lg">
+                    {formatMoney(p.price)}
+                  </span>
                 </div>
               </CardContent>
             </Card>
