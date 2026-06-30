@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "(1) No horizontal overflow. (2) Add-to-cart buttons are ≥40px.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782777136,
+  "id": "202606300752134966da28fed04197",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "202606300752134966da28fed04197",
+  "usage": {
+    "completion_tokens": 22,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1365,
+    "prompt_tokens_details": {
+      "cached_tokens": 7
+    },
+    "total_tokens": 1387
+  }
+}

@@ -75,7 +75,7 @@ export function AdminDashboardPage() {
     return (
       <div className="space-y-4">
         <div className="h-8 w-48 shimmer rounded" />
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="h-28 shimmer rounded-lg" />
           ))}
@@ -88,23 +88,33 @@ export function AdminDashboardPage() {
   const revenueUp = data.revenue.deltaTodayVsYesterday >= 0
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          {new Date().toLocaleDateString("en-US", {
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          })}
-        </p>
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            {new Date().toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </p>
+        </div>
+        <div className="hidden sm:flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-xs">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          </span>
+          <span className="text-muted-foreground">Live</span>
+        </div>
       </div>
 
       {/* KPI cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardContent className="p-5">
+        <Card className="card-hover relative overflow-hidden">
+          <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-emerald-500/5 blur-2xl" />
+          <CardContent className="relative p-5">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -118,15 +128,16 @@ export function AdminDashboardPage() {
                   {Math.abs(data.revenue.deltaTodayVsYesterday).toFixed(1)}% vs yesterday
                 </div>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 ring-1 ring-emerald-100">
                 <DollarSign className="h-6 w-6 text-emerald-600" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-5">
+        <Card className="card-hover relative overflow-hidden">
+          <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-rose-500/5 blur-2xl" />
+          <CardContent className="relative p-5">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -140,15 +151,16 @@ export function AdminDashboardPage() {
                   Pending: {formatMoney(data.revenue.pending)}
                 </div>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 ring-1 ring-rose-100">
                 <TrendingUp className="h-6 w-6 text-rose-600" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-5">
+        <Card className="card-hover relative overflow-hidden">
+          <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-rose-500/5 blur-2xl" />
+          <CardContent className="relative p-5">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -161,15 +173,16 @@ export function AdminDashboardPage() {
                   {data.todayAppointments.filter((a) => a.status === "COMPLETED").length} completed
                 </div>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 ring-1 ring-rose-100">
                 <CalIcon className="h-6 w-6 text-rose-600" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-5">
+        <Card className="card-hover relative overflow-hidden">
+          <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-amber-500/5 blur-2xl" />
+          <CardContent className="relative p-5">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -182,7 +195,7 @@ export function AdminDashboardPage() {
                   {data.todayOrders.reduce((s, o) => s + o.items.length, 0)} items sold
                 </div>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 ring-1 ring-amber-100">
                 <ShoppingBag className="h-6 w-6 text-amber-600" />
               </div>
             </div>

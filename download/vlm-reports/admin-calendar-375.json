@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "1. **Horizontal overflow** - Code block content exceeds 375px width, causing side-to-side scrolling.  \n2. **Calendar grid fitting** - Calendar cells likely break/overflow due to insufficient width for dates/events.  \n3. **Sidebar/nav** - Fixed/overlapping sidebar may not collapse, pushing content off-screen.  \n4. **Sticky elements overlap** - Header/navigation overlaps calendar content on scroll.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782775921,
+  "id": "202606300731590c045fb244094747",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "202606300731590c045fb244094747",
+  "usage": {
+    "completion_tokens": 89,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 362,
+    "prompt_tokens_details": {
+      "cached_tokens": 4
+    },
+    "total_tokens": 451
+  }
+}

@@ -84,14 +84,17 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                   navigate(item.route)
                   onNavigate?.()
                 }}
-                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${
+                className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
                   isActive
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent"
+                    ? "bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-md shadow-rose-500/20"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:translate-x-0.5"
                 }`}
               >
-                <item.icon className="h-4 w-4 flex-shrink-0" />
-                <span className="flex-1 text-left">{item.label}</span>
+                {isActive && (
+                  <span className="absolute left-0 top-1/2 h-6 -translate-y-1/2 w-1 rounded-r-full bg-white/80" />
+                )}
+                <item.icon className={`h-4 w-4 flex-shrink-0 transition-transform ${isActive ? "" : "group-hover:scale-110"}`} />
+                <span className="flex-1 text-left font-medium">{item.label}</span>
                 {showBadge && (
                   <Badge variant="secondary" className="bg-rose-500 text-white">
                     {lowStockCount}

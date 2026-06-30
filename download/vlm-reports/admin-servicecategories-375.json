@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "1. Error message text (Runtime TypeError, Cannot read properties...) is too long for narrow viewport, risking overflow or wrapping issues.  \n2. Code snippet in error details lacks horizontal scroll, causing content to overflow the 375px width.  \n3. \"Show 14 ignore-listed frame(s)\" text may wrap awkwardly, reducing readability.  \n4. \"1 Issue\" badge in bottom button is truncated or misaligned due to limited space.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782775952,
+  "id": "20260630073227b6c1701aacb34484",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "20260630073227b6c1701aacb34484",
+  "usage": {
+    "completion_tokens": 95,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 348,
+    "prompt_tokens_details": {
+      "cached_tokens": 15
+    },
+    "total_tokens": 443
+  }
+}

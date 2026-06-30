@@ -181,16 +181,17 @@ export function ShopPage() {
                     {p.category.name}
                   </div>
                 )}
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="text-lg font-bold text-rose-600">{formatMoney(p.price)}</span>
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <span className="text-base sm:text-lg font-bold text-rose-600 truncate">{formatMoney(p.price)}</span>
                   <Button
                     size="icon"
-                    className="h-8 w-8 bg-rose-500 hover:bg-rose-600"
+                    className="h-10 w-10 shrink-0 bg-rose-500 hover:bg-rose-600"
                     onClick={(e) => {
                       e.stopPropagation()
                       handleAdd(p)
                     }}
                     disabled={p.stock === 0}
+                    aria-label={`Add ${p.name} to cart`}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>

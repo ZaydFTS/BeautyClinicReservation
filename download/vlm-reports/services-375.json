@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "- **Horizontal overflow**: No visible overflow; content fits 375px width.  \n- **Grid layout**: Single-column layout (no grid issues).  \n- **Touch targets**: \"Book\" buttons (e.g., 90px wide) meet mobile touch target standards.  \n- **Image scaling**: No images present to assess scaling.  \n- **Text truncation**: No truncated text visible.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782775924,
+  "id": "20260630073201b7528d293eb84925",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "20260630073201b7528d293eb84925",
+  "usage": {
+    "completion_tokens": 84,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 1872,
+    "prompt_tokens_details": {
+      "cached_tokens": 4
+    },
+    "total_tokens": 1956
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "This is a **Next.js error overlay** (a development error page). It is not a working admin page.  \n\n### Visible elements:  \n- **Header**: Shows \"Next.js 16..3 (stale) Turbopack\" (with a warning icon).  \n- **Error type**: \"Runtime TypeError\" in red text.  \n- **Error message**: \"Cannot read properties of undefined (reading 'name')\" (verbatim).  \n- **File/line reference**: \"src/components/admin/admin-calendar-page.tsx (627:41) @ <unknown>\".  \n- **Code snippet**: A preview of the code around line 627, showing:  \n  - Line 625: `<div classNa`  \n  - Line 626: `<div classNa`  \n  - Line 627: `<div classNa (appt.serv:` (highlighted as the error line)  \n  - Line 628: `</div>`  \n  - Line 629: `</div>`  \n  - Line 630: `)`  \n- **Call Stack section**: \"Call Stack\" with \"Show 14 ignore-listed frame(s)\" and a stack entry: \"<unknown> src/components/admin/admin-calendar-page.tsx (627:41)\".  \n- **Footer**: A red button labeled \"1 Issue\" with an \"X\" to close the overlay.  \n\n\nThe error indicates a `TypeError` where code is trying to access the `name` property of an `undefined` value, likely in the `admin-calendar-page.tsx` component.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782775995,
+  "id": "202606300733105689cd0795104fe3",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "202606300733105689cd0795104fe3",
+  "usage": {
+    "completion_tokens": 330,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 369,
+    "prompt_tokens_details": {
+      "cached_tokens": 5
+    },
+    "total_tokens": 699
+  }
+}

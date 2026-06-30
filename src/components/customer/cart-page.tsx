@@ -27,7 +27,8 @@ export function CartPage() {
           Browse our shop for premium aftercare products.
         </p>
         <Button
-          className="mt-6 bg-rose-500 hover:bg-rose-600"
+          size="lg"
+          className="mt-6 w-full sm:w-auto bg-rose-500 hover:bg-rose-600"
           onClick={() => navigate({ name: "shop" })}
         >
           Continue shopping
@@ -56,8 +57,8 @@ export function CartPage() {
         <div className="lg:col-span-2 space-y-3">
           {items.map((item) => (
             <Card key={item.productId}>
-              <CardContent className="flex items-center gap-4 p-4">
-                <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-rose-50">
+              <CardContent className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
+                <div className="h-14 w-14 sm:h-16 sm:w-16 flex-shrink-0 overflow-hidden rounded-lg bg-rose-50">
                   {item.imageUrl ? (
                      
                     <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
@@ -68,16 +69,17 @@ export function CartPage() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="truncate font-medium">{item.name}</div>
+                  <div className="truncate font-medium text-sm sm:text-base">{item.name}</div>
                   <div className="mt-0.5 text-sm text-rose-600">{formatMoney(item.price)}</div>
                 </div>
                 <div className="flex items-center gap-1">
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-9 w-9"
                     onClick={() => updateQty(item.productId, item.quantity - 1)}
                     disabled={item.quantity <= 1}
+                    aria-label="Decrease quantity"
                   >
                     <Minus className="h-3 w-3" />
                   </Button>
@@ -88,16 +90,17 @@ export function CartPage() {
                       const n = parseInt(e.target.value) || 1
                       updateQty(item.productId, n)
                     }}
-                    className="h-8 w-14 text-center"
+                    className="h-9 w-12 sm:w-14 text-center"
                     min={1}
                     max={item.stock}
                   />
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-9 w-9"
                     onClick={() => updateQty(item.productId, item.quantity + 1)}
                     disabled={item.quantity >= item.stock}
+                    aria-label="Increase quantity"
                   >
                     <Plus className="h-3 w-3" />
                   </Button>
@@ -108,11 +111,12 @@ export function CartPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-rose-600"
+                  className="h-9 w-9 text-muted-foreground hover:text-rose-600"
                   onClick={() => {
                     removeItem(item.productId)
                     toast("Item removed from cart")
                   }}
+                  aria-label="Remove item"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

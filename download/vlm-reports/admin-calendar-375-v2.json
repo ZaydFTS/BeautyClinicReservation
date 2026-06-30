@@ -1,0 +1,28 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "- Horizontal overflow: Calendar grid exceeds viewport width (375px).  \n- Calendar grid fitting: Week view grid doesn’t adapt to mobile width, causing overflow.  \n- Day cells truncated: Time slots/labels cut off due to narrow viewport.  \n- Action button size: Buttons (e.g., Day/Week/Month toggles) too small for touch.  \n- Sticky header overlap: Header (navigation, filters) may cover top calendar content.  \n- Sidebar/nav: Fixed sidebar (if present) may not collapse, wasting space.",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1782776238,
+  "id": "20260630073713ee3a4f5eb6844c9e",
+  "model": "glm-4.6v",
+  "object": "chat.completion",
+  "request_id": "20260630073713ee3a4f5eb6844c9e",
+  "usage": {
+    "completion_tokens": 113,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "prompt_tokens": 4974,
+    "prompt_tokens_details": {
+      "cached_tokens": 4
+    },
+    "total_tokens": 5087
+  }
+}
