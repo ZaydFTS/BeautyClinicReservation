@@ -114,12 +114,23 @@ export function AdminServicesPage() {
       {isLoading ? (
         <div className="h-64 shimmer rounded-lg" />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 stagger-children">
           {services.map((svc) => (
-            <Card key={svc.id} className={!svc.active ? "opacity-60" : ""}>
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <Badge variant="secondary" className="bg-rose-100 text-rose-700">
+            <Card
+              key={svc.id}
+              className={`card-hover group relative gap-0 overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm transition-all duration-300 hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10 ${!svc.active ? "opacity-60" : ""}`}
+            >
+              {/* Decorative gradient orb */}
+              <div
+                className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-rose-300/40 via-rose-200/30 to-amber-200/20 opacity-60 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+                aria-hidden
+              />
+              <CardHeader className="relative space-y-2 p-5 pb-3">
+                <div className="flex items-start justify-between gap-2">
+                  <Badge
+                    variant="outline"
+                    className="border-rose-200/70 bg-gradient-to-br from-rose-500/10 to-rose-500/5 px-2.5 py-1 text-xs font-medium text-rose-700 shadow-sm backdrop-blur-sm"
+                  >
                     {svc.category}
                   </Badge>
                   <Switch
@@ -127,28 +138,34 @@ export function AdminServicesPage() {
                     onCheckedChange={() => toggleActive(svc)}
                   />
                 </div>
-                <CardTitle className="mt-2 text-base">{svc.name}</CardTitle>
+                <CardTitle className="pt-1 text-base font-semibold tracking-tight">{svc.name}</CardTitle>
                 {svc.description && (
-                  <p className="line-clamp-2 text-xs text-muted-foreground">{svc.description}</p>
+                  <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{svc.description}</p>
                 )}
               </CardHeader>
-              <CardContent className="pt-0">
-                <div className="flex items-center justify-between">
+              <CardContent className="relative p-5 pt-0">
+                <div className="flex items-end justify-between border-t border-rose-100/60 pt-3">
                   <div>
-                    <div className="text-xl font-bold text-rose-600">{formatMoney(svc.price)}</div>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <div className="text-gradient-rose text-2xl font-bold tracking-tight">{formatMoney(svc.price)}</div>
+                    <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" />
                       {svc.durationMin} min
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setEditSvc(svc)} aria-label="Edit service">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-lg text-muted-foreground transition-colors hover:bg-rose-50 hover:text-rose-700"
+                      onClick={() => setEditSvc(svc)}
+                      aria-label="Edit service"
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 text-rose-600"
+                      className="h-9 w-9 rounded-lg text-rose-500 transition-colors hover:bg-rose-50 hover:text-rose-700"
                       onClick={() => setDeleteSvc(svc)}
                       aria-label="Delete service"
                     >

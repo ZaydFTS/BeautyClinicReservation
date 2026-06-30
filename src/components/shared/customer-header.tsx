@@ -89,6 +89,17 @@ export function CustomerHeader() {
             )}
           </Button>
 
+          {/* Mobile icon-only Book Now (alternative to the hidden text button) */}
+          <Button
+            size="icon"
+            onClick={() => navigate({ name: "booking" })}
+            className="h-10 w-10 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 sm:hidden"
+            aria-label="Book Now"
+          >
+            <Calendar className="h-4 w-4" />
+          </Button>
+
+          {/* Desktop Book Now (icon + text) */}
           <Button
             size="sm"
             onClick={() => navigate({ name: "booking" })}
