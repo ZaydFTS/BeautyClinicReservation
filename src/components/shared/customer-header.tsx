@@ -2,6 +2,7 @@
 
 import { useNav } from "@/store/nav"
 import { useCart } from "@/store/cart"
+import { useLang } from "@/store/lang"
 import { CLINIC_NAME, CLINIC_PHONE, CLINIC_EMAIL, CLINIC_ADDRESS } from "@/lib/constants"
 import {
   Sparkles, Menu, ShoppingCart, Calendar, Phone, MapPin,
@@ -13,25 +14,27 @@ import { Badge } from "@/components/ui/badge"
 import {
   Sheet, SheetContent, SheetTrigger, SheetTitle, SheetClose,
 } from "@/components/ui/sheet"
+import { LanguageSwitcher } from "@/components/shared/language-switcher"
 import { useState } from "react"
 
 const NAV_LINKS: {
-  label: string
+  labelKey: string
   route: Parameters<ReturnType<typeof useNav>["navigate"]>[0]
   icon: typeof Home
-  desc: string
+  descKey: string
 }[] = [
-  { label: "Home", route: { name: "home" }, icon: Home, desc: "Welcome page" },
-  { label: "Services", route: { name: "services" }, icon: Scissors, desc: "Treatments & pricing" },
-  { label: "Book", route: { name: "booking" }, icon: CalendarCheck, desc: "Schedule appointment" },
-  { label: "Shop", route: { name: "shop" }, icon: ShoppingBag, desc: "Aftercare products" },
-  { label: "Contact", route: { name: "contact" }, icon: MessageCircle, desc: "Get in touch" },
+  { labelKey: "nav.home", route: { name: "home" }, icon: Home, descKey: "mobileMenu.homeDesc" },
+  { labelKey: "nav.services", route: { name: "services" }, icon: Scissors, descKey: "mobileMenu.servicesDesc" },
+  { labelKey: "nav.book", route: { name: "booking" }, icon: CalendarCheck, descKey: "mobileMenu.bookDesc" },
+  { labelKey: "nav.shop", route: { name: "shop" }, icon: ShoppingBag, descKey: "mobileMenu.shopDesc" },
+  { labelKey: "nav.contact", route: { name: "contact" }, icon: MessageCircle, descKey: "mobileMenu.contactDesc" },
 ]
 
 export function CustomerHeader() {
   const navigate = useNav((s) => s.navigate)
   const currentRoute = useNav((s) => s.route)
   const cartCount = useCart((s) => s.items.reduce((n, i) => n + i.quantity, 0))
+  const t = useLang((s) => s.t)
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
@@ -41,7 +44,7 @@ export function CustomerHeader() {
         <button
           onClick={() => navigate({ name: "home" })}
           className="flex items-center gap-2 transition-transform hover:scale-[1.02]"
-          aria-label="Home"
+          aria-label={t("nav.home")}
         >
           <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-white shadow-sm">
             <Sparkles className="h-5 w-5" />
@@ -52,7 +55,7 @@ export function CustomerHeader() {
               {CLINIC_NAME.split(" ")[0]} <span className="text-rose-500">&</span> Smooth
             </div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Laser & Beauty Clinic
+              {t("nav.book") === "حجز" ? "ليزر وتجميل" : "Laser & Beauty Clinic"}
             </div>
           </div>
         </button>
@@ -63,7 +66,7 @@ export function CustomerHeader() {
             const isActive = currentRoute.name === link.route.name
             return (
               <button
-                key={link.label}
+                key={link.labelKey}
                 onClick={() => navigate(link.route)}
                 data-active={isActive}
                 className={`nav-underline relative rounded-md px-3 py-2 text-sm font-medium transition-colors ${
@@ -72,20 +75,21 @@ export function CustomerHeader() {
                     : "text-foreground/80 hover:text-rose-600"
                 }`}
               >
-                {link.label}
+                {t(link.labelKey)}
               </button>
             )
           })}
         </nav>
 
         {/* Right actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <LanguageSwitcher />
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate({ name: "cart" })}
             className="relative transition-transform hover:scale-105"
-            aria-label={`Cart${cartCount > 0 ? ` with ${cartCount} items` : ""}`}
+            aria-label={t("nav.cart")}
           >
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
@@ -100,7 +104,7 @@ export function CustomerHeader() {
             size="icon"
             onClick={() => navigate({ name: "booking" })}
             className="h-10 w-10 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 sm:hidden"
-            aria-label="Book Now"
+            aria-label={t("nav.bookNow")}
           >
             <Calendar className="h-4 w-4" />
           </Button>
@@ -112,18 +116,18 @@ export function CustomerHeader() {
             className="btn-shimmer hidden bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 sm:inline-flex"
           >
             <Calendar className="mr-1.5 h-4 w-4" />
-            Book Now
+            {t("nav.bookNow")}
           </Button>
 
-          {/* Mobile menu — modern 2026 redesign */}
+          {/* Mobile menu - modern 2026 redesign */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
+              <Button variant="ghost" size="icon" className="md:hidden" aria-label={t("nav.openMenu")}>
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[88vw] max-w-sm border-0 p-0">
-              <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+              <SheetTitle className="sr-only">{t("nav.menu")}</SheetTitle>
 
               {/* Branded gradient header */}
               <div className="relative overflow-hidden bg-gradient-to-br from-rose-500 via-rose-600 to-rose-700 px-6 pb-6 pt-8 text-white">
@@ -141,7 +145,7 @@ export function CustomerHeader() {
                         {CLINIC_NAME.split(" ")[0]} <span className="text-rose-200">&</span> Smooth
                       </div>
                       <div className="text-[10px] font-medium uppercase tracking-wider text-rose-100/80">
-                        Laser & Beauty Clinic
+                        {t("nav.book") === "حجز" ? "ليزر وتجميل" : "Laser & Beauty Clinic"}
                       </div>
                     </div>
                   </div>
@@ -150,7 +154,7 @@ export function CustomerHeader() {
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9 rounded-full bg-white/10 text-white hover:bg-white/20 hover:text-white"
-                      aria-label="Close menu"
+                      aria-label={t("nav.closeMenu")}
                     >
                       <span className="text-lg leading-none">×</span>
                     </Button>
@@ -163,26 +167,26 @@ export function CustomerHeader() {
                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15">
                       <Clock className="h-3.5 w-3.5" />
                     </div>
-                    <span className="text-rose-50">Open today</span>
+                    <span className="text-rose-50">{t("mobileMenu.openToday")}</span>
                   </div>
                   <div className="h-3 w-px bg-white/20" />
                   <div className="flex items-center gap-1.5">
                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold">
                       4.9
                     </div>
-                    <span className="text-rose-50">2,400+ clients</span>
+                    <span className="text-rose-50">{t("mobileMenu.clients")}</span>
                   </div>
                 </div>
               </div>
 
               {/* Scrollable nav body */}
               <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5">
-                {/* Nav items — modern card style with icons */}
+                {/* Nav items - modern card style with icons */}
                 <div className="space-y-1.5">
                   {NAV_LINKS.map((link) => {
                     const isActive = currentRoute.name === link.route.name
                     return (
-                      <SheetClose asChild key={link.label}>
+                      <SheetClose asChild key={link.labelKey}>
                         <button
                           onClick={() => navigate(link.route)}
                           className={`group flex w-full items-center gap-3 rounded-2xl p-3 transition-all ${
@@ -198,14 +202,14 @@ export function CustomerHeader() {
                           }`}>
                             <link.icon className="h-5 w-5" />
                           </div>
-                          <div className="flex-1 min-w-0 text-left">
+                          <div className="flex-1 min-w-0 text-start">
                             <div className={`text-sm font-semibold ${
                               isActive ? "text-rose-700" : "text-foreground"
                             }`}>
-                              {link.label}
+                              {t(link.labelKey)}
                             </div>
                             <div className="truncate text-xs text-muted-foreground">
-                              {link.desc}
+                              {t(link.descKey)}
                             </div>
                           </div>
                           <ChevronRight className={`h-4 w-4 flex-shrink-0 transition-transform ${
@@ -225,7 +229,7 @@ export function CustomerHeader() {
                       onClick={() => navigate({ name: "booking" })}
                     >
                       <CalendarCheck className="mr-2 h-5 w-5" />
-                      Book Appointment
+                      {t("nav.bookAppointment")}
                     </Button>
                   </SheetClose>
                   <SheetClose asChild>
@@ -235,7 +239,7 @@ export function CustomerHeader() {
                       onClick={() => navigate({ name: "admin_login" })}
                     >
                       <Shield className="mr-1.5 h-3.5 w-3.5" />
-                      Admin Login
+                      {t("nav.adminLogin")}
                     </Button>
                   </SheetClose>
                 </div>
@@ -243,7 +247,7 @@ export function CustomerHeader() {
                 {/* Contact cards */}
                 <div className="mt-6">
                   <div className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-                    Contact
+                    {t("footer.contact")}
                   </div>
                   <div className="space-y-1.5">
                     <a
@@ -254,7 +258,7 @@ export function CustomerHeader() {
                         <Phone className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Call us</div>
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("mobileMenu.callUs")}</div>
                         <div className="truncate text-sm font-medium">{CLINIC_PHONE}</div>
                       </div>
                     </a>
@@ -266,7 +270,7 @@ export function CustomerHeader() {
                         <Mail className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Email</div>
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("mobileMenu.emailLabel")}</div>
                         <div className="truncate text-sm font-medium">{CLINIC_EMAIL}</div>
                       </div>
                     </a>
@@ -275,7 +279,7 @@ export function CustomerHeader() {
                         <MapPin className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Visit</div>
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("mobileMenu.visit")}</div>
                         <div className="truncate text-sm font-medium">{CLINIC_ADDRESS}</div>
                       </div>
                     </div>

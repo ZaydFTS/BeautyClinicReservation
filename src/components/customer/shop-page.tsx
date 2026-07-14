@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { useNav } from "@/store/nav"
+import { useLang } from "@/store/lang"
 import { useCart } from "@/store/cart"
 import { apiGet } from "@/lib/api-client"
 import { formatMoney } from "@/lib/format"
@@ -12,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { ShoppingBag, Search, Plus, Leaf, Filter } from "lucide-react"
+import { ShoppingBag, Search, Plus, Leaf, Filter, PackageSearch } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -34,6 +35,7 @@ interface Category {
 
 export function ShopPage() {
   const navigate = useNav((s) => s.navigate)
+  const t = useLang((s) => s.t)
   const addItem = useCart((s) => s.addItem)
   const [q, setQ] = useState("")
   const [cat, setCat] = useState<string>("All")
@@ -63,19 +65,19 @@ export function ShopPage() {
       imageUrl: p.imageUrl,
       stock: p.stock,
     })
-    toast.success(`Added ${p.name} to cart`)
+    toast.success(t("shop.addedToCart", { name: p.name }))
   }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="text-center">
         <Badge variant="secondary" className="mb-3 bg-rose-100 text-rose-700">
-          <ShoppingBag className="mr-1.5 h-3 w-3" />
-          Shop
+          <ShoppingBag className="me-1.5 h-3 w-3" />
+          {t("shop.badge")}
         </Badge>
-        <h1 className="text-4xl font-bold tracking-tight">Beauty Essentials</h1>
+        <h1 className="text-4xl font-bold tracking-tight">{t("shop.title")}</h1>
         <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-          Professional-grade skincare and aftercare products, handpicked by our specialists.
+          {t("shop.subtitle")}
         </p>
       </div>
 
@@ -88,7 +90,7 @@ export function ShopPage() {
             onClick={() => setCat("All")}
             className={cat === "All" ? "bg-rose-500 hover:bg-rose-600" : ""}
           >
-            All
+            {t("servicesPage.allCategories")}
           </Button>
           {(catData?.categories || []).map((c) => (
             <Button
@@ -104,24 +106,24 @@ export function ShopPage() {
         </div>
         <div className="flex gap-2">
           <div className="relative w-full sm:w-56">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search products..."
+              placeholder={t("shop.searchPlaceholder")}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              className="pl-9"
+              className="ps-9"
             />
           </div>
           <Select value={sort} onValueChange={setSort}>
             <SelectTrigger className="w-32">
-              <Filter className="mr-1 h-3.5 w-3.5" />
+              <Filter className="me-1 h-3.5 w-3.5" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="featured">Featured</SelectItem>
-              <SelectItem value="price-asc">Price ↑</SelectItem>
-              <SelectItem value="price-desc">Price ↓</SelectItem>
-              <SelectItem value="name">Name</SelectItem>
+              <SelectItem value="featured">{t("shop.sortFeatured")}</SelectItem>
+              <SelectItem value="price-asc">{t("shop.sortPriceAsc")}</SelectItem>
+              <SelectItem value="price-desc">{t("shop.sortPriceDesc")}</SelectItem>
+              <SelectItem value="name">{t("shop.sortName")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -141,8 +143,25 @@ export function ShopPage() {
             </Card>
           ))
         ) : products.length === 0 ? (
-          <div className="col-span-full py-16 text-center text-muted-foreground">
-            No products found.
+          <div className="col-span-full">
+            <div className="relative mx-auto flex max-w-md flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-rose-200/70 bg-gradient-to-br from-rose-50/60 to-amber-50/40 px-6 py-16 text-center">
+              <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-rose-300/20 blur-2xl" aria-hidden />
+              <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-white/80 ring-1 ring-rose-100 shadow-sm backdrop-blur-sm">
+                <PackageSearch className="h-7 w-7 text-rose-500" />
+              </div>
+              <h3 className="mt-4 text-base font-semibold tracking-tight">{t("shop.noResultsTitle")}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t("shop.noResultsDesc")}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4 border-rose-200 text-rose-700 hover:bg-rose-50"
+                onClick={() => { setQ(""); setCat("All"); setSort("featured") }}
+              >
+                {t("shop.clearFilters")}
+              </Button>
+            </div>
           </div>
         ) : (
           products.map((p) => (
@@ -177,9 +196,9 @@ export function ShopPage() {
 
                 {/* Low-stock badge — amber gradient pill */}
                 {p.stock <= 5 && p.stock > 0 && (
-                  <div className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-amber-200/60 bg-gradient-to-r from-amber-200/90 to-amber-100/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-amber-800 shadow-sm backdrop-blur-sm">
+                  <div className="absolute start-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-amber-200/60 bg-gradient-to-r from-amber-200/90 to-amber-100/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-amber-800 shadow-sm backdrop-blur-sm">
                     <span className="h-1 w-1 rounded-full bg-amber-500" />
-                    Only {p.stock} left
+                    {t("shop.onlyLeft", { n: p.stock })}
                   </div>
                 )}
 
@@ -187,7 +206,7 @@ export function ShopPage() {
                 {p.stock === 0 && (
                   <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[2px]">
                     <span className="rounded-full border border-rose-200 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-rose-700 shadow-sm">
-                      Out of stock
+                      {t("shop.outOfStock")}
                     </span>
                   </div>
                 )}
@@ -202,11 +221,11 @@ export function ShopPage() {
                         e.stopPropagation()
                         handleAdd(p)
                       }}
-                      aria-label={`Add ${p.name} to cart`}
+                      aria-label={t("productDetail.addToCart")}
                     >
                       <Plus className="h-4 w-4 shrink-0" />
-                      <span className="max-w-0 overflow-hidden whitespace-nowrap pr-1 text-xs font-semibold opacity-0 transition-all duration-300 group-hover:max-w-[100px] group-hover:opacity-100">
-                        Add
+                      <span className="max-w-0 overflow-hidden whitespace-nowrap pe-1 text-xs font-semibold opacity-0 transition-all duration-300 group-hover:max-w-[100px] group-hover:opacity-100">
+                        {t("shop.addShort")}
                       </span>
                     </Button>
                   </div>

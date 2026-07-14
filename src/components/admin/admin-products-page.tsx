@@ -24,7 +24,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
-import { Plus, Edit, Trash2, Package, Search, AlertTriangle, Leaf } from "lucide-react"
+import { Plus, Edit, Trash2, Package, Search, AlertTriangle, Leaf, Minus } from "lucide-react"
 import { toast } from "sonner"
 
 interface Category {
@@ -155,9 +155,17 @@ export function AdminProductsPage() {
           {isLoading ? (
             <div className="h-64 shimmer" />
           ) : products.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <Package className="h-12 w-12 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">No products found.</p>
+            <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+              <div className="relative mx-auto flex h-16 w-16 items-center justify-center">
+                <div className="absolute inset-0 rounded-full bg-rose-200/40 blur-xl" aria-hidden />
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-white/90 ring-1 ring-rose-100 shadow-sm">
+                  <Package className="h-6 w-6 text-rose-500" />
+                </div>
+              </div>
+              <p className="mt-4 text-sm font-medium">No products found</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Add your first product or adjust filters to see inventory here.
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -212,11 +220,12 @@ export function AdminProductsPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6"
+                              className="h-8 w-8"
                               onClick={() => quickStockUpdate(p, -1)}
                               disabled={p.stock === 0}
+                              aria-label="Decrease stock"
                             >
-                              −
+                              <Minus className="h-3 w-3" />
                             </Button>
                             <Badge
                               className={isLow ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}
@@ -227,10 +236,11 @@ export function AdminProductsPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-6 w-6"
+                              className="h-8 w-8"
                               onClick={() => quickStockUpdate(p, 1)}
+                              aria-label="Increase stock"
                             >
-                              +
+                              <Plus className="h-3 w-3" />
                             </Button>
                           </div>
                           {isLow && (

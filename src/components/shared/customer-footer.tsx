@@ -1,11 +1,13 @@
 "use client"
 
 import { useNav } from "@/store/nav"
+import { useLang } from "@/store/lang"
 import { CLINIC_NAME, CLINIC_PHONE, CLINIC_EMAIL, CLINIC_ADDRESS, CLINIC_HOURS } from "@/lib/constants"
 import { Sparkles, Phone, Mail, MapPin, Clock, Instagram, Facebook } from "lucide-react"
 
 export function CustomerFooter() {
   const navigate = useNav((s) => s.navigate)
+  const t = useLang((s) => s.t)
   const year = new Date().getFullYear()
 
   return (
@@ -21,8 +23,7 @@ export function CustomerFooter() {
               <span className="font-semibold">{CLINIC_NAME}</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Premium laser waxing and beauty treatments. Reveal your smoothest self in a relaxing,
-              professional environment.
+              {t("footer.tagline")}
             </p>
             <div className="flex gap-2 pt-2">
               <a
@@ -45,27 +46,27 @@ export function CustomerFooter() {
           {/* Quick links */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">
-              Explore
+              {t("footer.explore")}
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
                 <button onClick={() => navigate({ name: "services" })} className="transition hover:text-rose-600">
-                  Services
+                  {t("footer.services")}
                 </button>
               </li>
               <li>
                 <button onClick={() => navigate({ name: "booking" })} className="transition hover:text-rose-600">
-                  Book Appointment
+                  {t("footer.bookAppointment")}
                 </button>
               </li>
               <li>
                 <button onClick={() => navigate({ name: "shop" })} className="transition hover:text-rose-600">
-                  Shop Products
+                  {t("footer.shopProducts")}
                 </button>
               </li>
               <li>
                 <button onClick={() => navigate({ name: "contact" })} className="transition hover:text-rose-600">
-                  Contact Us
+                  {t("footer.contactUs")}
                 </button>
               </li>
             </ul>
@@ -74,7 +75,7 @@ export function CustomerFooter() {
           {/* Contact */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">
-              Contact
+              {t("footer.contact")}
             </h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
@@ -95,30 +96,30 @@ export function CustomerFooter() {
           {/* Hours */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">
-              Opening Hours
+              {t("footer.openingHours")}
             </h4>
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
               <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-rose-500" />
               <span>{CLINIC_HOURS}</span>
             </div>
             <div className="rounded-lg bg-rose-50 p-3 text-xs text-rose-700">
-              <strong>Closed Sundays</strong>
+              <strong>{t("contact.closedSundays")}</strong>
               <br />
-              Book online 24/7
+              {t("contact.bookOnline")}
             </div>
           </div>
         </div>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <p>© {year} {CLINIC_NAME}. All rights reserved.</p>
+          <p>© {year} {CLINIC_NAME}. {t("footer.rights")}</p>
           <div className="flex gap-4">
             <button onClick={() => navigate({ name: "admin_login" })} className="transition hover:text-rose-600">
-              Admin Portal
+              {t("footer.adminPortal")}
             </button>
             <span>•</span>
-            <span>Privacy Policy</span>
+            <span>{t("footer.privacyPolicy")}</span>
             <span>•</span>
-            <span>Terms</span>
+            <span>{t("footer.terms")}</span>
           </div>
         </div>
       </div>

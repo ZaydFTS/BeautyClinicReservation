@@ -90,9 +90,17 @@ export function AdminCustomersPage() {
           {isLoading ? (
             <div className="h-64 shimmer" />
           ) : customers.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <Users className="h-12 w-12 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">No customers found.</p>
+            <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+              <div className="relative mx-auto flex h-16 w-16 items-center justify-center">
+                <div className="absolute inset-0 rounded-full bg-rose-200/40 blur-xl" aria-hidden />
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-white/90 ring-1 ring-rose-100 shadow-sm">
+                  <Users className="h-6 w-6 text-rose-500" />
+                </div>
+              </div>
+              <p className="mt-4 text-sm font-medium">No customers found</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Customers who book appointments or place orders appear here.
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">

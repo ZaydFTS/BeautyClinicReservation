@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { useNav } from "@/store/nav"
+import { useLang } from "@/store/lang"
 import { apiGet } from "@/lib/api-client"
 import { formatMoney } from "@/lib/format"
 import { SERVICE_CATEGORIES } from "@/lib/constants"
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Calendar, Clock, Search, ArrowRight, Sparkles } from "lucide-react"
+import { Calendar, Clock, Search, ArrowRight, Sparkles, Scissors } from "lucide-react"
 import { useState } from "react"
 
 interface Service {
@@ -24,6 +25,7 @@ interface Service {
 
 export function ServicesPage() {
   const navigate = useNav((s) => s.navigate)
+  const t = useLang((s) => s.t)
   const [q, setQ] = useState("")
   const [cat, setCat] = useState<string>("All")
 
@@ -44,12 +46,11 @@ export function ServicesPage() {
       {/* Header */}
       <div className="text-center">
         <Badge variant="secondary" className="mb-3 bg-rose-100 text-rose-700">
-          Our Treatments
+          {t("servicesPage.badge")}
         </Badge>
-        <h1 className="text-4xl font-bold tracking-tight">Beauty Services</h1>
+        <h1 className="text-4xl font-bold tracking-tight">{t("servicesPage.title")}</h1>
         <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-          From laser hair removal to advanced facials, every treatment is performed by certified
-          specialists using state-of-the-art equipment.
+          {t("servicesPage.subtitle")}
         </p>
       </div>
 
@@ -69,12 +70,12 @@ export function ServicesPage() {
           ))}
         </div>
         <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search treatments..."
+            placeholder={t("servicesPage.searchPlaceholder")}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="pl-9"
+            className="ps-9"
           />
         </div>
       </div>
@@ -83,17 +84,39 @@ export function ServicesPage() {
       <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i}>
-              <CardHeader><div className="h-5 w-1/2 shimmer rounded" /></CardHeader>
-              <CardContent>
-                <div className="h-3 w-full shimmer rounded" />
-                <div className="mt-2 h-3 w-2/3 shimmer rounded" />
+            <Card key={i} className="overflow-hidden rounded-2xl border-rose-100/70">
+              <div className="relative h-32 shimmer bg-gradient-to-br from-rose-100/70 to-amber-50/50">
+                <div className="absolute right-3 top-3 h-6 w-16 shimmer rounded-full opacity-60" />
+                <div className="absolute right-3 top-12 h-6 w-12 shimmer rounded opacity-60" />
+              </div>
+              <CardContent className="p-5">
+                <div className="h-5 w-2/3 shimmer rounded" />
+                <div className="mt-2 h-3 w-full shimmer rounded" />
+                <div className="mt-1.5 h-3 w-4/5 shimmer rounded" />
+                <div className="mt-4 h-8 w-full shimmer rounded-md" />
               </CardContent>
             </Card>
           ))
         ) : filtered.length === 0 ? (
-          <div className="col-span-full text-center py-16 text-muted-foreground">
-            No services found. Try a different search.
+          <div className="col-span-full">
+            <div className="relative mx-auto flex max-w-md flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-rose-200/70 bg-gradient-to-br from-rose-50/60 to-amber-50/40 px-6 py-16 text-center">
+              <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-rose-300/20 blur-2xl" aria-hidden />
+              <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-white/80 ring-1 ring-rose-100 shadow-sm backdrop-blur-sm">
+                <Scissors className="h-7 w-7 text-rose-500" />
+              </div>
+              <h3 className="mt-4 text-base font-semibold tracking-tight">{t("servicesPage.noResultsTitle")}</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {t("servicesPage.noResultsDesc")}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4 border-rose-200 text-rose-700 hover:bg-rose-50"
+                onClick={() => { setQ(""); setCat("All") }}
+              >
+                {t("servicesPage.clearFilters")}
+              </Button>
+            </div>
           </div>
         ) : (
           filtered.map((svc) => (
@@ -118,13 +141,13 @@ export function ServicesPage() {
                   >
                     {svc.category}
                   </Badge>
-                  <div className="text-right">
+                  <div className="text-end">
                     <div className="text-gradient-rose text-2xl font-bold tracking-tight">
                       {formatMoney(svc.price)}
                     </div>
                     <div className="mt-0.5 flex items-center justify-end gap-1 text-xs text-rose-700/70">
                       <Clock className="h-3 w-3" />
-                      {svc.durationMin} min
+                      {svc.durationMin} {t("nav.treatmentDuration")}
                     </div>
                   </div>
                 </div>
@@ -145,16 +168,16 @@ export function ServicesPage() {
                   className="flex-1 border-rose-200/70 text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                   onClick={() => navigate({ name: "service_detail", serviceId: svc.id })}
                 >
-                  Details
+                  {t("servicesPage.details")}
                 </Button>
                 <Button
                   size="sm"
                   className="flex-1 bg-gradient-to-r from-rose-500 to-rose-600 shadow-sm shadow-rose-500/20 transition-all hover:from-rose-600 hover:to-rose-700 hover:shadow-md hover:shadow-rose-500/30"
                   onClick={() => navigate({ name: "booking", serviceId: svc.id })}
                 >
-                  <Calendar className="mr-1.5 h-4 w-4" />
-                  Book
-                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                  <Calendar className="me-1.5 h-4 w-4" />
+                  {t("servicesPage.book")}
+                  <ArrowRight className="ms-1.5 h-3.5 w-3.5" />
                 </Button>
               </CardFooter>
             </Card>
