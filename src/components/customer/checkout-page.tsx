@@ -1,6 +1,7 @@
 "use client"
 
 import { useNav } from "@/store/nav"
+import { useLang } from "@/store/lang"
 import { useCart } from "@/store/cart"
 import { apiPost } from "@/lib/api-client"
 import { formatMoney } from "@/lib/format"
@@ -15,7 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import {
   User, Phone, Mail, MapPin, CreditCard, Loader2, Check, ShieldCheck,
-  ShoppingBag, ChevronLeft,
+  ShoppingBag, ChevronLeft, ArrowRight,
 } from "lucide-react"
 import { useState } from "react"
 import { useMutation } from "@tanstack/react-query"
@@ -23,6 +24,7 @@ import { toast } from "sonner"
 
 export function CheckoutPage() {
   const navigate = useNav((s) => s.navigate)
+  const t = useLang((s) => s.t)
   const { items, totalPrice, clear } = useCart()
 
   const [form, setForm] = useState({
@@ -51,21 +53,33 @@ export function CheckoutPage() {
       }),
     onSuccess: (data) => {
       clear()
-      toast.success("Order placed! We'll be in touch shortly.")
+      toast.success(t("checkout.orderPlacedToast"))
       navigate({ name: "order_success", orderId: data.order.id })
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to place order")
+      toast.error(err.message || t("checkout.failedToast"))
     },
   })
 
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16 text-center">
-        <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground" />
-        <h2 className="mt-4 text-xl font-semibold">Your cart is empty</h2>
-        <Button className="mt-4" onClick={() => navigate({ name: "shop" })}>
-          Continue shopping
+        <div className="relative mx-auto flex h-24 w-24 items-center justify-center">
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-rose-200/60 to-amber-200/40 blur-xl" aria-hidden />
+          <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-rose-100 to-rose-50 ring-1 ring-rose-200/60">
+            <ShoppingBag className="h-9 w-9 text-rose-500" />
+          </div>
+        </div>
+        <h2 className="mt-6 text-2xl font-bold tracking-tight">{t("checkout.cartEmpty")}</h2>
+        <p className="mx-auto mt-2 max-w-md text-muted-foreground">
+          {t("checkout.cartEmptyDesc")}
+        </p>
+        <Button
+          className="btn-shimmer mt-6 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700"
+          onClick={() => navigate({ name: "shop" })}
+        >
+          {t("cart.continueShopping")}
+          <ArrowRight className="ms-2 h-4 w-4" />
         </Button>
       </div>
     )
@@ -74,11 +88,11 @@ export function CheckoutPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
       <Button variant="ghost" size="sm" onClick={() => navigate({ name: "cart" })} className="mb-4">
-        <ChevronLeft className="mr-1 h-4 w-4" />
-        Back to cart
+        <ChevronLeft className="me-1 h-4 w-4" />
+        {t("checkout.backToCart")}
       </Button>
 
-      <h1 className="text-3xl font-bold tracking-tight">Checkout</h1>
+      <h1 className="text-3xl font-bold tracking-tight">{t("checkout.title")}</h1>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         {/* Left: form */}
@@ -88,12 +102,12 @@ export function CheckoutPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <User className="h-5 w-5 text-rose-500" />
-                Your Information
+                {t("checkout.yourInfo")}
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="name">Full name *</Label>
+                <Label htmlFor="name">{t("checkout.fullName")} <span className="text-rose-500">{t("checkout.required")}</span></Label>
                 <Input
                   id="name"
                   value={form.customerName}
@@ -103,7 +117,7 @@ export function CheckoutPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-1.5">
-                  <Phone className="h-3.5 w-3.5" /> Phone *
+                  <Phone className="h-3.5 w-3.5" /> {t("checkout.phone")} <span className="text-rose-500">{t("checkout.required")}</span>
                 </Label>
                 <Input
                   id="phone"
@@ -114,7 +128,7 @@ export function CheckoutPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-1.5">
-                  <Mail className="h-3.5 w-3.5" /> Email
+                  <Mail className="h-3.5 w-3.5" /> {t("checkout.email")}
                 </Label>
                 <Input
                   id="email"
@@ -126,7 +140,7 @@ export function CheckoutPage() {
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="address" className="flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5" /> Delivery address (if COD)
+                  <MapPin className="h-3.5 w-3.5" /> {t("checkout.deliveryAddress")}
                 </Label>
                 <Textarea
                   id="address"
@@ -137,13 +151,13 @@ export function CheckoutPage() {
                 />
               </div>
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="notes">Order notes (optional)</Label>
+                <Label htmlFor="notes">{t("checkout.orderNotes")}</Label>
                 <Textarea
                   id="notes"
                   rows={2}
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  placeholder="Any special instructions..."
+                  placeholder={t("checkout.orderNotesPlaceholder")}
                 />
               </div>
             </CardContent>
@@ -154,7 +168,7 @@ export function CheckoutPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <CreditCard className="h-5 w-5 text-rose-500" />
-                Payment Method
+                {t("checkout.paymentMethod")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -166,13 +180,13 @@ export function CheckoutPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="CASH_IN_CLINIC">Pay in clinic (cash / card on arrival)</SelectItem>
-                  <SelectItem value="COD">Cash on delivery</SelectItem>
+                  <SelectItem value="CASH_IN_CLINIC">{t("checkout.payInClinic")}</SelectItem>
+                  <SelectItem value="COD">{t("checkout.cod")}</SelectItem>
                 </SelectContent>
               </Select>
               <div className="mt-3 rounded-md bg-rose-50 p-3 text-xs text-rose-700">
                 <ShieldCheck className="mb-1 h-4 w-4" />
-                <strong>No online payment.</strong> Pay when you receive your products.
+                <strong>{t("checkout.noOnlinePayment")}</strong> {t("checkout.noOnlinePaymentDesc")}
               </div>
             </CardContent>
           </Card>
@@ -180,15 +194,18 @@ export function CheckoutPage() {
 
         {/* Right: summary */}
         <div>
-          <Card className="sticky top-20">
+          <Card className="sticky top-20 border-rose-100/70 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-lg">Order Summary</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <ShieldCheck className="h-4 w-4 text-rose-500" />
+                {t("checkout.orderSummary")}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
+              <div className="max-h-64 space-y-2 overflow-y-auto pe-1">
                 {items.map((item) => (
                   <div key={item.productId} className="flex items-center gap-2 text-sm">
-                    <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded bg-rose-50">
+                    <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-md bg-gradient-to-br from-rose-100 to-amber-50 ring-1 ring-rose-100">
                       {item.imageUrl ? (
                          
                         <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
@@ -206,41 +223,41 @@ export function CheckoutPage() {
                   </div>
                 ))}
               </div>
-              <div className="space-y-2 border-t pt-3 text-sm">
+              <div className="space-y-2 border-t border-rose-100 pt-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-muted-foreground">{t("cart.subtotal")}</span>
                   <span className="font-medium">{formatMoney(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tax (8%)</span>
+                  <span className="text-muted-foreground">{t("cart.tax")}</span>
                   <span className="font-medium">{formatMoney(tax)}</span>
                 </div>
-                <div className="flex justify-between border-t pt-2">
-                  <span className="font-semibold">Total</span>
-                  <span className="text-lg font-bold text-rose-600">{formatMoney(total)}</span>
+                <div className="flex items-end justify-between border-t border-rose-100 pt-2">
+                  <span className="font-semibold">{t("cart.total")}</span>
+                  <span className="text-gradient-rose text-2xl font-bold tracking-tight">{formatMoney(total)}</span>
                 </div>
               </div>
               <Button
                 size="lg"
-                className="w-full bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700"
+                className="btn-shimmer w-full bg-gradient-to-r from-rose-500 to-rose-600 shadow-md shadow-rose-500/20 hover:from-rose-600 hover:to-rose-700 hover:shadow-lg hover:shadow-rose-500/30"
                 onClick={() => mutation.mutate()}
                 disabled={mutation.isPending || !form.customerName || !form.phone}
               >
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Placing order...
+                    <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                    {t("checkout.placingOrder")}
                   </>
                 ) : (
                   <>
-                    <Check className="mr-2 h-4 w-4" />
-                    Place Order
+                    <Check className="me-2 h-4 w-4" />
+                    {t("checkout.placeOrder")}
                   </>
                 )}
               </Button>
               <Badge variant="secondary" className="w-full justify-center py-2 text-center text-xs">
-                <ShieldCheck className="mr-1 h-3 w-3" />
-                Secure checkout · No credit card needed
+                <ShieldCheck className="me-1 h-3 w-3" />
+                {t("checkout.secureCheckout")}
               </Badge>
             </CardContent>
           </Card>

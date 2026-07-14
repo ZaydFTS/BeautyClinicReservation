@@ -132,9 +132,17 @@ export function AdminOrdersPage() {
           {isLoading ? (
             <div className="h-64 shimmer" />
           ) : orders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16">
-              <ShoppingCart className="h-12 w-12 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">No orders found.</p>
+            <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+              <div className="relative mx-auto flex h-16 w-16 items-center justify-center">
+                <div className="absolute inset-0 rounded-full bg-rose-200/40 blur-xl" aria-hidden />
+                <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-white/90 ring-1 ring-rose-100 shadow-sm">
+                  <ShoppingCart className="h-6 w-6 text-rose-500" />
+                </div>
+              </div>
+              <p className="mt-4 text-sm font-medium">No orders found</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                New customer orders will appear here in real time.
+              </p>
             </div>
           ) : (
             <div className="overflow-x-auto">

@@ -11,10 +11,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Sparkles, Loader2, Lock, Mail, ChevronLeft, ShieldCheck } from "lucide-react"
 import { toast } from "sonner"
+import { useLang } from "@/store/lang"
 
 export function AdminLoginPage() {
   const navigate = useNav((s) => s.navigate)
   const fetchMe = useAuth((s) => s.fetchMe)
+  const t = useLang((s) => s.t)
   const [email, setEmail] = useState(DEFAULT_ADMIN.email)
   const [password, setPassword] = useState(DEFAULT_ADMIN.password)
   const [loading, setLoading] = useState(false)
@@ -24,10 +26,10 @@ export function AdminLoginPage() {
     try {
       await apiPost("/api/auth/login", { email, password })
       await fetchMe()
-      toast.success("Welcome back, admin!")
+      toast.success(t("nav.welcomeBackAdmin"))
       navigate({ name: "admin_dashboard" })
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Login failed")
+      toast.error(err instanceof Error ? err.message : t("nav.loginFailed"))
     } finally {
       setLoading(false)
     }
@@ -42,8 +44,8 @@ export function AdminLoginPage() {
           onClick={() => navigate({ name: "home" })}
           className="mb-4"
         >
-          <ChevronLeft className="mr-1 h-4 w-4" />
-          Back to website
+          <ChevronLeft className="me-1 h-4 w-4" />
+          {t("nav.backToWebsite")}
         </Button>
 
         <Card className="border-rose-100 shadow-lg">
@@ -51,16 +53,16 @@ export function AdminLoginPage() {
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-rose-400 to-rose-600 text-white">
               <ShieldCheck className="h-7 w-7" />
             </div>
-            <CardTitle className="text-2xl">Admin Portal</CardTitle>
+            <CardTitle className="text-2xl">{t("nav.adminPortal")}</CardTitle>
             <CardDescription>
-              Sign in to manage appointments, products, and orders.
+              {t("nav.adminLoginSubtitle")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-1.5">
                 <Mail className="h-3.5 w-3.5" />
-                Email
+                {t("common.email")}
               </Label>
               <Input
                 id="email"
@@ -73,7 +75,7 @@ export function AdminLoginPage() {
             <div className="space-y-2">
               <Label htmlFor="password" className="flex items-center gap-1.5">
                 <Lock className="h-3.5 w-3.5" />
-                Password
+                {t("common.password")}
               </Label>
               <Input
                 id="password"
@@ -90,23 +92,23 @@ export function AdminLoginPage() {
             >
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
+                  <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                  {t("nav.signingIn")}
                 </>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Sign in
+                  <Sparkles className="me-2 h-4 w-4" />
+                  {t("nav.signIn")}
                 </>
               )}
             </Button>
 
             <div className="rounded-md bg-rose-50 p-3 text-xs text-rose-700">
-              <strong className="font-semibold">Demo credentials:</strong>
+              <strong className="font-semibold">{t("nav.demoCredentials")}</strong>
               <br />
-              Email: <code className="rounded bg-white px-1">{DEFAULT_ADMIN.email}</code>
+              {t("common.email")}: <code className="rounded bg-white px-1">{DEFAULT_ADMIN.email}</code>
               <br />
-              Password: <code className="rounded bg-white px-1">{DEFAULT_ADMIN.password}</code>
+              {t("common.password")}: <code className="rounded bg-white px-1">{DEFAULT_ADMIN.password}</code>
             </div>
           </CardContent>
         </Card>

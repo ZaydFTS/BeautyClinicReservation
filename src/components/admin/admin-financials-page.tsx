@@ -83,8 +83,9 @@ export function AdminFinancialsPage() {
         <>
           {/* KPI cards */}
           <div className="grid gap-4 md:grid-cols-4">
-            <Card>
-              <CardContent className="p-5">
+            <Card className="card-hover relative overflow-hidden">
+              <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-emerald-500/5 blur-2xl" />
+              <CardContent className="relative p-5">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -94,15 +95,16 @@ export function AdminFinancialsPage() {
                       {fmt(f.total)}
                     </div>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 ring-1 ring-emerald-100">
                     <DollarSign className="h-6 w-6 text-emerald-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-5">
+            <Card className="card-hover relative overflow-hidden">
+              <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-amber-500/5 blur-2xl" />
+              <CardContent className="relative p-5">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -112,15 +114,16 @@ export function AdminFinancialsPage() {
                       {fmt(f.pending)}
                     </div>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 ring-1 ring-amber-100">
                     <Clock className="h-6 w-6 text-amber-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-5">
+            <Card className="card-hover relative overflow-hidden">
+              <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-rose-500/5 blur-2xl" />
+              <CardContent className="relative p-5">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -130,15 +133,16 @@ export function AdminFinancialsPage() {
                       {fmt(f.cancelled)}
                     </div>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 ring-1 ring-rose-100">
                     <XCircle className="h-6 w-6 text-rose-600" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-5">
+            <Card className="card-hover relative overflow-hidden">
+              <div className="absolute right-0 top-0 h-20 w-20 rounded-full bg-rose-500/5 blur-2xl" />
+              <CardContent className="relative p-5">
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -151,7 +155,7 @@ export function AdminFinancialsPage() {
                       {f.pending > 0 ? `${fmt(f.pending)} pending` : "All collected"}
                     </div>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 ring-1 ring-rose-100">
                     <TrendingUp className="h-6 w-6 text-rose-600" />
                   </div>
                 </div>

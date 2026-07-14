@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getSessionToken } from "@/lib/auth"
 
+const SESSION_COOKIE = "bc_admin_session"
+
 export async function POST() {
   try {
     const token = await getSessionToken()
@@ -9,7 +11,7 @@ export async function POST() {
       await db.adminSession.deleteMany({ where: { token } })
     }
     const res = NextResponse.json({ ok: true })
-    res.cookies.set("bc_admin_session", "", { expires: new Date(0), path: "/" })
+    res.cookies.set(SESSION_COOKIE, "", { expires: new Date(0), path: "/" })
     return res
   } catch (e) {
     return NextResponse.json({ error: "Failed" }, { status: 500 })

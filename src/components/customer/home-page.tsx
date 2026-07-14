@@ -2,8 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { useNav } from "@/store/nav"
+import { useLang } from "@/store/lang"
 import { apiGet } from "@/lib/api-client"
-import { CLINIC_NAME, CLINIC_TAGLINE, CLINIC_HOURS } from "@/lib/constants"
+import { CLINIC_NAME, CLINIC_HOURS } from "@/lib/constants"
 import { formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -34,6 +35,7 @@ interface Product {
 
 export function HomePage() {
   const navigate = useNav((s) => s.navigate)
+  const t = useLang((s) => s.t)
 
   const { data: servicesData } = useQuery({
     queryKey: ["services", "active"],
@@ -59,17 +61,16 @@ export function HomePage() {
           <div className="mx-auto max-w-3xl text-center">
             <Badge variant="secondary" className="mb-6 animate-fade-in-up bg-rose-100 text-rose-700 hover:bg-rose-100">
               <Sparkles className="mr-1.5 h-3 w-3" />
-              Premium Laser & Beauty Clinic
+              {t("home.badge")}
             </Badge>
             <h1 className="animate-fade-in-up text-balance text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl" style={{ animationDelay: "0.05s" }}>
-              Reveal Your Smoothest,
+              {t("home.heroTitle1")}
               <span className="text-gradient-rose">
-                {" "}Most Confident Self
+                {" "}{t("home.heroTitle2")}
               </span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl animate-fade-in-up text-balance text-lg text-muted-foreground" style={{ animationDelay: "0.1s" }}>
-              {CLINIC_TAGLINE}. Professional laser waxing, advanced skincare treatments,
-              and premium aftercare products — all in one tranquil Beverly Hills studio.
+              {t("home.heroSubtitle")}
             </p>
             <div className="mt-10 flex animate-fade-in-up flex-col items-center justify-center gap-3 sm:flex-row" style={{ animationDelay: "0.15s" }}>
               <Button
@@ -78,7 +79,7 @@ export function HomePage() {
                 className="btn-shimmer pulse-glow w-full bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 sm:w-auto"
               >
                 <Calendar className="mr-2 h-5 w-5" />
-                Book Appointment
+                {t("nav.bookAppointment")}
               </Button>
               <Button
                 size="lg"
@@ -86,7 +87,7 @@ export function HomePage() {
                 onClick={() => navigate({ name: "services" })}
                 className="w-full border-rose-200 hover:border-rose-300 hover:bg-rose-50 sm:w-auto"
               >
-                Explore Services
+                {t("home.exploreServices")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -94,8 +95,8 @@ export function HomePage() {
               {[1, 2, 3, 4, 5].map((i) => (
                 <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
               ))}
-              <span className="ml-2 font-medium text-foreground">4.9</span>
-              <span>· 2,400+ happy clients</span>
+              <span className="ml-2 font-medium text-foreground">{t("home.rating")}</span>
+              <span>· {t("home.happyClients")}</span>
             </div>
           </div>
         </div>
@@ -105,10 +106,10 @@ export function HomePage() {
       <section className="border-y border-border/60 bg-card">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-8 sm:px-6 md:grid-cols-4 lg:px-8">
           {[
-            { icon: ShieldCheck, title: "FDA-Approved Lasers", desc: "Safe for all skin types" },
-            { icon: Award, title: "Certified Specialists", desc: "10+ years experience" },
-            { icon: Clock, title: "Flexible Booking", desc: CLINIC_HOURS.split("·")[0] },
-            { icon: Heart, title: "2,400+ Clients", desc: "Trusted since 2014" },
+            { icon: ShieldCheck, title: t("home.trust1Title"), desc: t("home.trust1Desc") },
+            { icon: Award, title: t("home.trust2Title"), desc: t("home.trust2Desc") },
+            { icon: Clock, title: t("home.trust3Title"), desc: CLINIC_HOURS.split("·")[0] },
+            { icon: Heart, title: t("home.trust4Title"), desc: t("home.trust4Desc") },
           ].map((item, i) => (
             <div
               key={item.title}
@@ -132,18 +133,18 @@ export function HomePage() {
         <div className="flex items-end justify-between">
           <div>
             <Badge variant="secondary" className="mb-2 bg-rose-50 text-rose-700">
-              Treatments
+              {t("home.treatments")}
             </Badge>
-            <h2 className="text-3xl font-bold tracking-tight">Popular Treatments</h2>
+            <h2 className="text-3xl font-bold tracking-tight">{t("home.popularTreatments")}</h2>
             <p className="mt-2 text-muted-foreground">
-              Our most-loved services, performed by certified specialists.
+              {t("home.popularDesc")}
             </p>
           </div>
           <Button variant="ghost" onClick={() => navigate({ name: "services" })} className="hidden sm:inline-flex">
-            View all
+            {t("home.viewAll")}
             <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={() => navigate({ name: "services" })} className="sm:hidden" aria-label="View all services">
+          <Button variant="ghost" size="icon" onClick={() => navigate({ name: "services" })} className="sm:hidden" aria-label={t("home.viewAll")}>
             <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
@@ -192,7 +193,7 @@ export function HomePage() {
                       </div>
                       <div className="mt-0.5 flex items-center justify-end gap-0.5 text-xs text-rose-700/70">
                         <Clock className="h-3 w-3" />
-                        {svc.durationMin} min
+                        {svc.durationMin} {t("nav.treatmentDuration")}
                       </div>
                     </div>
                   </div>
@@ -217,7 +218,7 @@ export function HomePage() {
                       navigate({ name: "booking", serviceId: svc.id })
                     }}
                   >
-                    Book this treatment
+                    {t("home.bookThisTreatment")}
                     <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </Button>
                 </CardFooter>
@@ -236,16 +237,16 @@ export function HomePage() {
                 <ShoppingBag className="mr-1 h-3 w-3" />
                 Shop
               </Badge>
-              <h2 className="text-3xl font-bold tracking-tight">Aftercare & Beauty Essentials</h2>
+              <h2 className="text-3xl font-bold tracking-tight">{t("home.aftercareTitle")}</h2>
               <p className="mt-2 text-muted-foreground">
                 Professional-grade products to extend your results at home.
               </p>
             </div>
             <Button variant="ghost" onClick={() => navigate({ name: "shop" })} className="hidden sm:inline-flex">
-              Shop all
+              {t("home.shopAll")}
               <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => navigate({ name: "shop" })} className="sm:hidden" aria-label="Shop all products">
+            <Button variant="ghost" size="icon" onClick={() => navigate({ name: "shop" })} className="sm:hidden" aria-label={t("home.shopAll")}>
               <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
@@ -341,10 +342,10 @@ export function HomePage() {
       <section className="bg-gradient-to-r from-rose-500 to-rose-700 py-16">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Ready to glow?
+            {t("home.ctaTitle")}
           </h2>
           <p className="mt-4 text-lg text-rose-100">
-            Book your appointment online in under 60 seconds. Available time slots shown in real-time.
+            {t("home.ctaSubtitle")}
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
@@ -354,7 +355,7 @@ export function HomePage() {
               className="w-full bg-white text-rose-600 hover:bg-rose-50 sm:w-auto"
             >
               <Calendar className="mr-2 h-5 w-5" />
-              Book Now
+              {t("nav.bookNow")}
             </Button>
             <Button
               size="lg"
@@ -363,7 +364,7 @@ export function HomePage() {
               className="w-full border-white bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
             >
               <Phone className="mr-2 h-4 w-4" />
-              Talk to us
+              {t("home.talkToUs")}
             </Button>
           </div>
         </div>

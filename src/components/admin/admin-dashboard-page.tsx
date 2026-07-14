@@ -15,6 +15,7 @@ import {
   ShoppingBag, Package, AlertTriangle, ArrowRight, Clock, Users,
 } from "lucide-react"
 import { useNav } from "@/store/nav"
+import { useLang } from "@/store/lang"
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip,
   CartesianGrid, BarChart, Bar, PieChart, Pie, Cell, Legend,
@@ -65,6 +66,7 @@ const PIE_COLORS = ["oklch(0.65 0.20 350)", "oklch(0.72 0.15 50)", "oklch(0.55 0
 
 export function AdminDashboardPage() {
   const navigate = useNav((s) => s.navigate)
+  const t = useLang((s) => s.t)
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
     queryFn: () => apiGet<DashboardData>("/api/dashboard"),
@@ -91,7 +93,7 @@ export function AdminDashboardPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t("adminDashboard.title")}</h1>
           <p className="text-sm text-muted-foreground">
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
@@ -106,7 +108,7 @@ export function AdminDashboardPage() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
           </span>
-          <span className="text-muted-foreground">Live</span>
+          <span className="text-muted-foreground">{t("adminDashboard.live")}</span>
         </div>
       </div>
 
@@ -118,14 +120,14 @@ export function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Today&apos;s Revenue
+                  {t("adminDashboard.todayRevenue")}
                 </div>
                 <div className="mt-1 text-2xl font-bold">
                   {formatMoney(data.revenue.today)}
                 </div>
                 <div className={`mt-1 flex items-center gap-1 text-xs ${revenueUp ? "text-emerald-600" : "text-rose-600"}`}>
                   {revenueUp ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                  {Math.abs(data.revenue.deltaTodayVsYesterday).toFixed(1)}% vs yesterday
+                  {Math.abs(data.revenue.deltaTodayVsYesterday).toFixed(1)}% {t("adminDashboard.vsYesterday")}
                 </div>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 ring-1 ring-emerald-100">
@@ -141,14 +143,14 @@ export function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Month Revenue
+                  {t("adminDashboard.monthRevenue")}
                 </div>
                 <div className="mt-1 text-2xl font-bold">
                   {formatMoney(data.revenue.month)}
                 </div>
                 <div className="mt-1 flex items-center gap-1 text-xs text-amber-600">
                   <Clock className="h-3 w-3" />
-                  Pending: {formatMoney(data.revenue.pending)}
+                  {t("adminDashboard.pending")} {formatMoney(data.revenue.pending)}
                 </div>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 ring-1 ring-rose-100">
@@ -164,13 +166,13 @@ export function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Today&apos;s Appointments
+                  {t("adminDashboard.todayAppointments")}
                 </div>
                 <div className="mt-1 text-2xl font-bold">
                   {data.todayAppointments.length}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {data.todayAppointments.filter((a) => a.status === "COMPLETED").length} completed
+                  {data.todayAppointments.filter((a) => a.status === "COMPLETED").length} {t("adminDashboard.completed")}
                 </div>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-rose-50 ring-1 ring-rose-100">
@@ -186,13 +188,13 @@ export function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Today&apos;s Orders
+                  {t("adminDashboard.todayOrders")}
                 </div>
                 <div className="mt-1 text-2xl font-bold">
                   {data.todayOrders.length}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {data.todayOrders.reduce((s, o) => s + o.items.length, 0)} items sold
+                  {data.todayOrders.reduce((s, o) => s + o.items.length, 0)} {t("adminDashboard.itemsSold")}
                 </div>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 ring-1 ring-amber-100">
@@ -208,8 +210,8 @@ export function AdminDashboardPage() {
         {/* Revenue chart */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Revenue (Last 7 Days)</CardTitle>
-            <CardDescription>Daily completed revenue</CardDescription>
+            <CardTitle>{t("adminDashboard.revenueLast7Days")}</CardTitle>
+            <CardDescription>{t("adminDashboard.dailyCompletedRevenue")}</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={260}>
@@ -225,7 +227,7 @@ export function AdminDashboardPage() {
                 <YAxis tick={{ fontSize: 11 }} stroke="oklch(0.55 0.02 350)" tickFormatter={(v) => `$${v}`} />
                 <Tooltip
                   contentStyle={{ background: "white", border: "1px solid oklch(0.92 0.01 60)", borderRadius: 8 }}
-                  formatter={(v: number) => [formatMoney(v), "Revenue"]}
+                  formatter={(v: number) => [formatMoney(v), t("adminDashboard.revenue")]}
                 />
                 <Area
                   type="monotone"
@@ -242,13 +244,13 @@ export function AdminDashboardPage() {
         {/* Service breakdown */}
         <Card>
           <CardHeader>
-            <CardTitle>Service Revenue</CardTitle>
-            <CardDescription>This month</CardDescription>
+            <CardTitle>{t("adminDashboard.serviceRevenue")}</CardTitle>
+            <CardDescription>{t("adminDashboard.thisMonth")}</CardDescription>
           </CardHeader>
           <CardContent>
             {data.serviceBreakdown.length === 0 ? (
               <div className="flex h-[260px] items-center justify-center text-sm text-muted-foreground">
-                No data yet
+                {t("adminDashboard.noData")}
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={260}>
@@ -281,17 +283,18 @@ export function AdminDashboardPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Today&apos;s Appointments</CardTitle>
+              <CardTitle>{t("adminDashboard.todaysAppointments")}</CardTitle>
               <Button variant="ghost" size="sm" onClick={() => navigate({ name: "admin_calendar" })}>
-                View calendar
-                <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                {t("adminDashboard.viewCalendar")}
+                <ArrowRight className="ms-1 h-3.5 w-3.5" />
               </Button>
             </div>
           </CardHeader>
           <CardContent>
             {data.todayAppointments.length === 0 ? (
-              <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-                No appointments today
+              <div className="flex h-32 flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+                <CalIcon className="h-7 w-7 text-rose-300/70" />
+                <span>{t("adminDashboard.noAppointmentsToday")}</span>
               </div>
             ) : (
               <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
@@ -330,19 +333,19 @@ export function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-amber-500" />
-                Low Stock Alerts
+                {t("adminDashboard.lowStockAlerts")}
               </CardTitle>
               <Button variant="ghost" size="sm" onClick={() => navigate({ name: "admin_products" })}>
-                Manage
-                <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                {t("adminDashboard.manage")}
+                <ArrowRight className="ms-1 h-3.5 w-3.5" />
               </Button>
             </div>
           </CardHeader>
           <CardContent>
             {data.lowStock.length === 0 ? (
               <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-                <Package className="mr-2 h-5 w-5" />
-                All products well-stocked
+                <Package className="me-2 h-5 w-5" />
+                {t("adminDashboard.allProductsStocked")}
               </div>
             ) : (
               <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
@@ -357,11 +360,11 @@ export function AdminDashboardPage() {
                     <div className="flex-1 min-w-0">
                       <div className="truncate text-sm font-medium">{p.name}</div>
                       <div className="text-xs text-muted-foreground">
-                        Threshold: {p.lowStockAt}
+                        {t("adminCommon.threshold")} {p.lowStockAt}
                       </div>
                     </div>
                     <Badge variant="secondary" className="bg-amber-100 text-amber-800">
-                      {p.stock} left
+                      {p.stock} {t("adminCommon.left")}
                     </Badge>
                   </div>
                 ))}
@@ -375,17 +378,18 @@ export function AdminDashboardPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Today&apos;s Orders</CardTitle>
+            <CardTitle>{t("adminDashboard.todaysOrders")}</CardTitle>
             <Button variant="ghost" size="sm" onClick={() => navigate({ name: "admin_orders" })}>
-              All orders
-              <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              {t("adminDashboard.allOrders")}
+              <ArrowRight className="ms-1 h-3.5 w-3.5" />
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           {data.todayOrders.length === 0 ? (
-            <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-              No orders today
+            <div className="flex h-32 flex-col items-center justify-center gap-2 text-sm text-muted-foreground">
+              <ShoppingBag className="h-7 w-7 text-rose-300/70" />
+              <span>{t("adminDashboard.noOrdersToday")}</span>
             </div>
           ) : (
             <div className="space-y-2">
@@ -402,10 +406,10 @@ export function AdminDashboardPage() {
                       #{order.id.slice(-8).toUpperCase()} · {order.customerName}
                     </div>
                     <div className="truncate text-xs text-muted-foreground">
-                      {order.items.length} items · {formatDateTime(order.createdAt)}
+                      {order.items.length} {t("adminCommon.items")} · {formatDateTime(order.createdAt)}
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <div className="text-sm font-bold">{formatMoney(order.total)}</div>
                     <Badge className={ORDER_STATUS_COLOR[order.status]} variant="outline">
                       {ORDER_STATUS_LABEL[order.status]}
@@ -421,14 +425,16 @@ export function AdminDashboardPage() {
       {/* Counts */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
-          { label: "Customers", value: data.counts.customers, icon: Users, color: "text-rose-600" },
-          { label: "Appointments", value: data.counts.appointments, icon: CalIcon, color: "text-emerald-600" },
-          { label: "Orders", value: data.counts.orders, icon: ShoppingBag, color: "text-amber-600" },
-          { label: "Products", value: data.counts.products, icon: Package, color: "text-purple-600" },
+          { label: t("adminDashboard.customers"), value: data.counts.customers, icon: Users, color: "text-rose-600", bg: "bg-rose-50 ring-rose-100" },
+          { label: t("adminDashboard.appointments"), value: data.counts.appointments, icon: CalIcon, color: "text-emerald-600", bg: "bg-emerald-50 ring-emerald-100" },
+          { label: t("adminDashboard.orders"), value: data.counts.orders, icon: ShoppingBag, color: "text-amber-600", bg: "bg-amber-50 ring-amber-100" },
+          { label: t("adminDashboard.products"), value: data.counts.products, icon: Package, color: "text-purple-600", bg: "bg-purple-50 ring-purple-100" },
         ].map((item) => (
-          <Card key={item.label}>
-            <CardContent className="flex items-center gap-3 p-4">
-              <item.icon className={`h-8 w-8 ${item.color}`} />
+          <Card key={item.label} className="card-hover relative overflow-hidden">
+            <CardContent className="relative flex items-center gap-3 p-4">
+              <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${item.bg} ring-1`}>
+                <item.icon className={`h-5 w-5 ${item.color}`} />
+              </div>
               <div>
                 <div className="text-xl font-bold">{item.value}</div>
                 <div className="text-xs text-muted-foreground">{item.label}</div>

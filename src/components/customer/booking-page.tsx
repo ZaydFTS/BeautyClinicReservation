@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation } from "@tanstack/react-query"
 import { useNav, type Route } from "@/store/nav"
+import { useLang } from "@/store/lang"
 import { apiGet, apiPost } from "@/lib/api-client"
 import { formatMoney, formatTime, formatDateTime, toISODate, addDays, sameDay } from "@/lib/format"
 import { Button } from "@/components/ui/button"
@@ -49,6 +50,9 @@ interface BookingPayload {
 
 export function BookingPage({ route }: { route: Extract<Route, { name: "booking" }> }) {
   const navigate = useNav((s) => s.navigate)
+  const t = useLang((s) => s.t)
+  const lang = useLang((s) => s.lang)
+  const locale = lang === "ar" ? "ar" : "en-US"
   const initialServiceId = route.serviceId
 
   const [selectedService, setSelectedService] = useState<string>(initialServiceId || "")
@@ -96,7 +100,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
     mutationFn: (payload: BookingPayload) =>
       apiPost<{ appointment: { id: string } }>("/api/appointments", payload),
     onSuccess: (data) => {
-      toast.success("Appointment booked! We'll see you soon.")
+      toast.success(t("booking.successToast"))
       navigate({ name: "home" })
       // Reset
       setSelectedSlotId("")
@@ -109,11 +113,11 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
 
   const handleBook = () => {
     if (!selectedSlotId) {
-      toast.error("Please select an available time slot.")
+      toast.error(t("booking.selectSlotToast"))
       return
     }
     if (!form.customerName || !form.phone) {
-      toast.error("Please enter your name and phone number.")
+      toast.error(t("booking.fillDetailsToast"))
       return
     }
     bookingMutation.mutate({
@@ -144,13 +148,12 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
       {/* Header */}
       <div className="text-center">
         <Badge variant="secondary" className="mb-3 bg-rose-100 text-rose-700">
-          <Calendar className="mr-1.5 h-3 w-3" />
-          Book Appointment
+          <Calendar className="me-1.5 h-3 w-3" />
+          {t("booking.badge")}
         </Badge>
-        <h1 className="text-4xl font-bold tracking-tight">Schedule Your Visit</h1>
+        <h1 className="text-4xl font-bold tracking-tight">{t("booking.title")}</h1>
         <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-          Choose a service, pick an available time slot, and confirm your booking.
-          Slots are managed by our admin team in real-time.
+          {t("booking.subtitle")}
         </p>
       </div>
 
@@ -160,7 +163,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
           {/* Service selection */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">1. Choose a service</CardTitle>
+              <CardTitle className="text-lg">{t("booking.step1Service")}</CardTitle>
             </CardHeader>
             <CardContent>
               <Select
@@ -171,13 +174,13 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a treatment..." />
+                  <SelectValue placeholder={t("booking.selectService")} />
                 </SelectTrigger>
                 <SelectContent className="max-h-72">
                   {services.map((s) => (
                     <SelectItem key={s.id} value={s.id}>
                       <span className="font-medium">{s.name}</span>
-                      <span className="ml-2 text-xs text-muted-foreground">
+                      <span className="ms-2 text-xs text-muted-foreground">
                         · {formatMoney(s.price)} · {s.durationMin}m
                       </span>
                     </SelectItem>
@@ -187,19 +190,19 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
               {currentService && (
                 <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                   <div className="rounded-lg bg-rose-50 p-3 text-center">
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground">Price</div>
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground">{t("booking.price")}</div>
                     <div className="text-lg font-bold text-rose-600">
                       {formatMoney(currentService.price)}
                     </div>
                   </div>
                   <div className="rounded-lg bg-rose-50 p-3 text-center">
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground">Duration</div>
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground">{t("booking.duration")}</div>
                     <div className="text-lg font-bold text-rose-600">
                       {currentService.durationMin}m
                     </div>
                   </div>
                   <div className="rounded-lg bg-rose-50 p-3 text-center">
-                    <div className="text-xs uppercase tracking-wider text-muted-foreground">Category</div>
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground">{t("booking.category")}</div>
                     <div className="text-lg font-bold text-rose-600">
                       {currentService.category}
                     </div>
@@ -212,9 +215,9 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
           {/* Date + slots */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">2. Pick a date & time</CardTitle>
+              <CardTitle className="text-lg">{t("booking.step2DateTime")}</CardTitle>
               <CardDescription>
-                Only available slots are shown. Booked or blocked times are hidden.
+                {t("booking.step2Desc")}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -225,7 +228,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                 </Button>
                 <div className="flex-1 text-center">
                   <div className="text-sm font-semibold">
-                    {selectedDate.toLocaleDateString("en-US", {
+                    {selectedDate.toLocaleDateString(locale, {
                       weekday: "long",
                       month: "long",
                       day: "numeric",
@@ -233,7 +236,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                     })}
                   </div>
                   {sameDay(selectedDate, new Date()) && (
-                    <div className="text-xs text-rose-600">Today</div>
+                    <div className="text-xs text-rose-600">{t("booking.today")}</div>
                   )}
                 </div>
                 <Button variant="ghost" size="icon" onClick={goNextDay}>
@@ -257,11 +260,11 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                       }`}
                     >
                       <span className="text-[10px] uppercase tracking-wider">
-                        {d.toLocaleDateString("en-US", { weekday: "short" })}
+                        {d.toLocaleDateString(locale, { weekday: "short" })}
                       </span>
                       <span className="text-lg font-bold">{d.getDate()}</span>
                       <span className="text-[10px] text-muted-foreground">
-                        {d.toLocaleDateString("en-US", { month: "short" })}
+                        {d.toLocaleDateString(locale, { month: "short" })}
                       </span>
                     </button>
                   )
@@ -270,8 +273,15 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
 
               {/* Slots */}
               {!selectedService ? (
-                <div className="mt-6 rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-                  Please select a service first.
+                <div className="mt-6 relative overflow-hidden rounded-2xl border border-dashed border-rose-200/70 bg-gradient-to-br from-rose-50/60 to-amber-50/40 p-8 text-center">
+                  <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-rose-300/20 blur-2xl" aria-hidden />
+                  <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/80 ring-1 ring-rose-100 shadow-sm backdrop-blur-sm">
+                    <Sparkles className="h-6 w-6 text-rose-500" />
+                  </div>
+                  <p className="relative mt-3 text-sm font-medium">{t("booking.selectServiceFirst")}</p>
+                  <p className="relative mt-1 text-xs text-muted-foreground">
+                    {t("booking.selectServiceFirstDesc")}
+                  </p>
                 </div>
               ) : slotsLoading ? (
                 <div className="mt-6 grid grid-cols-3 gap-2 sm:grid-cols-4">
@@ -280,10 +290,14 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                   ))}
                 </div>
               ) : slots.length === 0 ? (
-                <div className="mt-6 rounded-lg border border-dashed p-8 text-center">
-                  <CalendarDays className="mx-auto h-8 w-8 text-muted-foreground" />
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    No available slots for this date. Try another day.
+                <div className="mt-6 relative overflow-hidden rounded-2xl border border-dashed border-rose-200/70 bg-gradient-to-br from-rose-50/60 to-amber-50/40 p-8 text-center">
+                  <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-rose-300/20 blur-2xl" aria-hidden />
+                  <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/80 ring-1 ring-rose-100 shadow-sm backdrop-blur-sm">
+                    <CalendarDays className="h-6 w-6 text-rose-500" />
+                  </div>
+                  <p className="relative mt-3 text-sm font-medium">{t("booking.noSlotsTitle")}</p>
+                  <p className="relative mt-1 text-xs text-muted-foreground">
+                    {t("booking.noSlotsDesc")}
                   </p>
                 </div>
               ) : (
@@ -338,13 +352,13 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">3. Your details</CardTitle>
+              <CardTitle className="text-lg">{t("booking.step3Details")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name" className="flex items-center gap-1.5">
                   <User className="h-3.5 w-3.5" />
-                  Full name *
+                  {t("booking.fullName")} <span className="text-rose-500">{t("booking.required")}</span>
                 </Label>
                 <Input
                   id="name"
@@ -356,7 +370,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-1.5">
                   <Phone className="h-3.5 w-3.5" />
-                  Phone *
+                  {t("booking.phone")} <span className="text-rose-500">{t("booking.required")}</span>
                 </Label>
                 <Input
                   id="phone"
@@ -368,7 +382,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-1.5">
                   <Mail className="h-3.5 w-3.5" />
-                  Email (optional)
+                  {t("booking.emailOptional")}
                 </Label>
                 <Input
                   id="email"
@@ -379,13 +393,13 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="note">Notes (optional)</Label>
+                <Label htmlFor="note">{t("booking.notesOptional")}</Label>
                 <Textarea
                   id="note"
                   rows={3}
                   value={form.note}
                   onChange={(e) => setForm({ ...form, note: e.target.value })}
-                  placeholder="Any specific concerns or requests..."
+                  placeholder={t("booking.notesPlaceholder")}
                 />
               </div>
             </CardContent>
@@ -396,25 +410,25 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
             <CardHeader>
               <CardTitle className="flex items-center gap-1.5 text-lg">
                 <Sparkles className="h-4 w-4 text-rose-600" />
-                Booking Summary
+                {t("booking.bookingSummary")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               {currentService && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Service</span>
-                  <span className="font-medium text-right">{currentService.name}</span>
+                  <span className="text-muted-foreground">{t("booking.service")}</span>
+                  <span className="font-medium text-end">{currentService.name}</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Date</span>
+                <span className="text-muted-foreground">{t("common.date")}</span>
                 <span className="font-medium">
-                  {selectedDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  {selectedDate.toLocaleDateString(locale, { month: "short", day: "numeric" })}
                 </span>
               </div>
               {selectedSlotId && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Time</span>
+                  <span className="text-muted-foreground">{t("common.time")}</span>
                   <span className="font-medium">
                     {(() => {
                       const slot = slots.find((s) => s.id === selectedSlotId)
@@ -425,14 +439,14 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
               )}
               {currentService && (
                 <div className="flex justify-between border-t pt-2">
-                  <span className="font-semibold">Total</span>
+                  <span className="font-semibold">{t("common.total")}</span>
                   <span className="font-bold text-rose-600">
                     {formatMoney(currentService.price)}
                   </span>
                 </div>
               )}
               <div className="rounded-md bg-white/60 p-2 text-xs text-muted-foreground">
-                Pay in clinic after your treatment.
+                {t("booking.payInClinic")}
               </div>
             </CardContent>
           </Card>
@@ -445,18 +459,18 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
           >
             {bookingMutation.isPending ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Booking...
+                <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                {t("booking.booking")}
               </>
             ) : (
               <>
-                <Check className="mr-2 h-4 w-4" />
-                Confirm Booking
+                <Check className="me-2 h-4 w-4" />
+                {t("booking.confirmBooking")}
               </>
             )}
           </Button>
           <p className="text-center text-xs text-muted-foreground">
-            By booking you agree to our cancellation policy. No-shows may incur a fee.
+            {t("booking.cancellationPolicy")}
           </p>
         </div>
       </div>

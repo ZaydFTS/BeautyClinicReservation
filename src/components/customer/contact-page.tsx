@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useMutation } from "@tanstack/react-query"
 import { apiPost } from "@/lib/api-client"
+import { useLang } from "@/store/lang"
 import { CLINIC_PHONE, CLINIC_EMAIL, CLINIC_ADDRESS, CLINIC_HOURS } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,6 +15,7 @@ import { Phone, Mail, MapPin, Clock, Send, Loader2, MessageCircle } from "lucide
 import { toast } from "sonner"
 
 export function ContactPage() {
+  const t = useLang((s) => s.t)
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -30,11 +32,11 @@ export function ContactPage() {
         message: form.message,
       }),
     onSuccess: () => {
-      toast.success("Message sent! We'll get back to you shortly.")
+      toast.success(t("contact.messageSent"))
       setForm({ name: "", email: "", phone: "", message: "" })
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Failed to send message")
+      toast.error(err.message || t("contact.failedToast"))
     },
   })
 
@@ -42,13 +44,12 @@ export function ContactPage() {
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="text-center">
         <Badge variant="secondary" className="mb-3 bg-rose-100 text-rose-700">
-          <MessageCircle className="mr-1.5 h-3 w-3" />
-          Get in touch
+          <MessageCircle className="me-1.5 h-3 w-3" />
+          {t("contact.badge")}
         </Badge>
-        <h1 className="text-4xl font-bold tracking-tight">Contact Us</h1>
+        <h1 className="text-4xl font-bold tracking-tight">{t("contact.title")}</h1>
         <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-          Have a question about our treatments, products, or booking? Send us a message and
-          we'll respond within one business day.
+          {t("contact.subtitle")}
         </p>
       </div>
 
@@ -61,7 +62,7 @@ export function ContactPage() {
                 <Phone className="h-5 w-5 text-rose-600" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Phone</div>
+                <div className="text-sm font-semibold">{t("contact.phone")}</div>
                 <div className="text-sm text-muted-foreground">{CLINIC_PHONE}</div>
               </div>
             </CardContent>
@@ -72,7 +73,7 @@ export function ContactPage() {
                 <Mail className="h-5 w-5 text-rose-600" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Email</div>
+                <div className="text-sm font-semibold">{t("contact.email")}</div>
                 <div className="text-sm text-muted-foreground">{CLINIC_EMAIL}</div>
               </div>
             </CardContent>
@@ -83,7 +84,7 @@ export function ContactPage() {
                 <MapPin className="h-5 w-5 text-rose-600" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Address</div>
+                <div className="text-sm font-semibold">{t("contact.address")}</div>
                 <div className="text-sm text-muted-foreground">{CLINIC_ADDRESS}</div>
               </div>
             </CardContent>
@@ -94,7 +95,7 @@ export function ContactPage() {
                 <Clock className="h-5 w-5 text-rose-600" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Hours</div>
+                <div className="text-sm font-semibold">{t("contact.hours")}</div>
                 <div className="text-sm text-muted-foreground">{CLINIC_HOURS}</div>
               </div>
             </CardContent>
@@ -105,21 +106,21 @@ export function ContactPage() {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Send us a message</CardTitle>
+              <CardTitle>{t("contact.sendMessage")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Name *</Label>
+                  <Label htmlFor="name">{t("contact.name")} <span className="text-rose-500">{t("contact.required")}</span></Label>
                   <Input
                     id="name"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="Your name"
+                    placeholder={t("contact.namePlaceholder")}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
+                  <Label htmlFor="phone">{t("contact.phone")}</Label>
                   <Input
                     id="phone"
                     value={form.phone}
@@ -129,7 +130,7 @@ export function ContactPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("contact.email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -139,13 +140,13 @@ export function ContactPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="message">Message *</Label>
+                <Label htmlFor="message">{t("contact.message")} <span className="text-rose-500">{t("contact.required")}</span></Label>
                 <Textarea
                   id="message"
                   rows={6}
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  placeholder="How can we help you?"
+                  placeholder={t("contact.messagePlaceholder")}
                 />
               </div>
               <Button
@@ -155,13 +156,13 @@ export function ContactPage() {
               >
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending...
+                    <Loader2 className="me-2 h-4 w-4 animate-spin" />
+                    {t("contact.sending")}
                   </>
                 ) : (
                   <>
-                    <Send className="mr-2 h-4 w-4" />
-                    Send Message
+                    <Send className="me-2 h-4 w-4" />
+                    {t("contact.send")}
                   </>
                 )}
               </Button>
@@ -177,7 +178,7 @@ export function ContactPage() {
             <div className="text-center">
               <MapPin className="mx-auto h-12 w-12 text-rose-500" />
               <div className="mt-2 font-medium">{CLINIC_ADDRESS}</div>
-              <div className="text-sm text-muted-foreground">Beverly Hills, California</div>
+              <div className="text-sm text-muted-foreground">{t("contact.cityState")}</div>
             </div>
           </div>
         </div>

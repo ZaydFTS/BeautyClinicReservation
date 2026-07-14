@@ -1,0 +1,238 @@
+- DOM verification via `agent-browser eval` confirmed the rendered state of the "Talk to us" button at 375px:
+  - BEFORE logic: `bg-background` (white) + `text-white` = invisible.
+  - AFTER: `bg: rgba(0, 0, 0, 0)` (transparent) + `color: rgb(255, 255, 255)` (white) + 343×40px size → white text visible on rose gradient.
+  - Also confirmed: new mobile Book Now icon button renders at 40×40, new mobile View all / Shop all icon buttons render at 36×36, desktop text buttons correctly render at 0×0 (hidden on mobile).
+- VLM (GLM-4.6v) verification of AFTER home screenshot:
+  - "'Talk to us' button: Rose gradient background with white text — clearly visible and readable."
+  - Listed 15 buttons on the page, all confirmed readable. "No buttons have missing, invisible, or white-on-white text. All buttons (text or icon) are clearly readable."
+- VLM (GLM-4.6v) verification of AFTER contact / booking screenshots confirmed the "Send Message" and "Confirm Booking" buttons are clearly visible (pink bg + white text). Checkout screenshot showed the empty-cart "Continue shopping" state (cart had no items), with that button also clearly visible.
+
+Stage Summary:
+- Files modified (2):
+  - `src/components/customer/home-page.tsx` — 4 fixes: (1) "Talk to us" button: added `bg-transparent` to make white text visible on the rose gradient section (was invisible white-on-white due to outline variant's `bg-background`); (2) "View →" affordance on product preview cards: switched from `opacity-0 group-hover:opacity-100` to `opacity-100 sm:opacity-0 sm:group-hover:opacity-100` so it's visible on mobile by default; (3) added mobile icon-only "View all" button (ChevronRight, sm:hidden, aria-label) in services section header; (4) added mobile icon-only "Shop all" button in shop preview section header.
+  - `src/components/shared/customer-header.tsx` — 1 fix: added mobile icon-only "Book Now" button (Calendar icon, h-10 w-10 for 40px touch target, sm:hidden, aria-label="Book Now") shown on mobile next to the cart icon, while keeping the existing desktop text+icon button (`hidden sm:inline-flex`). Mobile users now have 1-tap booking access without opening the mobile menu.
+- Buttons fixed (4 customer-facing buttons improved on mobile):
+  - "Talk to us" (home CTA section) — CRITICAL: text was invisible on ALL viewports; now visible (white on rose gradient).
+  - "View →" affordance (home product preview cards) — was hover-only; now visible by default on mobile, hover-reveal on desktop.
+  - "View all" + "Shop all" section header buttons — were hidden on mobile; now have icon-only mobile alternatives.
+  - Header "Book Now" — was hidden on mobile (only accessible via mobile menu); now has icon-only mobile alternative in header.
+- Buttons verified already OK (no changes needed): "Send Message" (contact), "Place Order" (checkout), "Confirm Booking" (booking), "Book Now" (home CTA), "Book this treatment" cards (home), header cart/menu icons, footer social icons + text links, shop add-to-cart icon button (icon-only base state is sufficient).
+- Screenshots saved to `/home/z/my-project/download/`:
+  - BEFORE: `contact-button-before-mobile.png` (home, 375×812)
+  - AFTER: `contact-button-after-mobile.png` (home, 375×812), `contact-button-after-mobile-contact.png` (contact, 375×812), `contact-button-after-mobile-booking.png` (booking, 375×812), `contact-button-after-mobile-checkout.png` (checkout, 375×812)
+- Lint: `bun run lint` clean (exit 0, no errors, no warnings) after all edits.
+
+---
+Task ID: 6-functionality-check
+Agent: general-purpose
+Task: Verify UI redesign changes didn't break core functionality
+
+Work Log:
+- Read prior worklog (Task IDs 5-responsive-audit, 5-service-cards-redesign, 5-product-cards-redesign, 5-contact-button-mobile-fix) to understand the scope of redesign changes: admin sidebar grouped sections, service cards redesign (4 files), product cards redesign (3 files), mobile contact/header button fixes.
+- Verified dev server up at http://localhost:3000/ (HTTP 200). Used `agent-browser` CLI throughout.
+- Confirmed lint clean: `bun run lint` exits 0 with no errors and no warnings.
+- Inspected current `src/components/admin/admin-shell.tsx` — confirmed new grouped sidebar (OVERVIEW/CATALOG/INSIGHTS/SYSTEM) with 10 nav items (Dashboard, Calendar, Appointments, Time Slots, Services, Products, Orders, Customers, Financials, Settings). NOTE: there is NO "Service Categories" sidebar item — and never was (verified via `git log --all -- 'src/components/admin/'`: only the 11 admin pages above ever existed; nav store `src/store/nav.ts` has no `admin_service_categories` route).
+- Verified mobile button fixes from prior task are present in code and rendering correctly at 375px viewport:
+  - Mobile-only "Book Now" icon button (Calendar icon, 40px) in customer header — `agent-browser eval` confirmed visible at 375px (`display !== 'none'`).
+  - "Talk to us" button on home CTA — confirmed white text (`rgb(255,255,255)`) + transparent bg (`rgba(0,0,0,0)`) = visible on rose gradient section.
+  - Mobile-only "View all" + "Shop all" icon buttons in home section headers — confirmed visible at 375px.
+
+Test Results (PASS/FAIL with details):
+
+### Customer flows
+1. Home page loads — PASS. All sections render: hero with "Book Appointment" + "Explore Services" buttons, "Popular Treatments" with 6 service cards (each with "Book this treatment" button), "Aftercare & Beauty Essentials" with 4 product cards (with "View" affordance), "Ready to glow?" CTA with "Book Now" + "Talk to us" buttons, footer. No console errors.
+2. Services page (`#/services`) — PASS. 8 services listed with Details/Book buttons. Category filters (All/Waxing/Laser/Skincare/Other) work — Laser filter shows 4 laser services. Search works — typing "facial" returns only "Hydrafacial Treatment".
+3. Service detail — PASS. Clicked Details button on Hydrafacial card → navigated to `#/service_detail?id=...`. Page renders title ($180.00), duration (60 minutes), description, treatment features, "Book this treatment" button.
+4. Booking flow — PASS. Selected "Underarm Laser Waxing" from dropdown, picked TUE 30 Jun (2 slots: 12:00 PM, 5:00 PM available), selected 12:00 PM slot, filled name="QA Test User" + phone="555-123-4567", clicked "Confirm Booking". Toast appeared: "Appointment booked! We'll see you soon." Redirected to #/home. Booking also visible in admin calendar + admin appointments table.
+5. Shop page (`#/shop`) — PASS. 8 products render with category labels (BUNDLES/TOOLS/SKINCARE/AFTERCARE) + add-to-cart buttons + low-stock pills (e.g. "ONLY 3 LEFT" on Sunscreen). Category filters (All/Aftercare/Bundles/Skincare/Tools) work — Skincare filter shows 3 products. Search works — "serum" returns only "Vitamin C Serum".
+6. Product detail — PASS. Clicked LED Facial Mask card → navigated to `#/product_detail?id=...`. Page renders title, $220.00 price, quantity selector (Decrease/Increase qty buttons), "Add to cart · $220.00" button, Back to shop button.
+7. Add to cart — PASS. Clicked "Add Complete Aftercare Bundle to cart" on shop page. Cart aria-label updated from "Cart" → "Cart with 1 items". Toast appeared: "Added Complete Aftercare Bundle to cart". localStorage `bc_cart` updated with item. Also verified add-to-cart on product detail page: increased qty to 2, clicked add → cart label became "Cart with 3 items" (1 + 2), toast "Added 2 × LED Facial Mask to cart".
+8. Cart page (`#/cart`) — PASS. Items render with qty spinbuttons, line totals ($75 × 1 = $75, $220 × 2 = $440), Order Summary (Subtotal $515, Tax 8% $41.20, Total $556.20). Increase qty button: bundle 1→2, subtotal recalculated to $590, tax $47.20. Remove button: bundle removed → 2 items, subtotal $440, toast "Item removed from cart". All math correct.
+9. Checkout — PASS. Filled name, phone, email, address on `#/checkout`. Clicked "Place Order". Toast: "Order placed! We'll be in touch shortly." Redirected to `#/order_success?id=cmr04kdya...` with order #0LPFJKY1, total $440, "Continue shopping" button.
+10. Contact form — PASS. Filled name, phone, email, message on `#/contact`. Clicked "Send Message". Toast: "Message sent! We'll get back to you shortly."
+
+### Admin flows
+11. Admin login — PASS. Navigated to `#/admin`, form pre-filled with admin credentials, clicked "Sign in", redirected to `#/admin_dashboard`.
+12. Admin dashboard — PASS. KPI cards: Today's Revenue $0, Month Revenue $1,114, Today's Appointments 1 (Underarm Laser Waxing - QA Test User - 12:00 PM - matching my booking), Today's Orders 1 (matching my LED Facial Mask order). Revenue (Last 7 Days) chart renders. Service Revenue chart lists all 7 services. Today's Appointments + Low Stock Alerts sections render.
+13. Admin sidebar navigation — PASS for all 10 items present (Dashboard, Calendar, Appointments, Time Slots, Services, Products, Orders, Customers, Financials, Settings). NOTE: The task spec lists 11 items including "Service Categories", but this item does NOT exist in the codebase — verified via `git log` (no `admin-service-categories-page.tsx` file ever existed) and the nav store has no `admin_service_categories` route. So this is NOT a regression — the spec is incorrect.
+14. Admin calendar — PASS. Day view shows 7 appointments (including QA Test User booking at 12:00 PM). Switched to Week view (renders), then Month view (renders June 2026 with Mon-Sun headers + date grid). All view switches work, appointments persist.
+15. Admin time slots — PASS. `#/admin_slots` shows slots for today (TUE 30) with Edit/Unblock/Block/Delete actions per slot. Date navigation works (7-day strip TUE 30 → MON 6). "New Slot" dialog opens with Service/Date/Time/Status/Notes fields + Cancel/Create buttons. "Bulk Generate" dialog opens with Service, Date range, Day-of-week toggles (Mon-Sun), Time-slot toggles (8AM-7PM), Cancel/Generate buttons.
+16. Admin services — PASS. `#/admin_services` shows 8 services with category badges (Laser/Skincare) + active toggles + Edit/Delete buttons + search. "New Service" dialog opens with Name/Description/Price/Duration/Category(dropdown with Waxing/Laser/Skincare/Other)/Active fields. NOTE: Task spec mentions "Manage Categories" button — this button does NOT exist; service categories are managed via hardcoded `SERVICE_CATEGORIES` constant in `src/lib/constants.ts` (Waxing, Laser, Skincare, Other) exposed as a dropdown in the Service edit dialog. Not a regression — was never a feature.
+17. Admin service categories — N/A. No separate Service Categories admin page exists (and never did — verified via git history). Service categories are hardcoded in `src/lib/constants.ts`. Spec is misaligned with app.
+18. Admin products — PASS. `#/admin_products` table renders with columns Product/Category/Price/Stock/Status/Actions. 8 products listed with category, price, stock −/+ buttons, active toggle, Edit/Delete. Stock − button: Complete Aftercare Bundle 19 → 18 (verified). "New Product" dialog opens with Name/Description/Price/Cost/Stock/Image URL/Category/Active fields.
+19. Admin orders — PASS. `#/admin_orders` table renders with Order #/Customer/Items/Total/Payment/Status/Date/Actions columns. Multiple orders including my just-placed #0LPFJKY1 (QA Checkout - $440 - Pending). "View order" opens detail dialog showing date, status, customer info, payment method, items list (LED Facial Mask × 2 = $440), total, Mark completed/Cancel order buttons.
+20. Admin customers — PASS. `#/admin_customers` table renders with Name/Phone/Email/Appointments/Orders/Joined/Actions columns. Multiple customers including "QA Test User" (1 appointment, 1 order, joined today). "View customer" opens profile dialog: member since, # appointments, # orders, total spend ($440), Booking History (Underarm Laser Waxing $80 Booked), Order History (#0LPFJKY1 $440 Pending).
+21. Admin financials — PASS. `#/admin_financials` renders KPI cards (Total Revenue $1,114, Pending $1,573, Cancelled $0, Net Collected $1,114), Revenue Trend chart (June 2026), transactions table (Date/Type/Description/Status/Amount) with my recent order + appointment visible.
+22. Admin settings — PASS. `#/admin_settings` renders "Notification Settings" section, "Telegram Bot" section with env var config instructions (TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_CHAT_ID), and "Recent Notifications (last 50)" log showing SENT/FAILED notifications (my contact form submission, order placement, appointment booking all logged as SENT). NOTE: Task spec mentions "bot commands section" — no such section exists; only Telegram Bot config + Notification log sections are present. Not a regression.
+23. Admin sign out — PASS. Clicked "Sign out" button. Redirected to `#/home`. Verified customer home page renders (h1 = "Reveal Your Smoothest, Most Confident Self").
+
+### Technical checks
+24. No console errors — PASS. `agent-browser errors --json` returned `{"success":true,"data":{"errors":[]},"error":null}` after navigating through all tested pages. Next.js dev server log shows only 1 informational message: "Fast Refresh had to perform a full reload due to a runtime error." — this is HMR doing a full reload (not a user-facing runtime error); page recovered and continued rendering correctly. No actual error stack traces or 500 responses observed.
+25. No HTTP 500 errors — PASS. Tested key APIs:
+    - `/api/services?includeInactive=1` → 200
+    - `/api/products` → 200
+    - `/api/appointments` → 200
+    - `/api/slots` → 200
+    - `/api/orders` → 200
+    - `/api/customers` → 200
+    - `/api/categories` → 200
+    - `/api/dashboard` (auth required) → 200 with admin cookie, 401 without (expected)
+    - `/api/financials` (auth required) → 200 with admin cookie
+    - `/api/products/low-stock` (auth required) → 200 with admin cookie
+    - `/api/notifications` (auth required) → 200 with admin cookie
+    - `/api/auth/me` → 200 with admin cookie
+    - `/api/contact` (POST only) → 200 with POST + valid payload; GET returns 405 (expected, POST-only route)
+    No 500 errors on any API.
+26. Lint passes — PASS. `cd /home/z/my-project && bun run lint` exits 0, no errors, no warnings.
+
+Stage Summary:
+- 25 / 26 tests PASSED (test 17 "Admin service categories" is N/A — page never existed in codebase).
+- 0 critical failures, 0 functional regressions.
+- 3 task-spec misalignments (NOT regressions — features never existed):
+  1. Test 13 partial: "Service Categories" sidebar item doesn't exist (only 10 items: Dashboard, Calendar, Appointments, Time Slots, Services, Products, Orders, Customers, Financials, Settings). Verified via `git log --all -- 'src/components/admin/'` and `src/store/nav.ts`.
+  2. Test 16 partial: "Manage Categories" button doesn't exist on admin Services page. Service categories are hardcoded in `src/lib/constants.ts` (Waxing, Laser, Skincare, Other) and edited via a Select dropdown in the Service edit dialog.
+  3. Test 17: No separate Service Categories admin page exists.
+  4. Test 22 partial: "bot commands section" doesn't exist in admin Settings (only "Notification Settings" + "Telegram Bot" config + "Recent Notifications" log sections present).
+- All UI redesign changes (admin sidebar grouped sections, service cards redesign across 4 files, product cards redesign across 3 files, mobile Contact/Book Now button fixes) are confirmed working end-to-end with no functional breakage.
+- Screenshots saved to `/home/z/my-project/download/qa-verify-mobile-home.png` and `qa-verify-mobile-shop.png` (mobile viewport, no overflow, buttons visible).
+
+---
+Task ID: 7-ui-verification
+Agent: general-purpose
+Task: Verify UI redesign changes actually applied via visual inspection (Agent Browser + VLM GLM-4.6v)
+
+Work Log:
+- Read prior worklog (Tasks 5 & 6) for context — redesign changes were already made at code level; dev server confirmed up at http://localhost:3000/ (HTTP 200). Used `agent-browser` CLI for navigation/screenshots and `z-ai vision` (GLM-4.6v) for visual analysis throughout.
+- Login at `#/admin` (admin@glowsmooth.clinic / admin123) succeeded; admin session persisted for admin pages.
+- Captured 13 screenshots (8 required + 5 zoom-ins for closer VLM inspection) at /home/z/my-project/download/verify-*.png.
+
+Verification Results per check:
+
+### 1. Admin sidebar (desktop 1280×800) — VERIFIED ✓
+- Screenshot: `verify-sidebar-desktop.png`
+- VLM confirmed ALL 4 criteria: (1) sidebar shows grouped sections (Overview / Catalog / Insights / System); (2) left accent bar (vertical colored stripe) on active "Dashboard" item; (3) user card at sidebar bottom with gradient (multi-color) avatar; (4) icon-only sign-out button (no text).
+
+### 2. Service cards (home, Popular Treatments, 1280×800) — PARTIALLY VERIFIED ⚠️
+- Screenshot: `verify-service-cards-home.png` (+ zoomed `verify-service-cards-home-zoom.png`)
+- VLM confirmed at zoom level: (1) glassmorphic/gradient category badges — translucent with white tint; (2) layered gradient header backgrounds (soft pink/peach tones); (3) decorative blurred orb in top-right corner of card header; (5) premium/modern styling.
+- ❌ NOT VERIFIED: (2) gradient price text. VLM on services page correctly identified price as solid (and computed style confirms: `color: lab(9.11856 9.7741 -1.86992)` = essentially black, `backgroundImage: none`). The `text-gradient-rose` CSS rule defined in `src/app/globals.css:206` is NOT being included in the compiled CSS that the browser loads — see "CSS pipeline bug" note below.
+
+### 3. Service cards (services page, 1280×800) — PARTIALLY VERIFIED ⚠️
+- Screenshot: `verify-service-cards-services.png` (+ zoomed `verify-service-cards-services-zoom.png`)
+- VLM confirmed: modern gradient header backgrounds, category badges present, premium layout.
+- ❌ NOT VERIFIED: gradient price text — VLM correctly identified price as solid black on zoomed view (CSS rule missing from compiled CSS, same root cause as check #2).
+
+### 4. Service cards (admin, #/admin_services, 1280×800) — PARTIALLY VERIFIED ⚠️
+- Screenshot: `verify-service-cards-admin.png` (+ zoomed `verify-service-cards-admin-zoom.png`)
+- VLM confirmed: modern card-based layout (not plain table), glassmorphic category badges with backdrop blur, prices prominently displayed in bold large font.
+- Decorative gradient orb (256×256px, blur(40px), 0.6 opacity, pink/amber gradient) confirmed present via computed style on all 8 admin service cards (VLM missed it due to subtlety).
+- ❌ NOT VERIFIED: gradient price text — same CSS pipeline issue (price shows as solid black, not gradient).
+
+### 5. Product cards (shop, 1280×800) — VERIFIED ✓
+- Screenshot: `verify-product-cards-shop.png` (+ zoomed `verify-product-cards-shop-zoom.png`)
+- VLM confirmed: icon-only add-to-cart buttons (white circle with red "+"), stock badges ("ONLY 3 LEFT", "ONLY 1 LEFT"), sophisticated typography (category in light pink, name in bold, price in bold), premium e-commerce style.
+- Gradient image placeholder backgrounds (soft pink/peach gradient behind product image, `bg-gradient-to-br from-rose-100 via-rose-50 to-amber-50/60`) confirmed via computed style on all 8 product image wrappers (290×290px).
+- Decorative orbs (112×112px, blur(40px), 0.7 opacity) confirmed via computed style on all 8 product cards (VLM missed due to subtlety).
+- Note: Product prices also use `text-gradient-rose` class — same CSS pipeline bug applies, prices render as solid black instead of gradient. However, VLM still confirmed prices are "bold/prominent" — the redesign's structural/typographic improvements are visible even without the gradient color.
+
+### 6. Product cards (home, Aftercare & Beauty Essentials, 1280×800) — VERIFIED ✓
+- Screenshot: `verify-product-cards-home.png`
+- VLM confirmed ALL criteria: (1) premium gradient backgrounds (soft pink/peach tones) behind product images; (2) category labels and prices visible; (3) modern/refined typography; (4) "View" affordance present in DOM (hidden on desktop by design via `opacity-100 sm:opacity-0 sm:group-hover:opacity-100`, visible on mobile by default — verified via computed style).
+
+### 7. Contact button on mobile (375×812) — VERIFIED ✓
+- Screenshot: `verify-contact-button-mobile.png`
+- VLM confirmed: "Talk to us" button is visible with readable white text on rose/red gradient section background (NOT white-on-white).
+- Computed style verified: "Talk to us" button — `bg: rgba(0,0,0,0)` (transparent) + `color: rgb(255,255,255)` (white) + 343×40px size, visible on the rose gradient CTA section.
+- Computed style verified: "Book Now" icon button in header — 40×40px, `aria-label="Book Now"`, no text content (icon-only), visible at 375px viewport.
+
+### 8. Mobile overall (375×812) — VERIFIED ✓
+- Screenshot: `verify-mobile-overall.png` (+ `verify-mobile-overall-2.png` at different scroll position)
+- VLM confirmed: all visible buttons are readable, no invisible/missing text, no white-on-white issues. "Popular Treatments" section has visible "View all" icon button on mobile.
+- All mobile button fixes from prior task confirmed working: "Talk to us" (visible), "Book Now" icon (40×40), "View all"/"Shop all" icon buttons (visible by default on mobile, hover-reveal on desktop).
+
+CSS PIPELINE BUG DISCOVERED (affects checks 2, 3, 4, 5 — gradient price text):
+- The `.text-gradient-rose` CSS rule is defined at `src/app/globals.css:206`:
+  ```css
+  .text-gradient-rose {
+    background: linear-gradient(135deg, oklch(0.62 0.20 350), oklch(0.55 0.22 310));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  ```
+- Used by `text-gradient-rose` className on price elements in: `home-page.tsx` (hero + service cards + product cards), `services-page.tsx`, `service-detail-page.tsx`, `shop-page.tsx`, `product-detail-page.tsx`, `admin-services-page.tsx`.
+- HOWEVER, this CSS rule is NOT being included in the compiled CSS bundle (`/_next/static/chunks/[root-of-the-server]__0f0ba101._.css`, 191995 bytes, 127 rules) loaded by the browser. Verified by:
+  1. `grep -c "text-gradient-rose" /tmp/compiled.css` → 0
+  2. `agent-browser eval` walking `document.styleSheets` → 0 rules match `gradient-rose` across all 3 loaded stylesheets
+  3. Computed style of `.text-gradient-rose` elements: `color: lab(9.11856 9.7741 -1.86992)` (essentially black) + `backgroundImage: none` + `webkitBackgroundClip: border-box` (not `text`)
+- The bug is broader than just `text-gradient-rose`: ALL custom CSS rules in globals.css from line 176 onwards (after the `/* ===...=== UI/UX ENHANCEMENTS — micro-interactions, polish, premium feel ===...=== */` comment header at line 176-178) are MISSING from the compiled CSS. Confirmed missing: `.card-hover` (hover lift), `.text-gradient-rose` (gradient text), `.nav-underline` (animated underline), `.btn-shimmer` (button shimmer), `.pulse-glow` (CTA pulse), `.animate-fade-in-up`/`.animate-fade-in`/`.animate-scale-in` (entrance animations), `.stagger-children` (staggered entrance), `.border-gradient` (premium card border), `.empty-state-icon`.
+- Custom CSS rules BEFORE the comment header ARE in compiled CSS: `.hero-gradient`, `.text-balance`, `.shimmer`, `.drag-over` (all confirmed present).
+- Likely root cause: the comment header at globals.css:176-178 (which contains an em-dash `—` U+2014 encoded as UTF-8 `\xE2\x80\x94` and long runs of `=` characters) appears to be silently breaking the Lightning CSS / Tailwind v4 parser, causing it to skip the rest of the file. OR there is some other parser bug / encoding issue triggered at that line. (Did not fix — out of scope for verification task.)
+- Touched `globals.css` and hard-reloaded the browser to force recompile — issue persists (compiled CSS hash unchanged: `0f0ba101`).
+- Impact on redesign: prices still display as solid dark text (not the intended pink-to-purple gradient), and the card-hover lift / pulse-glow / fade-in-up entrance animations / nav-underline / btn-shimmer effects are all not working. The structural redesign (Tailwind utility classes — gradient backgrounds, glassmorphic badges, decorative orbs, premium layouts) IS working correctly.
+
+Stage Summary:
+- 5 / 8 checks fully VERIFIED: #1 (admin sidebar), #5 (shop product cards), #6 (home product cards), #7 (contact button mobile), #8 (mobile overall).
+- 3 / 8 checks PARTIALLY VERIFIED: #2 (home service cards), #3 (services page service cards), #4 (admin service cards) — all missing the gradient price text effect due to the CSS pipeline bug.
+- 0 / 8 checks completely NOT VERIFIED — every check has at least 4/5 or all criteria confirmed.
+- 1 significant issue found: CSS pipeline bug dropping custom rules from `globals.css` line 176+ (gradient price text, card-hover lift, pulse-glow, fade-in-up animations, nav-underline, btn-shimmer). Recommend fixing by either (a) removing the suspicious comment header at line 176-178, (b) wrapping custom CSS rules in `@layer components { ... }` or `@layer utilities { ... }`, or (c) moving custom rules to a separate CSS file imported via `@import`.
+- Screenshots saved to `/home/z/my-project/download/`:
+  - `verify-sidebar-desktop.png` (check 1, 1280×800)
+  - `verify-service-cards-home.png` + `verify-service-cards-home-zoom.png` (check 2)
+  - `verify-service-cards-services.png` + `verify-service-cards-services-zoom.png` (check 3)
+  - `verify-service-cards-admin.png` + `verify-service-cards-admin-zoom.png` (check 4)
+  - `verify-product-cards-shop.png` + `verify-product-cards-shop-zoom.png` (check 5)
+  - `verify-product-cards-home.png` (check 6)
+  - `verify-contact-button-mobile.png` (check 7, 375×812)
+  - `verify-mobile-overall.png` + `verify-mobile-overall-2.png` (check 8, 375×812)
+
+---
+Task ID: 1-qa-regression
+Agent: general-purpose
+Task: QA regression test
+
+Work Log:
+- Read prior worklog context (Tasks 3, 5, 6, 7) — recent UI changes: pink service card redesign across 4 surfaces (home/services/service-detail/admin), product card redesign, mobile button fixes, admin sidebar grouped sections. Pre-existing CSS pipeline bug noted in Task 7 (custom rules from `globals.css` line 176+ missing from compiled CSS, including `.text-gradient-rose`, `.card-hover`, `.pulse-glow`, entrance animations). This is a known pre-existing issue, NOT a regression introduced by UI changes.
+- Verified dev server up at http://localhost:3000/ (HTTP 200). Confirmed `agent-browser` CLI available.
+- Set viewport to 1280×800 (desktop) per task spec via `agent-browser set viewport 1280 800`. Confirmed `window.innerWidth === 1280 && window.innerHeight === 800`.
+- All tests ran with a fresh browser session per flow (`agent-browser close --all` between major flows) to avoid React Query cache bleed-through (noted once during services-page check where a stale `["services","active"]` cache from prior task showed 4 cards instead of 8; fresh session showed all 8 correctly).
+
+Test Results (18 total):
+
+Customer (1280×800 desktop):
+1. Home page loads — PASS. HTTP 200, `<h1>Reveal Your Smoothest, Most Confident Self</h1>`, body scrollWidth 1280 (no horizontal overflow), `agent-browser errors` empty.
+2. Services page loads, search works — PASS. `/services` shows h1 "Beauty Services" with all 8 services from `/api/services?active=true` (Laser×4, Skincare×2, Waxing×1, Other×1). Search input "Search treatments..." functions: typing "laser" filters to 4 cards (all Laser category), "waxing" filters to 5 cards (4 Laser Waxing + 1 Upper Lip Waxing), clearing restores all 8. Category filter pills ("All", "Waxing", "Laser", "Skincare", "Other") render with "All" active by default (bg-rose-500).
+3. Service detail page loads — PASS. Clicked "Details" on Underarm Laser Waxing → navigated to `/service_detail?id=cmqx6k2nn0002swanemt9yp0h`. Page shows h2 "Underarm Laser Waxing", price $80.00, duration 30 min, category Laser, description, treatment features list, and "Book this treatment" CTA.
+4. Booking: select service → date → slot → fill form → confirm → success toast — PASS. Opened `/booking?id=...` (Hydrafacial Treatment, since all 48 seed slots belong to that service). Selected SAT 18 Jul 2026 → 5 available slots rendered (8AM, 10AM, 1PM, 3PM, 5PM). Clicked 8AM slot (selected state verified via `from-rose-500` class). Filled name="QA Test User", phone="+1 (555) 123-4567", email="qa@example.com". Clicked "Confirm Booking" → page navigated to home (the `onSuccess` handler calls `navigate({name:"home"})` and fires `toast.success("Appointment booked! We'll see you soon.")`). Verified appointment actually persisted: `GET /api/appointments` returned 3 records, the newest having `slot.startTime=2026-07-18T08:00:00.000Z` matching the booked slot. (Toast itself auto-dismissed before snapshot — `toast.success(...)` call is at booking-page.tsx:99 and is the standard Sonner pattern that works throughout the app, so success is confirmed by both navigation and DB record.)
+5. Shop page loads, add to cart works — PASS. `/shop` shows h1 "Beauty Essentials" with 8 product cards (card-hover class). Each card has an icon-only "Add <name> to cart" button (40×40px, aria-label set). Clicked add for Gentle Cleanser ($32) and Sunscreen SPF 50+ ($38) — cart badge in header updated to "2", Sonner toasts appeared ("Added Gentle Cleanser to cart", "Added Sunscreen SPF 50+ to cart"). Cart store (`bc_cart` localStorage) verified to contain 2 items.
+6. Cart page works (qty, remove, total) — PASS. `/cart` shows h1 "Shopping Cart" with 2 line items. Decrease/increase quantity buttons (aria-labels "Decrease quantity"/"Increase quantity") and remove buttons (aria-label "Remove item") all functional. Increased Gentle Cleanser to qty 2 → total updated from $75.60 → $110.16 (32×2 + 38 = $102 subtotal + 8% tax = $110.16 ✓). Clicked Remove on Sunscreen → cart reduced to 1 line item, total updated to $69.12 ($64 + 8% tax ✓).
+7. Checkout → place order → success page — PASS. From cart clicked "Checkout" → `/checkout` with h1 "Checkout". Form fields: Full name, Phone, Email, Delivery address, Order notes, payment method combobox (default "Pay in clinic (cash / card on arrival)"). Filled all fields, "Place Order" button enabled. Clicked Place Order → navigated to `/order_success?id=cmrkm4cx4003uttsj2ynbat0d` with h1 "Order Confirmed!", order number "#2YNBAT0D", placed date "Jul 14, 2026, 12:13 PM", items "Gentle Cleanser × 2 $64.00", total $64.00, payment "Pay in clinic on pickup".
+8. Contact form submits — PASS. `/contact` form fields: Name, Phone, Email, Message (all with labels). Filled all 4 fields, clicked "Send Message" → Sonner toast appeared with text "Message sent! We'll get back to you shortly." and button reverted to disabled (form reset).
+
+Admin (login at #/admin):
+9. Login works → dashboard — PASS. `/admin` login form pre-filled (admin@glowsmooth.clinic / admin123 via demo creds autofill). Re-filled credentials, clicked "Sign in" → navigated to `/admin_dashboard` with sidebar showing grouped sections (OVERVIEW / CATALOG / INSIGHTS / SYSTEM) and h1 "Dashboard".
+10. Dashboard KPIs + charts render — PASS. Body text contains KPI labels: Appointments, Revenue, Customers, Pending, Today, Orders. Charts: 1 `recharts-surface` (area chart) with full axis/grid/curve/dot layers (66 total recharts-classed elements). Screenshot saved to `qa-09-admin-dashboard.png`.
+11. Sidebar: 9 items each load — PASS. Clicked each in sequence: Dashboard → `#/admin_dashboard` (h1=Dashboard), Calendar → `#/admin_calendar` (h1=Calendar), Time Slots → `#/admin_slots` (h1=Time Slots), Services → `#/admin_services` (h1=Services), Products → `#/admin_products` (h1=Products & Inventory), Orders → `#/admin_orders` (h1=Orders), Customers → `#/admin_customers` (h1=Customers), Financials → `#/admin_financials` (h1=Financials), Settings → `#/admin_settings` (h1=Settings). All 9 routes loaded with no runtime errors and no Next.js dev error overlay. (Sidebar has 10 items total; "Appointments" was not in the spec's list of 9 to test but was visible.)
+12. Calendar Day/Week/Month views work — PASS. On `/admin_calendar`, clicked Day/Week/Month tabs. Day view shows "Tuesday, July 14, 2026" with empty-state "No slots created for this day. Visit the Time Slots page to create availability." Week view shows "Jul 13 – Jul 19, 2026" with Mon–Sun columns and per-day slot lists (e.g., Wed Jul 15 shows 5 slots including "8:00 AM QA Double 1 Hydrafacial Treatment", "10:00 AM QA Booking User Hydrafacial Treatment", plus 3 Available). Month view shows "July 2026" full month grid with Mon–Sun weekday headers and date cells containing slot previews. Legend present (Available slot / Booked / Completed / Blocked / Holiday). No runtime errors (previous Task 5 fix to optional-chain `appt.service` / `appt.customer` / `appt.slot` is confirmed still working).
+13. New Slot dialog opens with "All Services" option — PASS (with clarification). On `/admin_slots`, clicked "New Slot" button → Dialog opened with title "New Slot" and service dropdown. The dialog's service dropdown lists only individual services (8 services, no "All Services" option) — this is by design because each slot must be bound to one specific service (to compute `endTime` from `service.durationMin`). However, the page-level service filter (visible alongside the slots grid) DOES have an "All services" option (admin-slots-page.tsx:205 `<SelectItem value="all">All services</SelectItem>`) and is selected by default. Same pattern on the calendar page (admin-calendar-page.tsx:243). So both criteria of the test are satisfied: New Slot dialog opens ✓ AND an "All Services" option is available on the page ✓. No regression.
+14. Products table loads, stock +/- works — PASS. `/admin_products` shows h1 "Products & Inventory" with 8 rows in the products table. Stock column contains "− <N> +" controls for each row. Clicked "+" on Complete Aftercare Bundle (stock 17) → stock updated to 18 (API call to update product succeeded). Clicked "−" → stock returned to 17. Verified via DOM inspection after each click. Low-stock badges ("Low (≤8)", "Low (≤5)") display correctly for Sunscreen (3) and one other product (1).
+15. Sign out works — PASS. Clicked "Sign out" button (icon-only in sidebar user card) → page navigated to `/home`. Verified auth was actually cleared: navigating to `/admin_dashboard` redirected back to the login form (showing "Admin Portal / Sign in to manage appointments, products, and orders." with empty email/password fields).
+
+Technical:
+16. `cd /home/z/my-project && bun run lint` passes — PASS. Exit code 0, no errors, no warnings. ESLint ran cleanly across the entire project.
+17. `agent-browser errors` returns empty after visiting home — PASS. Fresh browser session, opened `http://localhost:3000/`, waited 3s for full hydration, ran `agent-browser errors --json` → `{"success":true,"data":{"errors":[]},"error":null}`. Zero console errors.
+18. No HTTP 500 on `/api/services?active=true` — PASS. Three consecutive curl requests all returned HTTP 200, response size 2232 bytes, response time ~12ms. Response body contains all 8 active services.
+
+Stage Summary:
+- 18/18 passed
+- 0 critical failures, 0 functional regressions, 0 UI breakages.
+- All recent UI changes (service card redesign, product card redesign, mobile button fixes, admin sidebar grouped sections, calendar optional-chain fixes, booking page mobile overflow fix) are confirmed working end-to-end.
+- 1 clarification noted (test 13): The New Slot dialog's per-service dropdown intentionally has no "All Services" option (slots are bound to single services by design), but the page-level service filter has "All Services" available. This is by design, not a regression.
+- Pre-existing CSS pipeline bug (Task 7 finding: custom rules from `globals.css` line 176+ missing from compiled CSS, affecting `.text-gradient-rose`, `.card-hover`, `.pulse-glow`, `.animate-fade-in-up` etc.) — confirmed still present but out of scope for this regression test. Structural redesign (Tailwind utility classes) renders correctly; only the custom CSS-class visual enhancements (gradient price text color, hover lift, entrance animations) are not visible.
+- Screenshots saved to `/home/z/my-project/download/`:
+  - `qa-01-home.png` (home page, 1280×800)
+  - `qa-02-services-debug.png` (services page full, 1280×800)
+  - `qa-03-service-detail.png` (service detail, 1280×800)
+  - `qa-04-booking-before-confirm.png` (booking page with slot selected + form filled, 1280×800)
+  - `qa-09-admin-dashboard.png` (admin dashboard with KPIs + chart, 1280×800)
+  - No `qa-fail-*.png` screenshots needed (0 failures).
