@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Plus, Edit, Trash2, Clock, Sparkles, Search } from "lucide-react"
 import { toast } from "sonner"
+import { ImageUpload } from "@/components/shared/image-upload"
 
 interface Service {
   id: string
@@ -32,6 +33,7 @@ interface Service {
   price: number
   durationMin: number
   category: string
+  imageUrl: string | null
   active: boolean
 }
 
@@ -238,6 +240,7 @@ function ServiceFormDialog({
   const [price, setPrice] = useState(service?.price.toString() || "")
   const [durationMin, setDurationMin] = useState(service?.durationMin.toString() || "30")
   const [category, setCategory] = useState(service?.category || "Waxing")
+  const [imageUrl, setImageUrl] = useState(service?.imageUrl || "")
   const [active, setActive] = useState(service?.active ?? true)
 
   const handleSubmit = () => {
@@ -261,6 +264,7 @@ function ServiceFormDialog({
       price: p,
       durationMin: d,
       category,
+      imageUrl: imageUrl || null,
       active,
     })
   }
@@ -285,6 +289,12 @@ function ServiceFormDialog({
               placeholder="Brief description of the treatment..."
             />
           </div>
+          {/* Service Image */}
+          <ImageUpload
+            value={imageUrl}
+            onChange={setImageUrl}
+            label="Service Image"
+          />
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-2">
               <Label>Price ($)</Label>

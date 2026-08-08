@@ -41,22 +41,41 @@ model AdminSession {
 }
 
 // ============================================================================
+// SERVICE CATEGORIES (admin-managed)
+// ============================================================================
+
+model ServiceCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  color     String?
+  createdAt DateTime @default(now())
+  services  Service[]
+}
+
+// ============================================================================
 // SERVICES (laser waxing + other beauty treatments)
 // ============================================================================
 
 model Service {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  price       Float
-  durationMin Int      // duration in minutes
-  category    String   @default("Waxing") // Waxing | Laser | Skincare | Other
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  nameAr        String?
+  description   String?
+  descriptionAr String?
+  price         Float
+  durationMin   Int
+  category      String   @default("Waxing")
+  categoryId    String?
+  imageUrl      String?
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
+  categoryRef ServiceCategory? @relation(fields: [categoryId], references: [id])
   slots       Slot[]
   appointments Appointment[]
+
+  @@index([categoryId])
 }
 
 // ============================================================================
