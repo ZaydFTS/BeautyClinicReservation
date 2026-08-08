@@ -101,7 +101,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                       navigate(item.route)
                       onNavigate?.()
                     }}
-                    className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
+                    className={`press-feedback group relative flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
                       isActive
                         ? "bg-gradient-to-r from-rose-500 to-rose-600 font-medium text-white shadow-sm shadow-rose-500/25"
                         : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
@@ -110,7 +110,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                     {isActive && (
                       <span className="absolute -left-3 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r-full bg-rose-500" />
                     )}
-                    <item.icon className={`h-[18px] w-[18px] flex-shrink-0 transition-transform ${isActive ? "" : "group-hover:scale-110"}`} />
+                    <item.icon className={`arrow-slide h-[18px] w-[18px] flex-shrink-0 transition-transform ${isActive ? "" : "group-hover:scale-110"}`} />
                     <span className="flex-1 text-start">{t(item.labelKey)}</span>
                     {showBadge && (
                       <Badge variant="secondary" className="h-5 min-w-5 bg-rose-500 px-1.5 text-[10px] font-bold text-white">
@@ -142,7 +142,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 flex-shrink-0 text-muted-foreground hover:bg-rose-100 hover:text-rose-600"
+            className="press-feedback h-8 w-8 flex-shrink-0 text-muted-foreground hover:bg-rose-100 hover:text-rose-600"
             onClick={async () => {
               await logout()
               navigate({ name: "home" })
@@ -209,7 +209,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
       {/* Mobile sidebar */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="left" className="w-64 p-0">
+        <SheetContent side="left" className="hide-auto-close w-64 p-0">
           <SheetTitle className="sr-only">{t("nav.menu")}</SheetTitle>
           <SidebarContent onNavigate={() => setMobileOpen(false)} />
         </SheetContent>
@@ -222,7 +222,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9"
+            className="press-feedback h-9 w-9"
             onClick={() => setMobileOpen(true)}
             aria-label={t("nav.openMenu")}
           >

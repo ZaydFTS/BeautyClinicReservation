@@ -20,6 +20,7 @@ interface Service {
   price: number
   durationMin: number
   category: string
+  imageUrl: string | null
   active: boolean
 }
 
@@ -122,26 +123,50 @@ export function ServicesPage() {
           filtered.map((svc) => (
             <Card
               key={svc.id}
-              className="card-hover group relative flex flex-col gap-0 overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm transition-all duration-300 hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10"
+              className="card-lift group relative flex flex-col gap-0 overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10"
             >
-              <CardHeader className="relative overflow-hidden bg-gradient-to-br from-rose-50 via-rose-50 to-amber-50/50 p-5 pb-4">
-                {/* Decorative orb */}
-                <div
-                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-rose-300/40 via-rose-200/30 to-amber-200/20 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
-                  aria-hidden
-                />
-                <Sparkles
-                  className="pointer-events-none absolute right-4 top-4 h-5 w-5 text-rose-400/40 transition-colors group-hover:text-rose-400/70"
-                  aria-hidden
-                />
-                <div className="relative flex items-start justify-between gap-3">
+              {/* Service image with img-zoom skill utility */}
+              {svc.imageUrl && (
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-rose-50">
+                  <img
+                    src={svc.imageUrl}
+                    alt={svc.name}
+                    className="img-zoom h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent" />
                   <Badge
                     variant="outline"
-                    className="border-white/60 bg-white/70 px-2.5 py-1 text-xs font-medium text-rose-700 shadow-sm backdrop-blur-md"
+                    className="absolute left-3 top-3 border-white/60 bg-white/85 px-2.5 py-1 text-xs font-medium text-rose-700 shadow-sm backdrop-blur-md"
                   >
                     {svc.category}
                   </Badge>
-                  <div className="text-end">
+                </div>
+              )}
+              <CardHeader className={`relative overflow-hidden ${svc.imageUrl ? "" : "bg-gradient-to-br from-rose-50 via-rose-50 to-amber-50/50"} p-5 pb-4`}>
+                {/* Decorative orb - only when no image */}
+                {!svc.imageUrl && (
+                  <>
+                    <div
+                      className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-rose-300/40 via-rose-200/30 to-amber-200/20 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+                      aria-hidden
+                    />
+                    <Sparkles
+                      className="pointer-events-none absolute right-4 top-4 h-5 w-5 text-rose-400/40 transition-colors group-hover:text-rose-400/70"
+                      aria-hidden
+                    />
+                  </>
+                )}
+                <div className="relative flex items-start justify-between gap-3">
+                  {!svc.imageUrl && (
+                    <Badge
+                      variant="outline"
+                      className="border-white/60 bg-white/70 px-2.5 py-1 text-xs font-medium text-rose-700 shadow-sm backdrop-blur-md"
+                    >
+                      {svc.category}
+                    </Badge>
+                  )}
+                  <div className="text-end ms-auto">
                     <div className="text-gradient-rose text-2xl font-bold tracking-tight">
                       {formatMoney(svc.price)}
                     </div>
@@ -165,19 +190,19 @@ export function ServicesPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 border-rose-200/70 text-rose-700 hover:bg-rose-50 hover:text-rose-800"
+                  className="press-feedback flex-1 border-rose-200/70 text-rose-700 hover:bg-rose-50 hover:text-rose-800"
                   onClick={() => navigate({ name: "service_detail", serviceId: svc.id })}
                 >
                   {t("servicesPage.details")}
                 </Button>
                 <Button
                   size="sm"
-                  className="flex-1 bg-gradient-to-r from-rose-500 to-rose-600 shadow-sm shadow-rose-500/20 transition-all hover:from-rose-600 hover:to-rose-700 hover:shadow-md hover:shadow-rose-500/30"
+                  className="btn-press flex-1 bg-gradient-to-r from-rose-500 to-rose-600 shadow-sm shadow-rose-500/20 hover:from-rose-600 hover:to-rose-700 hover:shadow-md hover:shadow-rose-500/30"
                   onClick={() => navigate({ name: "booking", serviceId: svc.id })}
                 >
                   <Calendar className="me-1.5 h-4 w-4" />
                   {t("servicesPage.book")}
-                  <ArrowRight className="ms-1.5 h-3.5 w-3.5" />
+                  <ArrowRight className="arrow-slide ms-1.5 h-3.5 w-3.5" />
                 </Button>
               </CardFooter>
             </Card>

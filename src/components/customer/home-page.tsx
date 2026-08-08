@@ -21,6 +21,7 @@ interface Service {
   price: number
   durationMin: number
   category: string
+  imageUrl: string | null
   active: boolean
 }
 
@@ -165,21 +166,36 @@ export function HomePage() {
             services.map((svc, i) => (
               <Card
                 key={svc.id}
-                className="card-hover group animate-fade-in-up relative cursor-pointer gap-0 overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm transition-all duration-300 hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10"
+                className="card-lift group animate-fade-in-up relative cursor-pointer gap-0 overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10"
                 onClick={() => navigate({ name: "service_detail", serviceId: svc.id })}
                 style={{ animationDelay: `${i * 0.05}s` }}
               >
-                <CardHeader className="relative overflow-hidden bg-gradient-to-br from-rose-100 via-rose-50 to-amber-50/60 p-5">
-                  {/* Decorative orb */}
-                  <div
-                    className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br from-rose-300/50 to-amber-200/30 blur-2xl"
-                    aria-hidden
-                  />
-                  {/* Sparkles accent */}
-                  <Sparkles
-                    className="pointer-events-none absolute right-4 top-4 h-5 w-5 text-rose-400/40 transition-colors group-hover:text-rose-400/70"
-                    aria-hidden
-                  />
+                {/* Service image with img-zoom skill utility */}
+                {svc.imageUrl && (
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-rose-50">
+                    <img
+                      src={svc.imageUrl}
+                      alt={svc.name}
+                      className="img-zoom h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/40 to-transparent" />
+                  </div>
+                )}
+                <CardHeader className={`relative overflow-hidden p-5 ${svc.imageUrl ? "" : "bg-gradient-to-br from-rose-100 via-rose-50 to-amber-50/60"}`}>
+                  {/* Decorative orb - only when no image */}
+                  {!svc.imageUrl && (
+                    <>
+                      <div
+                        className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br from-rose-300/50 to-amber-200/30 blur-2xl"
+                        aria-hidden
+                      />
+                      <Sparkles
+                        className="pointer-events-none absolute right-4 top-4 h-5 w-5 text-rose-400/40 transition-colors group-hover:text-rose-400/70"
+                        aria-hidden
+                      />
+                    </>
+                  )}
                   <div className="relative flex items-start justify-between gap-2">
                     <Badge
                       variant="outline"
@@ -212,14 +228,14 @@ export function HomePage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="w-full border-rose-200/70 transition-all duration-300 group-hover:border-rose-500 group-hover:bg-gradient-to-r group-hover:from-rose-500 group-hover:to-rose-600 group-hover:text-white"
+                    className="press-feedback w-full border-rose-200/70 transition-all duration-300 group-hover:border-rose-500 group-hover:bg-gradient-to-r group-hover:from-rose-500 group-hover:to-rose-600 group-hover:text-white"
                     onClick={(e) => {
                       e.stopPropagation()
                       navigate({ name: "booking", serviceId: svc.id })
                     }}
                   >
                     {t("home.bookThisTreatment")}
-                    <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                    <ArrowRight className="arrow-slide ml-1.5 h-3.5 w-3.5" />
                   </Button>
                 </CardFooter>
               </Card>
@@ -266,7 +282,7 @@ export function HomePage() {
               products.map((p, i) => (
                 <Card
                   key={p.id}
-                  className="card-hover group animate-fade-in-up relative cursor-pointer overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm transition-all duration-300 hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10"
+                  className="card-lift group animate-fade-in-up relative cursor-pointer overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10"
                   onClick={() => navigate({ name: "product_detail", productId: p.id })}
                   style={{ animationDelay: `${i * 0.05}s` }}
                 >
@@ -281,7 +297,7 @@ export function HomePage() {
                       <img
                         src={p.imageUrl}
                         alt={p.name}
-                        className="relative h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        className="img-zoom relative h-full w-full object-cover"
                       />
                     ) : (
                       <div className="relative flex h-full items-center justify-center">
