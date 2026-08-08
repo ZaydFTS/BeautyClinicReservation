@@ -126,7 +126,7 @@ export function CustomerHeader() {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[88vw] max-w-sm border-0 p-0">
+            <SheetContent side="right" className="hide-auto-close w-[88vw] max-w-sm border-0 p-0">
               <SheetTitle className="sr-only">{t("nav.menu")}</SheetTitle>
 
               {/* Branded gradient header */}
@@ -189,7 +189,7 @@ export function CustomerHeader() {
                       <SheetClose asChild key={link.labelKey}>
                         <button
                           onClick={() => navigate(link.route)}
-                          className={`group flex w-full items-center gap-3 rounded-2xl p-3 transition-all ${
+                          className={`press-feedback group flex w-full items-center gap-3 rounded-2xl p-3 transition-all ${
                             isActive
                               ? "bg-gradient-to-r from-rose-50 to-rose-50/50 ring-1 ring-rose-200"
                               : "hover:bg-muted/60"
@@ -212,8 +212,8 @@ export function CustomerHeader() {
                               {t(link.descKey)}
                             </div>
                           </div>
-                          <ChevronRight className={`h-4 w-4 flex-shrink-0 transition-transform ${
-                            isActive ? "text-rose-400" : "text-muted-foreground/40 group-hover:translate-x-0.5"
+                          <ChevronRight className={`arrow-slide h-4 w-4 flex-shrink-0 ${
+                            isActive ? "text-rose-400" : "text-muted-foreground/40"
                           }`} />
                         </button>
                       </SheetClose>
@@ -225,7 +225,7 @@ export function CustomerHeader() {
                 <div className="mt-5">
                   <SheetClose asChild>
                     <Button
-                      className="btn-shimmer h-12 w-full rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 text-base font-semibold shadow-md shadow-rose-500/25 hover:from-rose-600 hover:to-rose-700"
+                      className="btn-press btn-shimmer h-12 w-full rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 text-base font-semibold shadow-md shadow-rose-500/25 hover:from-rose-600 hover:to-rose-700"
                       onClick={() => navigate({ name: "booking" })}
                     >
                       <CalendarCheck className="mr-2 h-5 w-5" />
@@ -252,7 +252,7 @@ export function CustomerHeader() {
                   <div className="space-y-1.5">
                     <a
                       href={`tel:${CLINIC_PHONE.replace(/[^\d+]/g, "")}`}
-                      className="flex items-center gap-3 rounded-xl border border-border/60 bg-card p-3 transition-all hover:border-rose-200 hover:bg-rose-50/50"
+                      className="press-feedback flex items-center gap-3 rounded-xl border border-border/60 bg-card p-3 transition-all hover:border-rose-200 hover:bg-rose-50/50"
                     >
                       <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-rose-100 text-rose-600">
                         <Phone className="h-4 w-4" />
@@ -264,7 +264,7 @@ export function CustomerHeader() {
                     </a>
                     <a
                       href={`mailto:${CLINIC_EMAIL}`}
-                      className="flex items-center gap-3 rounded-xl border border-border/60 bg-card p-3 transition-all hover:border-rose-200 hover:bg-rose-50/50"
+                      className="press-feedback flex items-center gap-3 rounded-xl border border-border/60 bg-card p-3 transition-all hover:border-rose-200 hover:bg-rose-50/50"
                     >
                       <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-rose-100 text-rose-600">
                         <Mail className="h-4 w-4" />

@@ -572,3 +572,62 @@ Stage Summary:
 - src/lib/i18n.ts (new keys: en + ar)
 - src/components/admin/admin-dashboard-page.tsx (fully translated + RTL class swaps)
 - src/components/admin/admin-login-page.tsx (fully translated + RTL class swaps)
+
+---
+Task ID: velvet-bloom-skills-restore
+Agent: main
+Task: Restore the verified image-upload version and apply the installed design skills (ui-ux-pro-max, impeccable, emilkowalski-skill, taste-skill, motion-docs / emil-design-eng) to the customer and admin UI.
+
+Work Log:
+- Confirmed the verified image-upload state was already in commit e523c67 (API accepts imageUrl on POST/PUT /api/services, ImageUpload component in admin-services-page.tsx, edit dialog pre-loads service.imageUrl).
+- Added Velvet Bloom skill utility classes to src/app/globals.css:
+  - Custom easing tokens: --ease-out, --ease-in-out, --ease-drawer, --ease-spring (per emil-design-eng).
+  - .press-feedback (scale 0.97 on :active, 140ms ease-out) for tactile button feedback.
+  - .card-lift (translateY -4px on hover, 240ms ease-out) for card hover lift.
+  - .img-zoom (scale 1.06 on parent .group/.card-lift hover, 480ms ease-out) for service/product images.
+  - .arrow-slide (translateX 3px on parent hover) for arrow icons next to text.
+  - .arrow-diagonal (translate 2px,-2px on hover) for corner/external arrows.
+  - .hide-auto-close (display:none on shadcn auto-injected SheetClose) - fixes duplicate close button.
+  - .reveal (opacity 0 + translateY 16px -> revealed via IntersectionObserver) for scroll animations.
+  - .btn-press (extends press-feedback + adds hover shadow) for primary CTAs.
+  - All ASCII in CSS comments to avoid Tailwind v4 / Lightning CSS parser fragility.
+- Applied skill utilities to admin-services-page.tsx:
+  - Service cards: card-lift + img-zoom (renders svc.imageUrl as 16:10 cover image with bottom gradient overlay).
+  - Edit/Delete icon buttons: press-feedback + arrow-slide on the Edit icon.
+  - New Service button + Save changes button: btn-press.
+  - Cancel button: press-feedback.
+- Applied skill utilities to customer-header.tsx:
+  - SheetContent: hide-auto-close class (removes duplicate auto-injected close button).
+  - Mobile nav items: press-feedback + arrow-slide on chevron icons.
+  - Primary CTA "Book Appointment": btn-press + btn-shimmer.
+  - Contact cards (phone/email): press-feedback.
+- Applied skill utilities to admin-shell.tsx:
+  - SheetContent: hide-auto-close class.
+  - Sidebar nav items: press-feedback + arrow-slide on icons.
+  - Hamburger button + Sign out button: press-feedback.
+- Applied skill utilities to customer services-page.tsx:
+  - Service cards: card-lift (replaces card-hover), img-zoom on svc.imageUrl.
+  - "Book" button: btn-press + arrow-slide on ArrowRight icon.
+  - "Details" button: press-feedback.
+  - Added imageUrl to Service interface.
+- Applied skill utilities to customer home-page.tsx:
+  - Service cards: card-lift, img-zoom on svc.imageUrl.
+  - Product cards: card-lift, img-zoom on product image.
+  - "Book This Treatment" button: press-feedback + arrow-slide on ArrowRight.
+  - Added imageUrl to Service interface.
+- Verification (browser test at 390x844 mobile + 1280x800 desktop):
+  - Lint clean (bun run lint).
+  - All 16 skill utility classes present in compiled CSS (verified via document.styleSheets).
+  - Created test service with Unsplash imageUrl via POST /api/services - response confirmed imageUrl saved.
+  - Admin "New Service" dialog: shows ImageUpload with "Service Image" label + "Click to upload or drag & drop" + Upload/URL toggle.
+  - Admin "Edit Service" dialog: shows ImageUpload with existing image pre-loaded (img[alt="Preview"] src matches saved URL).
+  - Customer mobile menu (390px): hamburger visible, sheet opens, only 1 visible × close button (duplicate hidden by .hide-auto-close), 7 press-feedback items, 5 arrow-slide chevrons.
+  - Admin mobile menu (390px): hamburger visible, sheet opens, hide-auto-close applied, 12 press-feedback items, 11 arrow-slide icons.
+  - Screenshot: verify-restored-home.png, verify-new-service-dialog.png, verify-edit-dialog-with-image.png, verify-customer-mobile-menu.png, verify-admin-mobile-menu.png.
+
+Stage Summary:
+- Image upload functionality fully verified working (create + edit, with image preview).
+- All 5 installed design skills now actively used: press-feedback, card-lift, img-zoom, arrow-slide, btn-shimmer, btn-press, hide-auto-close, custom easing tokens (--ease-out, --ease-in-out, --ease-drawer, --ease-spring).
+- Mobile hamburger menus verified working on both customer and admin pages with no CSS parse errors.
+- Duplicate close button issue resolved via .hide-auto-close CSS class.
+- All changes lint clean. Test service cleaned up from DB after verification.

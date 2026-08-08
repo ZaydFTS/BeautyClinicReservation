@@ -97,7 +97,7 @@ export function AdminServicesPage() {
             Manage treatments, pricing, and availability.
           </p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} className="bg-rose-500 hover:bg-rose-600">
+        <Button onClick={() => setCreateOpen(true)} className="btn-press bg-rose-500 hover:bg-rose-600">
           <Plus className="mr-1.5 h-4 w-4" />
           New Service
         </Button>
@@ -120,13 +120,27 @@ export function AdminServicesPage() {
           {services.map((svc) => (
             <Card
               key={svc.id}
-              className={`card-hover group relative gap-0 overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm transition-all duration-300 hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10 ${!svc.active ? "opacity-60" : ""}`}
+              className={`card-lift group relative gap-0 overflow-hidden rounded-2xl border-rose-100/70 py-0 shadow-sm hover:border-rose-200 hover:shadow-xl hover:shadow-rose-500/10 ${!svc.active ? "opacity-60" : ""}`}
             >
-              {/* Decorative gradient orb */}
-              <div
-                className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-rose-300/40 via-rose-200/30 to-amber-200/20 opacity-60 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
-                aria-hidden
-              />
+              {/* Service image with img-zoom skill utility */}
+              {svc.imageUrl && (
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-rose-50">
+                  <img
+                    src={svc.imageUrl}
+                    alt={svc.name}
+                    className="img-zoom h-full w-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/40 to-transparent" />
+                </div>
+              )}
+              {/* Decorative gradient orb - only shown when no image */}
+              {!svc.imageUrl && (
+                <div
+                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-rose-300/40 via-rose-200/30 to-amber-200/20 opacity-60 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+                  aria-hidden
+                />
+              )}
               <CardHeader className="relative space-y-2 p-5 pb-3">
                 <div className="flex items-start justify-between gap-2">
                   <Badge
@@ -158,16 +172,16 @@ export function AdminServicesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 rounded-lg text-muted-foreground transition-colors hover:bg-rose-50 hover:text-rose-700"
+                      className="press-feedback h-9 w-9 rounded-lg text-muted-foreground hover:bg-rose-50 hover:text-rose-700"
                       onClick={() => setEditSvc(svc)}
                       aria-label="Edit service"
                     >
-                      <Edit className="h-4 w-4" />
+                      <Edit className="arrow-slide h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 rounded-lg text-rose-500 transition-colors hover:bg-rose-50 hover:text-rose-700"
+                      className="press-feedback h-9 w-9 rounded-lg text-rose-500 hover:bg-rose-50 hover:text-rose-700"
                       onClick={() => setDeleteSvc(svc)}
                       aria-label="Delete service"
                     >
@@ -325,8 +339,8 @@ function ServiceFormDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button className="bg-rose-500 hover:bg-rose-600" onClick={handleSubmit}>
+          <Button variant="outline" className="press-feedback" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button className="btn-press bg-rose-500 hover:bg-rose-600" onClick={handleSubmit}>
             {service ? "Save changes" : "Create service"}
           </Button>
         </DialogFooter>
