@@ -10,8 +10,8 @@ import { Badge } from"@/components/ui/badge"
 import { LanguageSwitcher } from"@/components/shared/language-switcher"
 import {
  LayoutDashboard, Calendar, Clock, Sparkles, Package, ShoppingCart,
- Users, Receipt, Settings, LogOut, Menu, X, Bell, Tag,
-} from"lucide-react"
+ Users, Receipt, Settings, LogOut, Menu, X, Bell, Tag, Home,
+} from "lucide-react"
 import { useState } from"react"
 import {
  Sheet, SheetContent, SheetTitle, SheetClose,
@@ -37,6 +37,7 @@ const NAV_ITEMS: NavItem[] = [
  { labelKey:"adminNav.customers", route: { name:"admin_customers" }, icon: Users },
  { labelKey:"adminNav.financials", route: { name:"admin_financials" }, icon: Receipt },
  { labelKey:"adminNav.settings", route: { name:"admin_settings" }, icon: Settings },
+ { labelKey:"adminNav.homeContent", route: { name:"admin_home_content" }, icon: Home },
 ]
 
 // Section grouping: [startIndex, endIndex, labelKey]
@@ -44,7 +45,7 @@ const NAV_SECTIONS: [number, number, string][] = [
  [0, 4,"adminNav.overview"], // Dashboard, Calendar, Appointments, Time Slots
  [4, 7,"adminNav.catalog"], // Services, Service Categories, Products
  [7, 9,"adminNav.insights"], // Orders, Customers
- [9, 11,"adminNav.system"], // Financials, Settings
+ [9, 12,"adminNav.system"], // Financials, Settings, Home Content
 ]
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
