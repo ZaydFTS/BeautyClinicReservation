@@ -3,8 +3,9 @@
 import { useQuery } from"@tanstack/react-query"
 import { useNav, type Route } from"@/store/nav"
 import { useLang } from"@/store/lang"
-import { apiGet } from"@/lib/api-client"
-import { formatMoney } from"@/lib/format"
+import { apiGet } from "@/lib/api-client"
+import { formatMoney } from "@/lib/format"
+import { useDiscount, calculateDiscountedPrice, getDiscount, type DiscountConfig } from "@/lib/discount"
 import { Button } from"@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from"@/components/ui/card"
 import { Badge } from"@/components/ui/badge"
@@ -19,6 +20,7 @@ interface Service {
  price: number
  durationMin: number
  category: string
+ categoryId: string | null
  active: boolean
 }
 
@@ -26,6 +28,8 @@ export function ServiceDetailPage({ route }: { route: Extract<Route, { name:"ser
  const navigate = useNav((s) => s.navigate)
  const t = useLang((s) => s.t)
  const lang = useLang((s) => s.lang)
+ const { data: discountData } = useDiscount()
+ const discount: DiscountConfig = getDiscount(discountData?.discount)
  const { data, isLoading } = useQuery({
  queryKey: ["service", route.serviceId],
  queryFn: () => apiGet<{ service: Service }>(`/api/services/${route.serviceId}`),
@@ -118,9 +122,26 @@ export function ServiceDetailPage({ route }: { route: Extract<Route, { name:"ser
  {svc.category}
  </Badge>
  <h2 className="text-balance text-2xl font-bold tracking-tight">{lang ==="ar" && svc.nameAr ? svc.nameAr : svc.name}</h2>
- <div className="text-primary mt-4 text-5xl font-bold tracking-tight">
- {formatMoney(svc.price)}
- </div>
+ {(() => {
+   const pi = calculateDiscountedPrice(svc.price, discount, "service", svc.categoryId)
+   return (
+     <div className="mt-4 flex items-center gap-3">
+       <span className="text-primary text-5xl font-bold tracking-tight">
+         {formatMoney(pi.discounted)}
+       </span>
+       {pi.hasDiscount && (
+         <span className="text-xl text-muted-foreground line-through">
+           {formatMoney(pi.original)}
+         </span>
+       )}
+       {pi.hasDiscount && (
+         <span className="inline-flex items-center rounded-full bg-primary-container/30 px-2.5 py-1 text-xs font-bold text-primary">
+           Save {formatMoney(pi.original - pi.discounted)}
+         </span>
+       )}
+     </div>
+   )
+ })()}
  <div className="mt-3 flex items-center gap-1.5 rounded-full border border-outline-variant/60 bg-white/60 px-3 py-1 text-xs font-medium text-secondary backdrop-blur-sm">
  <Clock className="h-3.5 w-3.5" />
  {svc.durationMin} {t("serviceDetail.minutes")}

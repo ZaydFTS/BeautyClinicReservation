@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useNav } from "@/store/nav"
 import { useLang } from "@/store/lang"
 import { apiGet } from "@/lib/api-client"
+import { useDiscount, calculateDiscountedPrice, getDiscount, type DiscountConfig } from "@/lib/discount"
 import { CLINIC_NAME, CLINIC_HOURS } from "@/lib/constants"
 import { formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
@@ -24,6 +25,7 @@ interface Service {
   price: number
   durationMin: number
   category: string
+  categoryId: string | null
   imageUrl: string | null
   active: boolean
 }
@@ -41,6 +43,8 @@ export function HomePage() {
   const navigate = useNav((s) => s.navigate)
   const t = useLang((s) => s.t)
   const lang = useLang((s) => s.lang)
+  const { data: discountData } = useDiscount()
+  const discount: DiscountConfig = getDiscount(discountData?.discount)
 
   const { data: servicesData } = useQuery({
     queryKey: ["services", "active"],
@@ -323,9 +327,21 @@ export function HomePage() {
                           <div className={`text-[10px] font-semibold uppercase tracking-wider ${isFeatured ? "text-white/70" : "text-muted-foreground"}`}>
                             From
                           </div>
-                          <div className={`text-lg font-bold ${isFeatured ? "text-white" : "text-primary"}`}>
-                            {formatMoney(svc.price)}
-                          </div>
+                          {(() => {
+                            const priceInfo = calculateDiscountedPrice(svc.price, discount, "service", svc.categoryId)
+                            return (
+                              <div className="flex items-center gap-2">
+                                <span className={`text-lg font-bold ${isFeatured ? "text-white" : "text-primary"}`}>
+                                  {formatMoney(priceInfo.discounted)}
+                                </span>
+                                {priceInfo.hasDiscount && (
+                                  <span className={`text-sm line-through ${isFeatured ? "text-white/60" : "text-muted-foreground"}`}>
+                                    {formatMoney(priceInfo.original)}
+                                  </span>
+                                )}
+                              </div>
+                            )
+                          })()}
                         </div>
                         <div
                           className={`flex h-10 w-10 items-center justify-center rounded-full transition-all ${
