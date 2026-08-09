@@ -52,8 +52,7 @@ export function CartPage() {
   }
 
   const subtotal = totalPrice()
-  const tax = subtotal * 0.08
-  const total = subtotal + tax
+  const total = subtotal
 
   return (
     <div className="flex flex-col">
@@ -223,10 +222,6 @@ export function CartPage() {
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t("cart.subtotal")}</span>
                       <span className="font-medium text-foreground">{formatMoney(subtotal)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t("cart.tax")}</span>
-                      <span className="font-medium text-foreground">{formatMoney(tax)}</span>
                     </div>
                   </div>
 

@@ -37,8 +37,7 @@ export function CheckoutPage() {
  })
 
  const subtotal = totalPrice()
- const tax = subtotal * 0.08
- const total = subtotal + tax
+ const total = subtotal
 
  const mutation = useMutation({
  mutationFn: () =>
@@ -227,10 +226,6 @@ export function CheckoutPage() {
  <div className="flex justify-between">
  <span className="text-muted-foreground">{t("cart.subtotal")}</span>
  <span className="font-medium">{formatMoney(subtotal)}</span>
- </div>
- <div className="flex justify-between">
- <span className="text-muted-foreground">{t("cart.tax")}</span>
- <span className="font-medium">{formatMoney(tax)}</span>
  </div>
  <div className="flex items-end justify-between border-t border-outline-variant pt-2">
  <span className="font-semibold">{t("cart.total")}</span>
