@@ -631,3 +631,76 @@ Stage Summary:
 - Mobile hamburger menus verified working on both customer and admin pages with no CSS parse errors.
 - Duplicate close button issue resolved via .hide-auto-close CSS class.
 - All changes lint clean. Test service cleaned up from DB after verification.
+
+---
+Task ID: velvet-bloom-design-md-migration
+Agent: main
+Task: Apply DESIGN.md (Velvet Bloom design system) to all pages - replace all rose-/amber-/emerald- classes and all gradients with Velvet Bloom solid colors.
+
+Work Log:
+- Located DESIGN.md at ./upload/DESIGN.md - Velvet Bloom palette:
+  - primary #a42c82 (vibrant pink), secondary #943e7e (dark purple)
+  - surface #fff7f9, surface-container-low #fdf0f6 (blush), surface-container #f7eaf0
+  - outline #87717c, outline-variant #d9c0cc, primary-container #ff79d1
+  - Fonts: Playfair Display (serif headings) + Be Vietnam Pro (sans body)
+  - Spec: NO gradients, NO rose- classes
+- Updated src/app/globals.css:
+  - Replaced all oklch rose colors in :root with Velvet Bloom hex tokens
+  - Added extended Velvet Bloom tokens: --surface, --surface-container-low, --surface-container, --outline, --outline-variant, --primary-container, --secondary-container, --tertiary
+  - Added utility classes: .bg-blush, .bg-blush-strong, .bg-surface, .bg-surface-container-{low,high}, .bg-primary-container, .text-on-primary, .text-primary-container, .text-secondary, .text-tertiary, .border-outline, .border-outline-variant, .border-primary, .border-secondary
+  - Updated @theme inline to use --font-be-vietnam and --font-playfair
+  - Removed gradient utilities: hero-gradient, text-gradient-rose (replaced with .text-primary-solid), border-gradient
+  - Updated shimmer, pulse-glow, nav-underline, card-hover, empty-state-icon to use Velvet Bloom solid colors (no gradients)
+  - Updated typography: h1-h6 + dialog-title + sheet-title use Playfair Display serif, body/button/input uses Be Vietnam Pro sans
+  - Updated dark mode with Velvet Bloom inverse tokens
+  - All skill utilities (press-feedback, card-lift, img-zoom, arrow-slide, arrow-diagonal, hide-auto-close, reveal, btn-press, btn-shimmer, ease tokens) preserved
+- Updated src/app/layout.tsx:
+  - Replaced Geist/Geist_Mono with Playfair_Display/Be_Vietnam_Pro from next/font/google
+  - Loaded Playfair Display weights 400-700, Be Vietnam Pro weights 300-700
+  - Updated body className to use new font variables
+- Wrote scripts/migrate_to_velvet_bloom.py - automated migration:
+  - Phase 1: Replaced all bg-rose-X, text-rose-X, border-rose-X, ring-rose-X, shadow-rose-X with Velvet Bloom tokens
+  - Phase 2: Neutralized all bg-gradient-to-X from-rose/via-rose/to-rose and from-amber/via-amber/to-amber chains
+    - Brand CTAs (rose-500..700) -> bg-primary
+    - Soft backgrounds (rose-50..200 + amber) -> bg-blush
+    - Decorative orbs (rose-300/400 with opacity) -> bg-primary/15
+  - Phase 3: Replaced all amber-X classes with Velvet Bloom equivalents (warnings -> primary, decorative -> blush)
+  - Phase 4: Replaced all emerald-X classes (in-stock badges) with Velvet Bloom equivalents
+  - Phase 5: Converted 5 remaining bg-gradient-to-t from-black/X to-transparent (image overlays) to solid bg-black/X covering entire image
+- Final source code totals:
+  - rose- count: 0 (was 336)
+  - gradient count: 0 (was 101)
+  - amber- count: 0 (was ~30)
+  - emerald- count: 0 (was ~16)
+- Verified in browser (Chromium via agent-browser):
+  - Home page (#/home): zero rose-, zero gradients, zero amber-, zero emerald-. 30 bg-primary, 27 bg-blush, 30 text-secondary, 28 border-outline-variant. --primary=#a42c82, --secondary=#943e7e, bg=rgb(255,247,249). H1+H2 use Playfair Display, body uses Be Vietnam Pro.
+  - Services page (#/services): zero rose-/gradients/amber. 8 card-lift service cards, 8 press-feedback buttons.
+  - Booking page (#/booking): zero rose-/gradients.
+  - Contact page (#/contact): zero rose-/gradients.
+  - Shop page (#/shop): zero rose-/gradients.
+  - Admin services (#/admin_services): zero rose-/gradients/amber. 8 card-lift cards, 29 press-feedback, 19 arrow-slide.
+  - Admin dashboard (#/admin_dashboard): zero rose-/gradients/amber.
+  - New Service dialog: ImageUpload component intact - "Service Image" label, "Click to upload or drag & drop" text, Upload/URL toggle all present.
+  - Customer mobile menu (390x844): hamburger visible, sheet opens, only 1 visible × close button (hide-auto-close working), 7 press-feedback items, zero rose-/gradients in sheet.
+  - Admin mobile menu (390x844): hamburger visible, sheet opens, hide-auto-close applied, 12 press-feedback, 11 arrow-slide, zero rose-/gradients in sheet.
+- Screenshots saved to /home/z/my-project/download/:
+  - velvet-bloom-home.png
+  - velvet-bloom-services.png
+  - velvet-bloom-booking.png
+  - velvet-bloom-contact.png
+  - velvet-bloom-shop.png
+  - velvet-bloom-admin-services.png
+  - velvet-bloom-admin-dashboard.png
+  - velvet-bloom-customer-mobile-menu.png
+  - velvet-bloom-admin-mobile-menu.png
+- Lint clean (bun run lint).
+
+Stage Summary:
+- DESIGN.md (Velvet Bloom) fully applied to all pages - customer (home, services, booking, shop, cart, checkout, contact, service-detail, product-detail, order-success) and admin (dashboard, calendar, appointments, slots, services, service-categories, products, orders, customers, financials, settings, login).
+- All previously-applied skill utilities (press-feedback, card-lift, img-zoom, arrow-slide, arrow-diagonal, btn-press, btn-shimmer, hide-auto-close, reveal, custom easing tokens) preserved and still active.
+- Image upload functionality preserved (admin New Service dialog + Edit dialog still show ImageUpload with pre-loaded image).
+- Mobile hamburger menus on both customer and admin pages still work with single close button.
+- Zero rose- classes in rendered HTML (was 336 in source).
+- Zero gradients in rendered HTML (was 101 in source).
+- Velvet Bloom palette active: primary #a42c82, secondary #943e7e, surface #fff7f9.
+- Typography: Playfair Display for h1-h6 + dialog/sheet titles, Be Vietnam Pro for body/buttons/inputs.
