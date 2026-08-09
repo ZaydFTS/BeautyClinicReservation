@@ -116,78 +116,96 @@ export function AdminServicesPage() {
  {isLoading ? (
  <div className="h-64 shimmer rounded-lg" />
  ) : (
- <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 stagger-children">
+ <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 stagger-children">
  {services.map((svc) => (
  <Card
  key={svc.id}
- className={`card-lift group relative gap-0 overflow-hidden rounded-2xl border-outline-variant/70 py-0 shadow-sm hover:border-outline-variant hover:shadow-xl hover:shadow-primary/10 ${!svc.active ?"opacity-60" :""}`}
+ className={`card-lift group relative gap-0 overflow-hidden rounded-2xl border-outline-variant/70 py-0 shadow-none transition-all duration-300 hover:border-primary ${!svc.active ? "opacity-60" : ""}`}
  >
- {/* Service image with img-zoom skill utility */}
- {svc.imageUrl && (
- <div className="relative aspect-[16/10] w-full overflow-hidden bg-blush">
+ {/* Image area */}
+ <div className="relative aspect-[4/3] w-full overflow-hidden bg-blush">
+ {svc.imageUrl ? (
  <img
  src={svc.imageUrl}
  alt={svc.name}
  className="img-zoom h-full w-full object-cover"
  loading="lazy"
  />
- <div className="pointer-events-none absolute inset-0 bg-black/40" />
+ ) : (
+ <div className="flex h-full items-center justify-center">
+ <Sparkles className="h-12 w-12 text-primary/25" />
  </div>
  )}
- {/* Decorative gradient orb - only shown when no image */}
- {!svc.imageUrl && (
- <div
- className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/15"
- aria-hidden
- />
- )}
- <CardHeader className="relative space-y-2 p-5 pb-3">
- <div className="flex items-start justify-between gap-2">
- <Badge
- variant="outline"
- className="border-outline-variant/70 bg-primary"
- >
+ {/* Category badge - top left */}
+ <div className="absolute left-3 top-3">
+ <span className="inline-flex items-center rounded-full bg-white/85 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-secondary shadow-sm backdrop-blur-md">
  {svc.category}
- </Badge>
- <Switch
- checked={svc.active}
- onCheckedChange={() => toggleActive(svc)}
- />
+ </span>
  </div>
- <CardTitle className="pt-1 text-base font-semibold tracking-tight">{svc.name}</CardTitle>
+ {/* Duration badge - top right */}
+ <div className="absolute right-3 top-3">
+ <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
+ <Clock className="h-2.5 w-2.5" />
+ {svc.durationMin} MIN
+ </span>
+ </div>
+ {/* Active/Inactive status pill - bottom left */}
+ <div className="absolute bottom-3 left-3">
+ <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-md ${svc.active ? "bg-white/85 text-secondary" : "bg-secondary text-white"}`}>
+ <span className={`h-1.5 w-1.5 rounded-full ${svc.active ? "bg-primary" : "bg-white"}`} />
+ {svc.active ? "Active" : "Hidden"}
+ </span>
+ </div>
+ </div>
+ {/* Content */}
+ <CardHeader className="relative space-y-2 p-5 pb-2">
+ <CardTitle className="font-serif text-lg font-bold tracking-tight text-foreground transition-colors group-hover:text-secondary">
+ {svc.name}
+ </CardTitle>
  {svc.description && (
  <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{svc.description}</p>
  )}
  </CardHeader>
  <CardContent className="relative p-5 pt-0">
- <div className="flex items-end justify-between border-t border-outline-variant/60 pt-3">
+ {/* Toggle + price row */}
+ <div className="flex items-center justify-between pt-2">
  <div>
- <div className="text-primary text-2xl font-bold tracking-tight">{formatMoney(svc.price)}</div>
- <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
- <Clock className="h-3 w-3" />
- {svc.durationMin} min
+ <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+ Price
+ </div>
+ <div className="text-primary text-xl font-bold tracking-tight">{formatMoney(svc.price)}</div>
+ </div>
+ {/* Active toggle */}
+ <div className="flex items-center gap-2">
+ <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+ {svc.active ? "Visible" : "Hidden"}
+ </span>
+ <Switch
+ checked={svc.active}
+ onCheckedChange={() => toggleActive(svc)}
+ />
  </div>
  </div>
- <div className="flex gap-1">
+ {/* Action buttons row */}
+ <div className="mt-4 flex gap-2 border-t border-outline-variant/60 pt-3">
  <Button
- variant="ghost"
- size="icon"
- className="press-feedback h-9 w-9 rounded-lg text-muted-foreground hover:bg-blush hover:text-secondary"
+ variant="outline"
+ size="sm"
+ className="press-feedback flex-1 border-outline-variant text-secondary hover:border-primary hover:bg-primary hover:text-white"
  onClick={() => setEditSvc(svc)}
- aria-label="Edit service"
  >
- <Edit className="arrow-slide h-4 w-4" />
+ <Edit className="mr-1.5 h-3.5 w-3.5" />
+ Edit
  </Button>
  <Button
- variant="ghost"
- size="icon"
- className="press-feedback h-9 w-9 rounded-lg text-primary hover:bg-blush hover:text-secondary"
+ variant="outline"
+ size="sm"
+ className="press-feedback flex-1 border-outline-variant text-secondary hover:border-primary hover:bg-primary hover:text-white"
  onClick={() => setDeleteSvc(svc)}
- aria-label="Delete service"
  >
- <Trash2 className="h-4 w-4" />
+ <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+ Delete
  </Button>
- </div>
  </div>
  </CardContent>
  </Card>
