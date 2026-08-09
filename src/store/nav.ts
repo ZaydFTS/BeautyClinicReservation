@@ -28,6 +28,7 @@ export type Route =
   | { name: "admin_customers" }
   | { name: "admin_financials" }
   | { name: "admin_settings" }
+  | { name: "admin_home_content" }
 
 interface NavState {
   route: Route
@@ -70,6 +71,7 @@ function parseHash(): Route {
     admin_customers: { name: "admin_customers" },
     admin_financials: { name: "admin_financials" },
     admin_settings: { name: "admin_settings" },
+    admin_home_content: { name: "admin_home_content" },
   }
   return map[parts[0]] || { name: "home" }
 }
@@ -99,6 +101,7 @@ function routeToHash(route: Route): string {
     case "admin_customers": return "#/admin_customers"
     case "admin_financials": return "#/admin_financials"
     case "admin_settings": return "#/admin_settings"
+    case "admin_home_content": return "#/admin_home_content"
   }
 }
 

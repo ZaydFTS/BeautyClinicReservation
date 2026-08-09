@@ -3,8 +3,9 @@
 import { useEffect } from"react"
 import { useNav } from"@/store/nav"
 import { useAuth } from"@/store/auth"
-import { CustomerHeader } from"@/components/shared/customer-header"
-import { CustomerFooter } from"@/components/shared/customer-footer"
+import { CustomerHeader } from "@/components/shared/customer-header"
+import { CustomerFooter } from "@/components/shared/customer-footer"
+import { PromoBanner } from "@/components/shared/promo-banner"
 import { HomePage } from"@/components/customer/home-page"
 import { ServicesPage } from"@/components/customer/services-page"
 import { ServiceDetailPage } from"@/components/customer/service-detail-page"
@@ -27,7 +28,8 @@ import { AdminOrdersPage } from"@/components/admin/admin-orders-page"
 import { AdminAppointmentsPage } from"@/components/admin/admin-appointments-page"
 import { AdminCustomersPage } from"@/components/admin/admin-customers-page"
 import { AdminFinancialsPage } from"@/components/admin/admin-financials-page"
-import { AdminSettingsPage } from"@/components/admin/admin-settings-page"
+import { AdminSettingsPage } from "@/components/admin/admin-settings-page"
+import { AdminHomeContentPage } from "@/components/admin/admin-home-content-page"
 
 export default function Home() {
  const route = useNav((s) => s.route)
@@ -73,6 +75,7 @@ export default function Home() {
  // Customer pages - render with header/footer
  return (
  <div className="min-h-screen flex flex-col bg-background">
+ <PromoBanner />
  <CustomerHeader />
  <main className="flex-1">
  {renderCustomerRoute(route)}
@@ -111,6 +114,7 @@ function renderAdminRoute(route: ReturnType<typeof useNav.getState>["route"]) {
  case"admin_customers": return <AdminCustomersPage />
  case"admin_financials": return <AdminFinancialsPage />
  case"admin_settings": return <AdminSettingsPage />
+ case"admin_home_content": return <AdminHomeContentPage />
  default: return <AdminDashboardPage />
  }
 }
