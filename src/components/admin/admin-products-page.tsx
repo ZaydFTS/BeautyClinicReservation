@@ -24,8 +24,10 @@ import {
 import {
  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from"@/components/ui/table"
-import { Plus, Edit, Trash2, Package, Search, AlertTriangle, Leaf, Minus } from"lucide-react"
+import { Plus, Edit, Trash2, Package, Search, AlertTriangle, Leaf, Minus, Settings, ArrowRight } from "lucide-react"
 import { toast } from"sonner"
+import { ImageUpload } from"@/components/shared/image-upload"
+import { useNav } from"@/store/nav"
 
 interface Category {
  id: string
@@ -41,12 +43,14 @@ interface Product {
  stock: number
  lowStockAt: number
  imageUrl: string | null
+ categoryId: string | null
  active: boolean
  category: Category | null
 }
 
 export function AdminProductsPage() {
  const queryClient = useQueryClient()
+ const navigate = useNav((s) => s.navigate)
  const [q, setQ] = useState("")
  const [filterCat, setFilterCat] = useState("all")
  const [showLowOnly, setShowLowOnly] = useState(false)
@@ -105,18 +109,35 @@ export function AdminProductsPage() {
  }
 
  return (
- <div className="space-y-4">
+ <div className="space-y-6">
  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
  <div>
- <h1 className="text-2xl font-bold tracking-tight">Products & Inventory</h1>
- <p className="text-sm text-muted-foreground">
+ <div className="mb-2 flex items-center gap-2">
+ <span className="h-px w-8 bg-primary" aria-hidden />
+ <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+ Catalog
+ </span>
+ </div>
+ <h1 className="font-serif text-3xl font-bold tracking-tight text-foreground">Products & Inventory</h1>
+ <p className="mt-1 text-sm text-muted-foreground">
  Manage products, prices, and stock levels. Stock auto-decreases on orders.
  </p>
  </div>
- <Button onClick={() => setCreateOpen(true)} className="bg-primary hover:bg-primary/90">
+ <div className="flex gap-2">
+ <Button
+ variant="outline"
+ onClick={() => navigate({ name: "admin_product_categories" })}
+ className="press-feedback border-outline-variant text-secondary hover:border-primary hover:bg-blush hover:text-primary"
+ >
+ <Settings className="mr-1.5 h-4 w-4" />
+ Manage Categories
+ <ArrowRight className="arrow-slide ml-1.5 h-3.5 w-3.5" />
+ </Button>
+ <Button onClick={() => setCreateOpen(true)} className="btn-press bg-primary hover:bg-primary/90">
  <Plus className="mr-1.5 h-4 w-4" />
  New Product
  </Button>
+ </div>
  </div>
 
  <div className="flex flex-wrap gap-2">
@@ -294,7 +315,7 @@ export function AdminProductsPage() {
  open={createOpen}
  onOpenChange={setCreateOpen}
  categories={catData?.categories || []}
- onSubmit={(body) => createMutation.mutate({ body })}
+ onSubmit={(body) => createMutation.mutate(body)}
  />
 
  {/* Edit dialog */}
@@ -342,28 +363,29 @@ function ProductFormDialog({
  categories: Category[]
  onSubmit: (body: Record<string, unknown>) => void
 }) {
- const [name, setName] = useState(product?.name ||"")
- const [description, setDescription] = useState(product?.description ||"")
- const [price, setPrice] = useState(product?.price.toString() ||"")
- const [cost, setCost] = useState(product?.cost.toString() ||"0")
- const [stock, setStock] = useState(product?.stock.toString() ||"0")
- const [lowStockAt, setLowStockAt] = useState(product?.lowStockAt.toString() ||"5")
- const [imageUrl, setImageUrl] = useState(product?.imageUrl ||"")
- const [categoryId, setCategoryId] = useState(product?.categoryId ||"")
+ const navigate = useNav((s) => s.navigate)
+ const [name, setName] = useState(product?.name || "")
+ const [description, setDescription] = useState(product?.description || "")
+ const [price, setPrice] = useState(product?.price?.toString() || "")
+ const [cost, setCost] = useState(product?.cost?.toString() || "0")
+ const [stock, setStock] = useState(product?.stock?.toString() || "0")
+ const [lowStockAt, setLowStockAt] = useState(product?.lowStockAt?.toString() || "5")
+ const [imageUrl, setImageUrl] = useState(product?.imageUrl || "")
+ const [categoryId, setCategoryId] = useState(product?.categoryId || "")
  const [active, setActive] = useState(product?.active ?? true)
 
  const handleSubmit = () => {
- if (!name) {
+ if (!name.trim()) {
  toast.error("Name is required")
  return
  }
  const p = parseFloat(price)
- if (Number.isNaN(p) || p < 0) {
- toast.error("Invalid price")
+ if (!price.trim() || Number.isNaN(p) || p < 0) {
+ toast.error("Valid price is required")
  return
  }
  onSubmit({
- name,
+ name: name.trim(),
  description: description || null,
  price: p,
  cost: parseFloat(cost) || 0,
@@ -379,71 +401,101 @@ function ProductFormDialog({
  <Dialog open={open} onOpenChange={onOpenChange}>
  <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
  <DialogHeader>
- <DialogTitle>{product ?"Edit Product" :"New Product"}</DialogTitle>
+ <DialogTitle className="font-serif text-xl font-bold">{product ? "Edit Product" : "New Product"}</DialogTitle>
  <DialogDescription>
  Product details, pricing, and inventory settings.
  </DialogDescription>
  </DialogHeader>
- <div className="space-y-3">
+ <div className="space-y-4">
  <div className="space-y-2">
- <Label>Name *</Label>
- <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Soothing Aloe Gel" />
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Name <span className="text-primary">*</span></Label>
+ <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Soothing Aloe Gel" className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card" />
  </div>
  <div className="space-y-2">
- <Label>Description</Label>
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Description</Label>
  <Textarea
  rows={2}
  value={description}
  onChange={(e) => setDescription(e.target.value)}
+ placeholder="Brief description of the product..."
+ className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card"
  />
  </div>
+ {/* Product Image Upload */}
+ <ImageUpload
+ value={imageUrl}
+ onChange={setImageUrl}
+ label="Product Image"
+ />
  <div className="grid grid-cols-2 gap-3">
  <div className="space-y-2">
- <Label>Price ($)</Label>
- <Input type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} />
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Price ($) <span className="text-primary">*</span></Label>
+ <Input type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0.00" className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card" />
  </div>
  <div className="space-y-2">
- <Label>Cost ($)</Label>
- <Input type="number" min="0" step="0.01" value={cost} onChange={(e) => setCost(e.target.value)} />
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Cost ($)</Label>
+ <Input type="number" min="0" step="0.01" value={cost} onChange={(e) => setCost(e.target.value)} className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card" />
  </div>
  </div>
  <div className="grid grid-cols-2 gap-3">
  <div className="space-y-2">
- <Label>Stock</Label>
- <Input type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} />
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Stock</Label>
+ <Input type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card" />
  </div>
  <div className="space-y-2">
- <Label>Low stock alert at</Label>
- <Input type="number" min="0" value={lowStockAt} onChange={(e) => setLowStockAt(e.target.value)} />
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Low stock alert at</Label>
+ <Input type="number" min="0" value={lowStockAt} onChange={(e) => setLowStockAt(e.target.value)} className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card" />
  </div>
  </div>
+ {/* Category - with Manage link */}
  <div className="space-y-2">
- <Label>Image URL</Label>
- <Input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." />
+ <div className="flex items-center justify-between">
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Category</Label>
+ <button
+ type="button"
+ onClick={() => { onOpenChange(false); navigate({ name: "admin_product_categories" }) }}
+ className="text-[10px] font-semibold uppercase tracking-wider text-primary hover:text-secondary"
+ >
+ + Manage
+ </button>
  </div>
- <div className="space-y-2">
- <Label>Category</Label>
+ {categories.length === 0 ? (
+ <div className="rounded-lg border border-dashed border-outline-variant/70 bg-blush p-4 text-center">
+ <p className="text-xs text-muted-foreground">No categories yet.</p>
+ <Button
+ type="button"
+ variant="outline"
+ size="sm"
+ className="press-feedback mt-2 border-primary text-primary hover:bg-primary hover:text-white"
+ onClick={() => { onOpenChange(false); navigate({ name: "admin_product_categories" }) }}
+ >
+ Create Categories First
+ <ArrowRight className="arrow-slide ml-1.5 h-3 w-3" />
+ </Button>
+ </div>
+ ) : (
  <Select value={categoryId} onValueChange={setCategoryId}>
- <SelectTrigger><SelectValue placeholder="Uncategorized" /></SelectTrigger>
+ <SelectTrigger className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card"><SelectValue placeholder="Uncategorized" /></SelectTrigger>
  <SelectContent>
  {categories.map((c) => (
  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
  ))}
  </SelectContent>
  </Select>
+ )}
  </div>
- <div className="flex items-center justify-between rounded-lg border p-3">
+ <div className="flex items-center justify-between rounded-lg border border-outline-variant/60 bg-blush/30 p-3">
  <div>
- <div className="text-sm font-medium">Active</div>
+ <div className="text-sm font-medium text-foreground">Active</div>
  <div className="text-xs text-muted-foreground">Inactive products are hidden from shop</div>
  </div>
  <Switch checked={active} onCheckedChange={setActive} />
  </div>
  </div>
  <DialogFooter>
- <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
- <Button className="bg-primary hover:bg-primary/90" onClick={handleSubmit}>
- {product ?"Save changes" :"Create product"}
+ <Button variant="outline" className="press-feedback" onClick={() => onOpenChange(false)}>Cancel</Button>
+ <Button className="btn-press bg-primary hover:bg-primary/90" onClick={handleSubmit}>
+ {product ? "Save changes" : "Create product"}
  </Button>
  </DialogFooter>
  </DialogContent>
