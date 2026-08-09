@@ -233,6 +233,12 @@ export function CheckoutPage() {
  ))}
  </div>
  <div className="space-y-2 border-t border-outline-variant pt-3 text-sm">
+ {totalDiscount > 0 && (
+ <div className="flex justify-between">
+ <span className="text-muted-foreground">Original Price</span>
+ <span className="text-muted-foreground line-through">{formatMoney(originalSubtotal)}</span>
+ </div>
+ )}
  <div className="flex justify-between">
  <span className="text-muted-foreground">{t("cart.subtotal")}</span>
  <span className="font-medium">{formatMoney(subtotal)}</span>
