@@ -10,7 +10,7 @@ import { Badge } from"@/components/ui/badge"
 import { LanguageSwitcher } from"@/components/shared/language-switcher"
 import {
  LayoutDashboard, Calendar, Clock, Sparkles, Package, ShoppingCart,
- Users, Receipt, Settings, LogOut, Menu, X, Bell, Tag, Tags, Home,
+ Users, Receipt, Settings, LogOut, Menu, X, Bell, Tag, Tags, Home, Percent,
 } from "lucide-react"
 import { useState } from"react"
 import {
@@ -34,6 +34,7 @@ const NAV_ITEMS: NavItem[] = [
  { labelKey:"adminNav.serviceCategories", route: { name:"admin_service_categories" }, icon: Tag },
  { labelKey:"adminNav.products", route: { name:"admin_products" }, icon: Package },
  { labelKey:"adminNav.productCategories", route: { name:"admin_product_categories" }, icon: Tags },
+ { labelKey:"adminNav.discounts", route: { name:"admin_discounts" }, icon: Percent },
  { labelKey:"adminNav.orders", route: { name:"admin_orders" }, icon: ShoppingCart },
  { labelKey:"adminNav.customers", route: { name:"admin_customers" }, icon: Users },
  { labelKey:"adminNav.financials", route: { name:"admin_financials" }, icon: Receipt },
@@ -44,9 +45,9 @@ const NAV_ITEMS: NavItem[] = [
 // Section grouping: [startIndex, endIndex, labelKey]
 const NAV_SECTIONS: [number, number, string][] = [
  [0, 4,"adminNav.overview"], // Dashboard, Calendar, Appointments, Time Slots
- [4, 8,"adminNav.catalog"], // Services, Service Categories, Products, Product Categories
- [8, 10,"adminNav.insights"], // Orders, Customers
- [10, 13,"adminNav.system"], // Financials, Settings, Home Content
+ [4, 9,"adminNav.catalog"], // Services, Service Categories, Products, Product Categories, Discounts
+ [9, 11,"adminNav.insights"], // Orders, Customers
+ [11, 14,"adminNav.system"], // Financials, Settings, Home Content
 ]
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {

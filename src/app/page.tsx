@@ -31,6 +31,7 @@ import { AdminFinancialsPage } from"@/components/admin/admin-financials-page"
 import { AdminSettingsPage } from "@/components/admin/admin-settings-page"
 import { AdminHomeContentPage } from "@/components/admin/admin-home-content-page"
 import { AdminProductCategoriesPage } from "@/components/admin/admin-product-categories-page"
+import { AdminDiscountsPage } from "@/components/admin/admin-discounts-page"
 
 export default function Home() {
  const route = useNav((s) => s.route)
@@ -117,6 +118,7 @@ function renderAdminRoute(route: ReturnType<typeof useNav.getState>["route"]) {
  case"admin_settings": return <AdminSettingsPage />
  case"admin_home_content": return <AdminHomeContentPage />
  case"admin_product_categories": return <AdminProductCategoriesPage />
+ case"admin_discounts": return <AdminDiscountsPage />
  default: return <AdminDashboardPage />
  }
 }
