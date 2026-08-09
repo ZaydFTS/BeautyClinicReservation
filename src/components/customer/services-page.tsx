@@ -5,6 +5,7 @@ import { useNav } from "@/store/nav"
 import { useLang } from "@/store/lang"
 import { apiGet } from "@/lib/api-client"
 import { formatMoney } from "@/lib/format"
+import { useDiscount, calculateDiscountedPrice, getDiscount, type DiscountConfig } from "@/lib/discount"
 import { SERVICE_CATEGORIES } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -23,6 +24,7 @@ interface Service {
   price: number
   durationMin: number
   category: string
+  categoryId: string | null
   imageUrl: string | null
   active: boolean
 }
@@ -51,6 +53,8 @@ export function ServicesPage() {
     queryKey: ["services", "active"],
     queryFn: () => apiGet<{ services: Service[] }>("/api/services?active=true"),
   })
+  const { data: discountData } = useDiscount()
+  const discount: DiscountConfig = getDiscount(discountData?.discount)
 
   const services = data?.services || []
 
@@ -323,9 +327,21 @@ export function ServicesPage() {
                                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                                   From
                                 </div>
-                                <div className="text-lg font-bold text-primary">
-                                  {formatMoney(svc.price)}
-                                </div>
+                                {(() => {
+                                  const priceInfo = calculateDiscountedPrice(svc.price, discount, "service", svc.categoryId)
+                                  return (
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-lg font-bold text-primary">
+                                        {formatMoney(priceInfo.discounted)}
+                                      </span>
+                                      {priceInfo.hasDiscount && (
+                                        <span className="text-sm text-muted-foreground line-through">
+                                          {formatMoney(priceInfo.original)}
+                                        </span>
+                                      )}
+                                    </div>
+                                  )
+                                })()}
                               </div>
                               <button
                                 onClick={() => navigate({ name: "booking", serviceId: svc.id })}

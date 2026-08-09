@@ -5,6 +5,7 @@ import { useNav, type Route } from "@/store/nav"
 import { useLang } from "@/store/lang"
 import { apiGet, apiPost } from "@/lib/api-client"
 import { formatMoney, formatTime, toISODate, addDays, sameDay } from "@/lib/format"
+import { useDiscount, calculateDiscountedPrice, getDiscount, type DiscountConfig } from "@/lib/discount"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -28,6 +29,7 @@ interface Service {
   price: number
   durationMin: number
   category: string
+  categoryId: string | null
   imageUrl: string | null
 }
 
@@ -54,6 +56,8 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
   const navigate = useNav((s) => s.navigate)
   const t = useLang((s) => s.t)
   const lang = useLang((s) => s.lang)
+  const { data: discountData } = useDiscount()
+  const discount: DiscountConfig = getDiscount(discountData?.discount)
   const locale = lang === "ar" ? "ar" : "en-US"
   const initialServiceId = route.serviceId
 
@@ -314,9 +318,21 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                           <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                             From
                           </span>
-                          <span className="text-lg font-bold text-primary">
-                            {formatMoney(svc.price)}
-                          </span>
+                          {(() => {
+                            const pi = calculateDiscountedPrice(svc.price, discount, "service", svc.categoryId)
+                            return (
+                              <span className="flex items-center gap-1.5">
+                                <span className="text-lg font-bold text-primary">
+                                  {formatMoney(pi.discounted)}
+                                </span>
+                                {pi.hasDiscount && (
+                                  <span className="text-xs text-muted-foreground line-through">
+                                    {formatMoney(pi.original)}
+                                  </span>
+                                )}
+                              </span>
+                            )
+                          })()}
                         </div>
                       </button>
                     )
@@ -622,7 +638,19 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                             <Clock className="h-3 w-3" />
                             {currentService.durationMin} min
                           </span>
-                          <span className="font-bold text-primary">{formatMoney(currentService.price)}</span>
+                          <span className="flex items-center gap-1.5">
+                            {(() => {
+                              const pi = calculateDiscountedPrice(currentService.price, discount, "service", currentService.categoryId)
+                              return (
+                                <>
+                                  <span className="font-bold text-primary">{formatMoney(pi.discounted)}</span>
+                                  {pi.hasDiscount && (
+                                    <span className="text-xs text-muted-foreground line-through">{formatMoney(pi.original)}</span>
+                                  )}
+                                </>
+                              )
+                            })()}
+                          </span>
                         </div>
                       </>
                     ) : (
@@ -656,9 +684,21 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                   {currentService && (
                     <div className="flex items-center justify-between border-t border-outline-variant pt-3">
                       <span className="font-semibold text-foreground">{t("common.total")}</span>
-                      <span className="font-serif text-2xl font-bold text-primary">
-                        {formatMoney(currentService.price)}
-                      </span>
+                      {(() => {
+                        const pi = calculateDiscountedPrice(currentService.price, discount, "service", currentService.categoryId)
+                        return (
+                          <span className="flex items-center gap-2">
+                            <span className="font-serif text-2xl font-bold text-primary">
+                              {formatMoney(pi.discounted)}
+                            </span>
+                            {pi.hasDiscount && (
+                              <span className="text-sm text-muted-foreground line-through">
+                                {formatMoney(pi.original)}
+                              </span>
+                            )}
+                          </span>
+                        )
+                      })()}
                     </div>
                   )}
 
