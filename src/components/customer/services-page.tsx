@@ -300,8 +300,6 @@ export function ServicesPage() {
                                   {svc.category}
                                 </span>
                               </div>
-                              {/* Subtle bottom overlay */}
-                              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-black/10" aria-hidden />
                             </div>
 
                             {/* Content */}
