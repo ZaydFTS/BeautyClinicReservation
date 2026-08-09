@@ -729,3 +729,300 @@ Stage Summary - VLM-verified results:
 - Mobile (390x844): customer hamburger menu visible, admin hamburger menu visible, single-column responsive layout, 3rd card solid primary on mobile too.
 - Lint clean. Zero rose-/gradients/amber-/emerald- in source and rendered HTML.
 - Screenshots: velvet-bloom-home-v2.png, velvet-bloom-services-v2.png, velvet-bloom-booking-v2.png, velvet-bloom-contact-v2.png, velvet-bloom-admin-services-v2.png, velvet-bloom-home-mobile.png, velvet-bloom-home-mobile-services.png, velvet-bloom-booking-flow.png.
+
+---
+Task ID: QA-1
+Agent: QA Customer Pages
+Task: Audit customer-facing pages for performance and issues
+
+Work Log:
+- Read prior worklog entries (5-responsive-audit through velvet-bloom-page-redesign) to understand context: customer-facing pages use Velvet Bloom design system (primary #a42c82, secondary #943e7e, Playfair Display + Be Vietnam Pro), zero rose-/gradient/amber- classes, sticky "Your Journey" sidebar on booking, asymmetric two-column hero on home.
+- Verified dev server up at http://127.0.0.1:3000/ (HTTP 200, TTFB ~0.10s).
+- Launched agent-browser (Chromium headless) at 1280×800 with a pre-navigation init script that registers `window.__errors`, `window.__consoleErrors`, and `window.__unhandled` collectors (error/unhandledrejection/console.error hooks) so every page navigation captured runtime errors from first paint.
+- For each customer route (#/home, #/services, #/booking, #/shop, #/product_detail, #/cart, #/contact) ran: navigate → wait networkidle → eval JSON dump of {title,url,hash,errors,consoleErrors,unhandled} → screenshot --full → structured DOM eval (headings, sections, images+b Broken-status, filter pills, sticky elements, overflow check).
+- Used `z-ai vision` CLI (GLM-5v) to validate full-page screenshots against the audit checklist for each page.
+- Tested interactive flows:
+  - Services: clicked WAXING filter pill → only 2 Waxing cards remained; LASER → 4; ALL → 8. Filter logic works.
+  - Booking: clicked Underarm Laser Waxing → "Your Journey" sidebar live-updated with service/date/price; clicked MON 10 Aug → 3 time slots (9:00 AM, 3:00 PM, 5:00 PM); clicked 9:00 AM → sidebar updated; keyboard-typed Name + Phone → Confirm Booking button changed from `disabled` to `enabled`. Full 3-step flow verified end-to-end.
+  - Shop: clicked page 2 → 9 real-named products (Vitamin C Serum, etc.); page 3 → 2 products (Numbing Cream 5%, Vitamin C Serum); page 1 → back to placeholder products. Pagination works. Clicked Aftercare category in sidebar → 2 filtered products. Sidebar filter works.
+  - Product detail: clicked Soothing Aloe Gel from shop → detail page loaded with image, price $28.00, description, quantity selector, Add to cart button.
+  - Cart: clicked Add to cart · $28.00 → navigated to #/cart → cart showed 1 item, Order Summary with Subtotal $28.00, Tax (8%) $2.24, Total $30.24, Checkout button. Cart badge in header shows "1".
+  - Contact: filled name/phone/email/message → Send Message button changed from `disabled` to `enabled`. Form validation works.
+- Tested mobile viewport (390×844) on home page: layout stacked single-column, promo banner visible at top, hamburger menu present, no horizontal overflow.
+- Fetched /api/products and /api/services directly to verify data quality: services have real names; products page 1 has placeholder data.
+- Screenshots saved to /home/z/my-project/download/qa1/: home-full.png, home-top.png, home-mobile.png, home-mobile-top.png, services-full.png, booking-full.png, booking-filled.png, booking-viewport.png, shop-full.png, product-detail-full.png, product-detail-viewport.png, cart-full.png, cart-viewport.png, contact-full.png, contact-viewport.png.
+- READ-ONLY audit: no source files modified.
+
+Stage Summary:
+
+1. Home page (#/home) — Status: PASS with DATA ISSUE
+   - Loads in <1s. HTTP 200. Title: "Glow & Smooth Laser Clinic | Premium Laser Waxing & Beauty Care". H1: "Reveal Your Smoothest, Most Confident Self".
+   - Console errors: NONE (window.__errors=[], consoleErrors=[], unhandled=[]).
+   - Promo banner: PRESENT and visible above header (top:0, height:36px on desktop / 48px on mobile). Text: "-30% Summer Sale - Book any laser package this month | Shop Now". Dismiss button (×) and Shop Now CTA both present.
+   - All 5 required sections visible: hero (asymmetric two-column with model image + floating stats card), trust badges (FDA-Approved Lasers, Certified Specialists, Flexible Booking, 2,400+ Clients), Curated Treatments (3 service cards: Underarm/Bikini/Back Laser Waxing), Aftercare Essentials shop preview (4 product cards), final CTA "Ready to Begin Your Beauty Journey?" (solid bg-primary), footer.
+   - DATA ISSUE: 4 product cards in "Aftercare Essentials" preview all show name "22222" with price $220.00 and placeholder description "ssadsad" — confirmed by /api/products which returns 8+ products all named "22222" (placeholder test data). Products lack image URLs so SVG leaf placeholders are shown.
+   - 4 images on page, 0 broken (hero-spa.png + 3 treatment-*.png). No horizontal overflow. bodyHeight 3307px on desktop, 5804px on mobile (single-column stack).
+
+2. Services page (#/services) — Status: PASS
+   - Loads in <1s. No console errors. H1: "Curated Treatments for Radiant Results".
+   - Service cards grouped by category H2s: "Waxing", "Laser", "Skincare". 8 cards total (2 Waxing, 4 Laser, 2 Skincare).
+   - Category filter works: ALL→8 cards/3 categories, WAXING→2 cards, LASER→4 cards, SKINCARE→2 cards. OTHER filter also present.
+   - Filter pills styled as rounded-full (ALL, WAXING, LASER, SKINCARE, OTHER) + search input "Search treatments...".
+   - Consultation CTA card visible at bottom: "Not sure where to start?" H3 + "Book Consultation" button on solid bg-secondary (purple).
+   - No image issues (cards use SVG sparkles icons since services have no image URL in DB). No horizontal overflow. bodyHeight 4274px.
+
+3. Booking page (#/booking) — Status: PASS
+   - Loads in <1s. No console errors. H1: "Schedule Your Visit".
+   - 3 numbered steps visible with "STEP 01 / 02 / 03" labels: "Select Treatment", "Date & Time", "Your Details".
+   - Sticky "Your Journey" sidebar present (class `lg:sticky lg:top-24`, becomes sticky on lg+ breakpoint). At 1280px viewport it sticks correctly. Sidebar shows: SERVICE name+duration+price, DATE, TIME, Total, "Pay in clinic after your treatment." note, Confirm Booking button, "Complete all 3 steps to confirm" helper.
+   - Service selection: 8 service buttons with category badge, duration, name, description, "FROM $X" price.
+   - Date chips: SUN 9 Aug through SAT 15 Aug (7 days). Time slots: 9:00 AM, 3:00 PM, 5:00 PM for selected date.
+   - End-to-end flow verified: clicked Underarm Laser Waxing → sidebar updated → clicked MON 10 Aug → 3 time slots appeared → clicked 9:00 AM → sidebar updated → filled Name + Phone via keyboard.type (fill command failed silently on controlled inputs) → Confirm Booking button enabled. Date navigation and time slot reveal work as designed.
+   - No horizontal overflow. bodyHeight 3137px.
+
+4. Shop page (#/shop) — Status: PASS with DATA ISSUE
+   - Loads in <1s. No console errors. H1: "Beauty Essentials".
+   - Pagination working: "Showing 1–9 of 20 products" on page 1, "Showing 10–18 of 20" on page 2, "Showing 19–20 of 20" on page 3. Previous/Next buttons present (Previous disabled on page 1).
+   - Sidebar filter working: "All Products (20)", "Aftercare (2)", "Bundles (10)", "Skincare (3)", "Tools (2)". Clicking Aftercare filtered to 2 real-named products (Soothing Aloe Gel, Numbing Cream 5%).
+   - Product cards visible with: Add to cart button, category badge, name, description, price. SVG placeholder icons shown (no product images set in DB).
+   - DATA ISSUE: Page 1 shows 9 products all named "22222" with description "ssadsad" and price $220.00, plus 1 product named "vvvv" with description "sdadas" and price $200.00 — these are placeholder/test data. Pages 2 and 3 contain real-named products (Vitamin C Serum, API Test Product, Test Product, Complete Aftercare Bundle, LED Facial Mask, Gentle Cleanser, Sunscreen SPF 50+, Soothing Aloe Gel, Exfoliating Mitt, Numbing Cream 5%).
+   - "SORT BY: Featured" dropdown present. bodyHeight 2793px. No horizontal overflow.
+
+5. Product detail page (#/product_detail?id=...) — Status: PASS
+   - Reached by clicking "Soothing Aloe Gel" product card from shop (Aftercare filter). URL: #/product_detail?id=cmqx6k2uq00lqswanxsx8rzv2.
+   - Loads in <1s. No console errors. H1: "Soothing Aloe Gel".
+   - Product image visible: Unsplash URL (images.unsplash.com/photo-1556228720-195a672e8a03?w=400&q=80), naturalWidth 400, NOT broken, alt="Soothing Aloe Gel".
+   - All elements visible: AFTERCARE category badge, product name H1, $28.00 price (shown in main display + Add to cart button), description "Post-waxing soothing gel with pure aloe vera and chamomile extract.", quantity selector (shows "1"), "Add to cart · $28.00" button, "Back to shop" button.
+   - Info sections: "Pickup or delivery: Available within 2-3 business days. Pay in clinic or cash on delivery." and "Cruelty-free: All our products are cruelty-free and dermatologically tested." both visible.
+   - No visual issues, no overflow. bodyHeight 1063px.
+
+6. Cart page (#/cart) — Status: PASS
+   - Reached after clicking "Add to cart · $28.00" on product detail page, then navigating to #/cart. Cart badge in header shows "1".
+   - Loads in <1s. No console errors. H1: "Shopping Cart". Subtitle "1 item(s)".
+   - Cart item visible: product image (Soothing Aloe Gel, Unsplash URL, NOT broken), product name, price $28.00. Quantity controls (− / 1 / +) and delete icon present.
+   - Order Summary section: Subtotal $28.00, Tax (8%) $2.24, Total $30.24. "Pay in clinic or cash on delivery. No online payment required." note in solid bg-primary box. Checkout button visible.
+   - "Continue shopping" button visible (left side).
+   - No horizontal overflow. bodyHeight 979px. Earlier VLM false-positive about "cut off" text was disproven by full-page screenshot and DOM rect check (parent overflow:visible, text fully rendered).
+
+7. Contact page (#/contact) — Status: PASS (with minor observation)
+   - Loads in <1s. No console errors. H1: "Crafting Confidence. Enhancing Radiance."
+   - All 5 required sections visible:
+     a) Hero section: "GET IN TOUCH" badge + H1 + intro paragraph.
+     b) Philosophy section: "OUR PHILOSOPHY" badge + "Science Meets Serenity" H2 + 5 H3 sub-points (Premium Care, Clinical Efficacy, Honest Assessments, Advanced Modalities, Personalized Attention).
+     c) Contact info + form section: "CONTACT INFO" badge + "We're Here to Help" H2 + left panel with 4 contact info cards (phone +1 (555) 123-4567, email hello@glowsmooth.clinic, address 123 Beauty Avenue Suite 200 Beverly Hills CA 90210, hours Mon–Sat 9–7) + right panel form with 4 inputs (NAME *, PHONE, EMAIL, MESSAGE *) + Send Message button.
+     d) Environment section: "THE ENVIRONMENT" badge + "Step Into Sanctuary" H2 + 2 valid images (contact-reception.png "Clinic reception area" 1344px wide, contact-treatment-room.png "Luxury treatment room" 1344px wide, neither broken).
+     e) Commitment band: "OUR PLEDGE" badge + "Commitment to You." H2 on solid bg-primary (purple) section.
+   - Form validation works: Send Message button disabled initially, enabled after filling name + phone + email + message via keyboard.type.
+   - Minor observation: NO actual map embed (no Google Maps / OpenStreetMap iframe) and NO "Get Directions" button — only a MapPin SVG icon next to the address. Previous worklog entry claimed "map section with Get Directions button" but neither exists in current contact-page.tsx source. This is not a regression from this audit's perspective; the audit checklist did not require a map.
+   - 2 images, 0 broken. No horizontal overflow. bodyHeight 3970px.
+
+Cross-cutting observations:
+- All 7 customer pages: zero runtime errors, zero console errors, zero unhandled promise rejections across all navigations.
+- All pages load in <1s (TTFB ~0.10s, networkidle reached within 1-2s).
+- No horizontal overflow on any page at 1280×800 desktop or 390×844 mobile.
+- Promo banner consistently visible above header on all customer pages (configured via /api/site-settings: promoEnabled=true, promoText="Summer Sale - Book any laser package this month", promoPercent=30, promoLink=#/services).
+- Velvet Bloom design system uniformly applied (no rose-/gradient/amber- classes found in any rendered HTML).
+- DATA QUALITY ISSUE (not a code bug): /api/products returns 8+ products all named "22222" (placeholder) priced $220, plus 1 named "vvvv" priced $200, all with gibberish descriptions ("ssadsad", "sdadas"). Real-named products exist on shop pages 2 and 3. Recommended: clean up placeholder products via admin panel or DB seed.
+- All services have null `image` field — service cards across home + services + booking use SVG sparkles placeholder icons. Recommended: upload service images via admin to improve visual richness.
+- All page-1 products have null `image` field — product cards use SVG leaf placeholder icons. Real products on pages 2-3 have valid Unsplash image URLs.
+- Booking form: `agent-browser fill` command silently fails on the controlled React inputs (Name, Phone); `keyboard type` after `click` works correctly. Not a user-facing issue — only affects automated testing.
+- Mobile (390×844) home page: layout properly stacked single-column, promo banner visible at top (48px tall), hamburger menu present, no horizontal overflow, bodyHeight 5804px.
+
+Recommendations (for future tasks, NOT applied in this read-only audit):
+1. Clean up placeholder products ("22222", "vvvv") from database — they appear on shop page 1 and home page shop preview.
+2. Upload images for all 8 services (currently using SVG placeholders).
+3. Optionally add a real map embed (Google Maps iframe) and "Get Directions" button to contact page if the previous design spec called for one.
+
+---
+Task ID: QA-2
+Agent: QA Admin + API
+Task: Audit admin pages and API performance
+
+Work Log:
+- Read prior worklog entries (5-responsive-audit through QA-1) for context: Velvet Bloom design system active, dev server at 127.0.0.1:3000, admin login admin@glowsmooth.clinic/admin123, previous QA-1 found customer pages all PASS with placeholder product data ("22222"/"vvvv") on shop page 1.
+- Verified dev server up (HTTP 200, TTFB 0.058s).
+- Logged into admin via `agent-browser`: opened http://127.0.0.1:3000/#/admin_login, but the SPA router did not match that hash (home page rendered instead). Clicked the "Admin Portal" button in the page footer which redirected to #/admin and rendered the email/password form. Filled #email + #password then clicked "Sign in" → arrived at #/admin_dashboard (H1 "Dashboard") in ~3s.
+- Restarted the browser with an `--init-script` (`/tmp/init-collect.js`) that registers `window.__errors`, `window.__consoleErrors`, and `window.__unhandled` collectors on every navigation so runtime errors could be captured per-page. Re-logged in (same flow).
+- For each of the 14 admin routes (#/admin_dashboard, #/admin_calendar, #/admin_appointments, #/admin_slots, #/admin_services, #/admin_service_categories, #/admin_products, #/admin_product_categories, #/admin_discounts, #/admin_orders, #/admin_customers, #/admin_financials, #/admin_settings, #/admin_home_content): set `location.hash`, waited 2.5s, ran a single `eval` that captures {hash, url, h1, headings[0..8], tables count, tbody rows, card count, button count, input count, bodyHeight, errOverlay flag, errs, consoleErrorsCount+sample, unhandled}, then `screenshot --full` to /home/z/my-project/download/qa2/.
+- Tested interactive flows:
+  - Admin Products: clicked "New Product" → dialog opened (H2 "New Product"), no errors.
+  - Admin Services: clicked "New Service" → dialog opened (H2 "New Service"), no errors.
+  - Admin Calendar: clicked "Week" view toggle (already in week mode), then clicked the icon-only "next" arrow in the calendar header → week label changed from "Aug 3 – Aug 9, 2026" to "Aug 10 – Aug 16, 2026", slots rendered correctly, no errors.
+- API performance: used curl with auth cookies (obtained by POSTing to /api/auth/login) to time each of the 7 endpoints 3 times. Also timed without auth (to verify auth gates), and captured payload sizes.
+- Prisma query audit: wrote `/tmp/count-queries.sh` that finds the position of the last "GET {endpoint}" line in dev.log, finds the previous HTTP-method line, and counts `prisma:query` lines in between. Verified the dashboard endpoint issues 16 queries (2 auth + 10 main + 4 count aggregates) and confirmed via reading `src/app/api/dashboard/route.ts` that all queries are non-N+1 (relations loaded via LEFT JOIN or single IN-clause follow-up queries).
+- Code quality review (READ-ONLY): read `src/app/api/products/route.ts` (53 lines), `src/app/api/services/route.ts` (63 lines), `src/components/customer/product-detail-page.tsx` (234 lines), `src/components/customer/cart-page.tsx` (181 lines), `src/components/customer/shop-page.tsx` (pagination logic only).
+- READ-ONLY audit: no source files modified.
+
+Stage Summary:
+
+### Admin Pages (all 14 sidebar items + home content = 14 routes)
+
+1. **#/admin_dashboard** — Status: PASS (with data discrepancy)
+   - HTTP 200. H1: "Dashboard". Sunday, August 9, 2026 shown as today. bodyHeight 1483.
+   - Stat cards: Today's Revenue $0.00 (0.0% vs yesterday), Month Revenue $0.00 (Pending: $3,219.00), Today's Appointments 0 (0 completed), Today's Orders 1 (2 items sold).
+   - Bottom counts: 13 Customers, 21 Appointments, 8 Orders, 20 Products.
+   - Revenue chart (Last 7 Days): all $0 (no completed transactions).
+   - Low Stock Alerts: 4 products (Vitamin C Serum, Exfoliating Mitt, Sunscreen SPF 50+, API Test Product) with stock ≤ threshold.
+   - Today's Orders: order #0ELR78LO by zayd, 2 items, $107.00, Pending.
+   - **DATA DISCREPANCY**: Dashboard shows "Pending: $3,219.00" but the Financials page (same month scope) shows "Pending $382.00". Root cause: `src/app/api/dashboard/route.ts` line 90-93 computes `pendingRevenue` from `db.transaction.findMany({ where: { status: "PENDING" } })` with NO date filter (all-time pending = $3,219), while `/api/financials?period=month` filters pending to the current month range (Aug 1-31 = $382). The dashboard card is labeled "Month Revenue" so the "Pending" sub-text is semantically misleading. Not a crash but a real inconsistency.
+
+2. **#/admin_calendar** — Status: PASS (with minor a11y note)
+   - H1: "Calendar". bodyHeight 577 (compact week-view layout). Week label "Aug 3 – Aug 9, 2026".
+   - All services filter dropdown, Day/Week/Month view toggles, "Today" button, and 2 icon-only prev/next navigation arrows present.
+   - 7 day columns rendered (Mon-Sun). Sun (Aug 9) shows 4 time slots (3:00 PM, 4:00 PM, 5:00 PM, 6:00 PM) marked "Available". Other days show "No slots".
+   - Legend: "Available slot / Booked / Completed / Blocked / Holiday".
+   - Prev/Next navigation works (clicked next → label updated to "Aug 10 – Aug 16, 2026" with slots rendering correctly).
+   - **A11y note**: The prev/week and next/week navigation arrows are `<button>` elements with NO `aria-label` and NO visible text — screen readers will announce them as empty buttons. Recommended: add `aria-label="Previous week"` / `aria-label="Next week"`.
+
+3. **#/admin_appointments** — Status: PASS
+   - H1: "Appointments". bodyHeight 577. 1 table, 4 rows, 1 filter input, 24 buttons.
+   - Filters: "All statuses" + "Next 14d" dropdowns.
+   - Table columns: When, Customer, Service, Price, Status, Actions.
+   - 4 appointments shown: Aug 10 11:00 AM (zayd, Underarm Laser Waxing, $80, Booked), Aug 10 1:00 PM (zayd, Underarm Laser Waxing, $80, Booked), Aug 11 10:00 AM (zayd, Eyebrow Shaping, $35, Booked), Aug 11 1:00 PM (zayd, Underarm Laser Waxing, $80, Booked).
+
+4. **#/admin_slots** — Status: PASS
+   - H1: "Time Slots". bodyHeight 577. 30 cards, 43 buttons.
+   - Date chips: Today / Sun 9 / Mon 10 / Tue 11 / Wed 12 / Thu 13 / Fri 14 / Sat 15.
+   - Sunday Aug 9 selected by default with "Eyebrow Shaping · 30 min · 4 slot(s)" header (Waxing category).
+   - 4 slots shown: 3:00 PM, 4:00 PM, 5:00 PM, 6:00 PM, all "Available".
+   - Bulk Generate + New Slot action buttons present.
+
+5. **#/admin_services** — Status: PASS
+   - H1: "Services". bodyHeight 1713. 32 cards, 44 buttons, 1 input.
+   - Service cards rendered with image, category badge, name, description, price, duration, active toggle.
+   - "New Service" button opens dialog (H2 "New Service") without errors.
+
+6. **#/admin_service_categories** — Status: PASS
+   - H1: "Service Categories". 4 H3 categories visible: Facials, Laser, Skincare, Waxing. 28 cards, 28 buttons.
+
+7. **#/admin_products** — Status: PASS
+   - H1: "Products & Inventory". bodyHeight 1471. 1 table, 20 rows, 122 buttons (action buttons per row), 1 input.
+   - "New Product" button opens dialog (H2 "New Product") without errors.
+   - Table shows all 20 products including the placeholder "22222"/"vvvv" entries noted in QA-1.
+
+8. **#/admin_product_categories** — Status: PASS
+   - H1: "Product Categories". 4 H3 categories: Aftercare, Bundles, Skincare, Tools. 24 cards, 28 buttons.
+
+9. **#/admin_discounts** — Status: PASS
+   - H1: "Discounts & Sales". bodyHeight 1382. 35 cards, 26 buttons, 3 inputs (filter/search).
+
+10. **#/admin_orders** — Status: PASS
+    - H1: "Orders". bodyHeight 682. 1 table, 8 rows.
+    - Columns: Order #, Customer, Items, Total, Payment, Status, Date, Actions.
+    - Sample rows: #0ELR78LO (zayd, 2 items, $107, In clinic, Pending, Aug 9), #2YNBAT0DQA (QA Checkout User, 1 item, $64, Pending, Jul 14), etc.
+
+11. **#/admin_customers** — Status: PASS
+    - H1: "Customers". bodyHeight 947. 1 table, 13 rows.
+    - Columns: Name, Phone, Email, Appointments, Orders, Joined, Actions.
+    - 13 customers shown including zayd, QA Checkout User, QA Test User, Olivia Martinez, Emily Davis, Sarah Johnson.
+
+12. **#/admin_financials** — Status: PASS (data discrepancy with dashboard — see #1)
+    - H1: "Financials". bodyHeight 1403. 1 table, 5 rows in Recent Transactions.
+    - This month: Total Revenue $0.00, Pending $382.00, Cancelled $0.00, Net Collected $0.00.
+    - Breakdown by type: Appointment 4 transactions ($0 completed, $275 pending), Order 1 transaction ($0 completed, $107 pending). Total pending = $382 (matches dashboard's $3,219? NO — see #1).
+    - Revenue Trend chart (Aug 1 – Aug 31): "No revenue in this period".
+    - Recent Transactions list shows 5 latest (4 appointments + 1 order, all PENDING).
+
+13. **#/admin_settings** — Status: PASS (with scope observation)
+    - H1: "Settings". bodyHeight 1335. 23 cards, 18 buttons, 0 inputs.
+    - **Scope observation**: The Settings page only contains "Notification Settings" (Telegram Bot integration). No General Settings (clinic name, address, hours, contact), no Payment Settings, no Appearance/Theme settings, no Email Settings. The H1 says "Configure clinic-wide settings and integrations" but the actual content is limited to Telegram notifications. Clinic-wide settings (phone, email, address, hours shown on the contact page) are managed via the `#/admin_home_content` page instead.
+    - Shows "TELEGRAM_BOT_TOKEN or TELEGRAM_ADMIN_CHAT_ID not configured" errors for all recent notification attempts (env vars not set in dev). Recent Notifications list (last 50) shows 5+ failed Telegram deliveries for new appointments/orders.
+
+14. **#/admin_home_content** — Status: PASS
+    - H1: "Home Page Content". bodyHeight 2115. 40 cards, 23 buttons, 17 inputs (text/number/textarea/file).
+    - Comprehensive bilingual (🇬🇧 English / 🇸🇦 Arabic) content editor: Promo Banner (visible toggle, percent, link, EN+AR text), Home Hero Section (badge, title line 1, title line 2 highlighted, subtitle, hero image upload), Final CTA Section (title, subtitle).
+    - Image upload supports PNG/JPG/WebP max 5MB. Upload/URL toggle.
+    - "Save Changes" + "Save All Changes" buttons present.
+
+### API Performance (7 endpoints, 3 runs each, with auth cookie)
+
+| Endpoint | Run 1 | Run 2 | Run 3 | Avg | Payload | Slow? |
+|---|---|---|---|---|---|---|
+| /api/services?active=true | 13.7ms | 42.5ms | 10.6ms | ~22ms | 3062 B | NO |
+| /api/products?active=true | 9.9ms | 9.9ms | 9.9ms | ~10ms | 8211 B | NO |
+| /api/categories | 6.7ms | 7.6ms | 6.2ms | ~7ms | 478 B | NO |
+| /api/service-categories | 7.2ms | 7.1ms | 6.2ms | ~7ms | 546 B | NO |
+| /api/site-settings | 8.8ms | 5.3ms | 8.7ms | ~8ms | 501 B | NO |
+| /api/discounts | 7.7ms | 10.8ms | 6.4ms | ~8ms | 157 B | NO |
+| /api/dashboard | 48.6ms | 22.6ms | 21.0ms | ~31ms | 2686 B | NO |
+
+- All 7 endpoints respond in <50ms on warm cache. None exceed the 500ms threshold.
+- Without auth: 6 endpoints return 200 (public), /api/dashboard returns 401 (correctly gated).
+- First-time compile costs seen in dev.log (e.g. /api/products/{id} took 574ms on first hit — 555ms compile + 19ms render) but this is one-time Next.js dev-mode JIT compilation, not a runtime performance issue. Production builds will not have this cost.
+
+### Prisma Query Audit (N+1 check)
+
+| Endpoint | Prisma queries | Notes |
+|---|---|---|
+| /api/services?active=true | 3 | services + categoryRef (LEFT JOIN) + 1 auth query — NO N+1 |
+| /api/products?active=true | 4 | products + category (LEFT JOIN) + 1 auth + 1 (category lookup) — NO N+1 |
+| /api/categories | 1 | single SELECT — NO N+1 |
+| /api/service-categories | 1 | single SELECT — NO N+1 |
+| /api/site-settings | 1 | single SELECT — NO N+1 |
+| /api/discounts | 1 | single SELECT — NO N+1 |
+| /api/dashboard | 16 | 2 auth (AdminSession + AdminUser) + 10 main queries (todayAppointments with customer/service/slot includes via LEFT JOIN, todayOrders with items via single IN-clause follow-up, todayRevenueRows, yesterdayRevenueRows, monthRevenueRows, last7Rows, pendingRows, allProducts, completedApptsThisMonth with service, lowStock filter done in JS) + 4 count aggregates (customers, appointments, orders, products) — NO N+1 |
+
+No N+1 query issues detected. All relation includes use Prisma's JOIN or batched IN-clause strategies.
+
+### Code Quality
+
+**`src/app/api/products/route.ts` (53 lines)**:
+- Does NOT support server-side pagination params (no `page`, `limit`, `offset`, `take`, or `skip` accepted).
+- Always returns ALL products matching the filter in a single `findMany` call. Currently 20 products → 8211-byte payload, fine for small catalog.
+- Returns `{ products: [...] }` wrapper (NOT a flat array — be aware when consuming).
+- Supports `categoryId` filter and `q` (name contains) search query.
+- Public (unauthenticated) requests get `where.active = true`; admin requests get all products including inactive.
+- POST handler correctly gates on admin auth; validates `name` and `price` are present.
+- **Recommendation**: Add `take`/`skip` pagination params (e.g. `?page=1&limit=20`) and a `count` field in the response for catalog scalability. The shop page (`src/components/customer/shop-page.tsx` line 45-71) currently does client-side pagination with `pageSize = 9` over the full fetched list — works for 20 products but transfers the entire catalog on every shop page load.
+
+**`src/app/api/services/route.ts` (63 lines)**:
+- Does NOT support pagination either.
+- Supports `active=true` (public) and `includeInactive=1` (admin) flags. Auto-applies `active=true` for unauthenticated callers regardless of `active` param.
+- Returns `{ services: [...] }` wrapper.
+- Includes `categoryRef` relation.
+- POST handler has duplicate category fields: stores both `category` (denormalized string, defaults to "Other") and `categoryId` (FK to ServiceCategory). When `categoryId` is provided, it does an extra `findUnique` to look up the category name and copies it to `category`. This denormalization is not a bug but creates a data-sync risk if a category is later renamed (the `category` string on existing services would be stale).
+- POST validates `name`, `price`, and `durationMin` are present.
+
+**`src/components/customer/product-detail-page.tsx` (234 lines)**:
+- Styling: Velvet Bloom design system properly applied (bg-blush, text-primary, bg-primary, border-outline-variant).
+- Premium glass-card design: aspect-square image panel with two decorative `bg-primary/15` orbs (top-right + bottom-left), inset shadow vignette overlay, rounded-3xl border.
+- Low-stock badge (≤5 stock): glassmorphic white/70 backdrop-blur pill with `bg-primary` dot indicator.
+- Out-of-stock (stock=0): full white/60 backdrop-blur overlay with "OUT OF STOCK" pill.
+- Quantity selector: rounded-full pill with -/+ ghost buttons, tabular-nums display, min/max clamping via `disabled` state.
+- "Add to cart" button: `btn-shimmer bg-primary rounded-full`, shows dynamic total price (`formatMoney(price * qty)`).
+- Pickup/delivery + cruelty-free info rows with bg-blush icon circles.
+- Loading skeleton: shimmer placeholders in matching grid layout.
+- Not-found state: bg-primary/15 ring + bg-blush circle with HelpCircle icon + back-to-shop button.
+- No issues found.
+
+**`src/components/customer/cart-page.tsx` (181 lines)**:
+- Styling: Velvet Bloom design system properly applied.
+- Empty state: bg-blush circle with ShoppingBag icon + Sparkles badge + full-width CTA button.
+- Cart items: card-hover effect with shadow-md hover, 14×14px thumbnail (or ShoppingBag placeholder), truncate name, primary-colored price, quantity controls (outline buttons + number input), line total, ghost delete button with hover-to-primary.
+- Sticky order summary card (`sticky top-20`) on lg+ screens.
+- Tax hardcoded at 8% (`subtotal * 0.08`) on line 48 — matches the "Tax (8%)" label but is not configurable.
+- **MINOR STYLING ISSUE** (line 164-166): The "Pay in clinic" info box uses `<div className="rounded-lg bg-primary">` with NO text color class and NO padding class. The inner `<strong>` and following text inherit the default body text color (dark) on a `bg-primary` (dark purple #a42c82) background, making it hard to read. Should be `className="rounded-lg bg-primary p-3 text-white"` (or similar) for proper contrast and spacing. Verified in QA-1 screenshot — the box is present but text contrast is poor.
+- No other issues found.
+
+### Cross-cutting Observations
+
+- All 14 admin pages: zero runtime errors, zero console errors, zero unhandled promise rejections across all navigations.
+- All pages load in <1s. The slowest first-compile was 574ms (`/api/products/{id}`) but subsequent warm requests are <30ms.
+- Velvet Bloom design system uniformly applied across all admin pages.
+- The previously-fixed admin calendar crash (`Cannot read properties of undefined (reading 'name')` at admin-calendar-page.tsx:627) is NOT reproducible — calendar renders cleanly with proper optional chaining and API includes.
+- Bilingual content editing available on `#/admin_home_content` (🇬🇧/🇸🇦).
+- Telegram notification integration is correctly architected but cannot send in dev (env vars not configured) — all 5+ recent notification attempts show FAILED status with helpful "Set these environment variables" guidance.
+
+### Recommendations (for future tasks, NOT applied in this read-only audit)
+
+1. **Fix dashboard "Pending" revenue semantics** (HIGH PRIORITY): In `src/app/api/dashboard/route.ts` line 90-93, scope the pending revenue query to the current month (`createdAt: { gte: monthStart, lte: monthEnd }`) so the dashboard's "Month Revenue / Pending: $X" matches the Financials page. Or relabel the dashboard card to "All-time Pending" if the all-time figure is intentional.
+2. **Add server-side pagination to `/api/products`**: Accept `?page=N&limit=M` (default limit 20) and return `{ products, total, page, totalPages }`. Update `shop-page.tsx` to fetch per-page instead of slicing the full list client-side. Becomes critical when catalog exceeds 50+ items.
+3. **Fix cart "Pay in clinic" box contrast** (LOW): Add `text-white p-3` classes to the `<div className="rounded-lg bg-primary">` on `cart-page.tsx:164`.
+4. **Add aria-labels to calendar prev/next arrows** (LOW, a11y): The two icon-only navigation buttons in the admin calendar header have no `aria-label`. Add `aria-label="Previous week"` / `aria-label="Next week"`.
+5. **Clean up placeholder products** ("22222", "vvvv") — same recommendation as QA-1.
+6. **Consider expanding Settings page**: Add General (clinic name/phone/email/address/hours), Payment, and Appearance tabs — the current Settings page is notification-only.
+7. **Sync `category` string on ServiceCategory rename**: When renaming a ServiceCategory, update all services with the old `category` string to the new name (or remove the denormalized `category` field entirely and rely solely on `categoryId`).
+
+### Screenshots
+All 17 screenshots saved to `/home/z/my-project/download/qa2/`:
+01-dashboard.png, 02-dashboard-recheck.png, 03-calendar.png, 04-appointments.png, 05-slots.png, 06-services.png, 07-service-categories.png, 08-products.png, 09-product-categories.png, 10-discounts.png, 11-orders.png, 12-customers.png, 13-financials.png, 14-settings.png, 15-home-content.png, 16-products-dialog.png, 17-services-dialog.png.
