@@ -244,6 +244,12 @@ export function CartPage() {
 
                   {/* Price breakdown */}
                   <div className="mt-6 space-y-3 text-sm">
+                    {totalDiscount > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Original Price</span>
+                        <span className="text-muted-foreground line-through">{formatMoney(originalSubtotal)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">{t("cart.subtotal")}</span>
                       <span className="font-medium text-foreground">{formatMoney(subtotal)}</span>
