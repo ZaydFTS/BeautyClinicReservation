@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { ShoppingBag, Search, Plus, Leaf, PackageSearch, ArrowRight, RotateCcw, Heart, Check } from "lucide-react"
+import { ShoppingBag, Search, Plus, Leaf, PackageSearch, ArrowRight, RotateCcw, Heart, Check, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Reveal } from "@/components/shared/reveal"
@@ -42,6 +42,8 @@ export function ShopPage() {
   const [q, setQ] = useState("")
   const [cat, setCat] = useState<string>("All")
   const [sort, setSort] = useState<string>("featured")
+  const [page, setPage] = useState(1)
+  const pageSize = 9
 
   const { data: productsData, isLoading } = useQuery({
     queryKey: ["products", "active"],
@@ -60,6 +62,16 @@ export function ShopPage() {
   if (sort === "price-asc") products = [...products].sort((a, b) => a.price - b.price)
   if (sort === "price-desc") products = [...products].sort((a, b) => b.price - a.price)
   if (sort === "name") products = [...products].sort((a, b) => a.name.localeCompare(b.name))
+
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(products.length / pageSize))
+  const currentPage = Math.min(page, totalPages)
+  const startIndex = (currentPage - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const pagedProducts = products.slice(startIndex, endIndex)
+
+  // Reset to page 1 when filters/search/sort change
+  const resetPage = () => setPage(1)
 
   const handleAdd = (p: Product) => {
     addItem({
@@ -116,7 +128,7 @@ export function ShopPage() {
                 <Input
                   placeholder={t("shop.searchPlaceholder")}
                   value={q}
-                  onChange={(e) => setQ(e.target.value)}
+                  onChange={(e) => { setQ(e.target.value); resetPage() }}
                   className="border-outline-variant bg-card pl-9 focus-visible:border-primary"
                 />
               </div>
@@ -126,7 +138,7 @@ export function ShopPage() {
                 <h3 className="font-serif text-lg font-bold tracking-tight text-foreground">Category</h3>
                 <div className="mt-3 space-y-1">
                   <button
-                    onClick={() => setCat("All")}
+                    onClick={() => { setCat("All"); resetPage() }}
                     className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition ${
                       cat === "All" ? "bg-blush font-semibold text-primary" : "text-muted-foreground hover:bg-blush/50 hover:text-foreground"
                     }`}
@@ -137,7 +149,7 @@ export function ShopPage() {
                   {categories.map((c) => (
                     <button
                       key={c.id}
-                      onClick={() => setCat(c.id)}
+                      onClick={() => { setCat(c.id); resetPage() }}
                       className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition ${
                         cat === c.id ? "bg-blush font-semibold text-primary" : "text-muted-foreground hover:bg-blush/50 hover:text-foreground"
                       }`}
@@ -167,11 +179,11 @@ export function ShopPage() {
             {/* Sort bar */}
             <div className="mb-6 flex items-center justify-between rounded-xl border border-outline-variant/60 bg-card px-4 py-3">
               <div className="text-sm text-muted-foreground">
-                Showing <span className="font-semibold text-foreground">{products.length}</span> of {totalCount} products
+                Showing <span className="font-semibold text-foreground">{products.length === 0 ? 0 : startIndex + 1}–{Math.min(endIndex, products.length)}</span> of {products.length} products
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Sort by:</span>
-                <Select value={sort} onValueChange={setSort}>
+                <Select value={sort} onValueChange={(v) => { setSort(v); resetPage() }}>
                   <SelectTrigger className="h-8 w-36 border-none bg-transparent text-sm font-medium shadow-none focus:ring-0">
                     <SelectValue />
                   </SelectTrigger>
@@ -219,7 +231,7 @@ export function ShopPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {products.map((p, i) => {
+                {pagedProducts.map((p, i) => {
                   const priceInfo = calculateDiscountedPrice(p.price, discount, "product", p.categoryId)
                   return (
                     <Reveal key={p.id} delay={i * 80}>
@@ -328,6 +340,46 @@ export function ShopPage() {
                     </Reveal>
                   )
                 })}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && !isLoading && products.length > 0 && (
+              <div className="mt-12 flex items-center justify-center gap-2">
+                {/* Previous button */}
+                <button
+                  onClick={() => { setPage(currentPage - 1); window.scrollTo({ top: 200, behavior: "smooth" }) }}
+                  disabled={currentPage === 1}
+                  className="press-feedback flex h-10 w-10 items-center justify-center rounded-full border border-outline-variant bg-card text-secondary transition hover:border-primary hover:bg-blush hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-outline-variant disabled:hover:bg-card disabled:hover:text-secondary"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+
+                {/* Page numbers */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => { setPage(pageNum); window.scrollTo({ top: 200, behavior: "smooth" }) }}
+                    className={`press-feedback flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-semibold transition ${
+                      pageNum === currentPage
+                        ? "bg-primary text-white shadow-sm shadow-primary/25"
+                        : "border border-outline-variant bg-card text-secondary hover:border-primary hover:bg-blush hover:text-primary"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
+
+                {/* Next button */}
+                <button
+                  onClick={() => { setPage(currentPage + 1); window.scrollTo({ top: 200, behavior: "smooth" }) }}
+                  disabled={currentPage === totalPages}
+                  className="press-feedback flex h-10 w-10 items-center justify-center rounded-full border border-outline-variant bg-card text-secondary transition hover:border-primary hover:bg-blush hover:text-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-outline-variant disabled:hover:bg-card disabled:hover:text-secondary"
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
               </div>
             )}
           </div>
