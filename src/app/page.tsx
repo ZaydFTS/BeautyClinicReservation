@@ -20,8 +20,9 @@ import { AdminShell } from"@/components/admin/admin-shell"
 import { AdminDashboardPage } from"@/components/admin/admin-dashboard-page"
 import { AdminCalendarPage } from"@/components/admin/admin-calendar-page"
 import { AdminSlotsPage } from"@/components/admin/admin-slots-page"
-import { AdminServicesPage } from"@/components/admin/admin-services-page"
-import { AdminProductsPage } from"@/components/admin/admin-products-page"
+import { AdminServicesPage } from "@/components/admin/admin-services-page"
+import { AdminServiceCategoriesPage } from "@/components/admin/admin-service-categories-page"
+import { AdminProductsPage } from "@/components/admin/admin-products-page"
 import { AdminOrdersPage } from"@/components/admin/admin-orders-page"
 import { AdminAppointmentsPage } from"@/components/admin/admin-appointments-page"
 import { AdminCustomersPage } from"@/components/admin/admin-customers-page"
@@ -103,6 +104,7 @@ function renderAdminRoute(route: ReturnType<typeof useNav.getState>["route"]) {
  case"admin_calendar": return <AdminCalendarPage />
  case"admin_slots": return <AdminSlotsPage />
  case"admin_services": return <AdminServicesPage />
+ case"admin_service_categories": return <AdminServiceCategoriesPage />
  case"admin_products": return <AdminProductsPage />
  case"admin_orders": return <AdminOrdersPage />
  case"admin_appointments": return <AdminAppointmentsPage />

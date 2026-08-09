@@ -21,6 +21,7 @@ export type Route =
   | { name: "admin_calendar" }
   | { name: "admin_slots" }
   | { name: "admin_services" }
+  | { name: "admin_service_categories" }
   | { name: "admin_products" }
   | { name: "admin_orders" }
   | { name: "admin_appointments" }
@@ -62,6 +63,7 @@ function parseHash(): Route {
     admin_calendar: { name: "admin_calendar" },
     admin_slots: { name: "admin_slots" },
     admin_services: { name: "admin_services" },
+    admin_service_categories: { name: "admin_service_categories" },
     admin_products: { name: "admin_products" },
     admin_orders: { name: "admin_orders" },
     admin_appointments: { name: "admin_appointments" },
@@ -90,6 +92,7 @@ function routeToHash(route: Route): string {
     case "admin_calendar": return "#/admin_calendar"
     case "admin_slots": return "#/admin_slots"
     case "admin_services": return "#/admin_services"
+    case "admin_service_categories": return "#/admin_service_categories"
     case "admin_products": return "#/admin_products"
     case "admin_orders": return "#/admin_orders"
     case "admin_appointments": return "#/admin_appointments"

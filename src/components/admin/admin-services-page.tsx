@@ -1,17 +1,17 @@
 "use client"
 
-import { useState } from"react"
-import { useQuery, useMutation, useQueryClient } from"@tanstack/react-query"
-import { apiGet, apiPost, apiPut, apiDelete } from"@/lib/api-client"
-import { formatMoney } from"@/lib/format"
-import { SERVICE_CATEGORIES } from"@/lib/constants"
-import { Card, CardContent, CardHeader, CardTitle } from"@/components/ui/card"
-import { Button } from"@/components/ui/button"
-import { Badge } from"@/components/ui/badge"
-import { Input } from"@/components/ui/input"
-import { Label } from"@/components/ui/label"
-import { Textarea } from"@/components/ui/textarea"
-import { Switch } from"@/components/ui/switch"
+import { useState } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useNav } from "@/store/nav"
+import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/api-client"
+import { formatMoney } from "@/lib/format"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 import {
  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from"@/components/ui/select"
@@ -22,9 +22,15 @@ import {
  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from"@/components/ui/alert-dialog"
-import { Plus, Edit, Trash2, Clock, Sparkles, Search } from"lucide-react"
-import { toast } from"sonner"
-import { ImageUpload } from"@/components/shared/image-upload"
+import { Plus, Edit, Trash2, Clock, Sparkles, Search, Settings, ArrowRight } from "lucide-react"
+import { toast } from "sonner"
+import { ImageUpload } from "@/components/shared/image-upload"
+
+interface ServiceCategory {
+  id: string
+  name: string
+  color: string | null
+}
 
 interface Service {
  id: string
@@ -33,12 +39,14 @@ interface Service {
  price: number
  durationMin: number
  category: string
+ categoryId: string | null
  imageUrl: string | null
  active: boolean
 }
 
 export function AdminServicesPage() {
  const queryClient = useQueryClient()
+ const navigate = useNav((s) => s.navigate)
  const [q, setQ] = useState("")
  const [createOpen, setCreateOpen] = useState(false)
  const [editSvc, setEditSvc] = useState<Service | null>(null)
@@ -89,18 +97,35 @@ export function AdminServicesPage() {
  }
 
  return (
- <div className="space-y-4">
+ <div className="space-y-6">
  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
  <div>
- <h1 className="text-2xl font-bold tracking-tight">Services</h1>
- <p className="text-sm text-muted-foreground">
+ <div className="mb-2 flex items-center gap-2">
+ <span className="h-px w-8 bg-primary" aria-hidden />
+ <span className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+ Catalog
+ </span>
+ </div>
+ <h1 className="font-serif text-3xl font-bold tracking-tight text-foreground">Services</h1>
+ <p className="mt-1 text-sm text-muted-foreground">
  Manage treatments, pricing, and availability.
  </p>
  </div>
+ <div className="flex gap-2">
+ <Button
+ variant="outline"
+ onClick={() => navigate({ name: "admin_service_categories" })}
+ className="press-feedback border-outline-variant text-secondary hover:border-primary hover:bg-blush hover:text-primary"
+ >
+ <Settings className="mr-1.5 h-4 w-4" />
+ Manage Categories
+ <ArrowRight className="arrow-slide ml-1.5 h-3.5 w-3.5" />
+ </Button>
  <Button onClick={() => setCreateOpen(true)} className="btn-press bg-primary hover:bg-primary/90">
  <Plus className="mr-1.5 h-4 w-4" />
  New Service
  </Button>
+ </div>
  </div>
 
  <div className="relative w-full sm:w-72">
@@ -267,13 +292,21 @@ function ServiceFormDialog({
  service?: Service
  onSubmit: (body: Record<string, unknown>) => void
 }) {
+ const navigate = useNav((s) => s.navigate)
  const [name, setName] = useState(service?.name ||"")
  const [description, setDescription] = useState(service?.description ||"")
  const [price, setPrice] = useState(service?.price.toString() ||"")
  const [durationMin, setDurationMin] = useState(service?.durationMin.toString() ||"30")
- const [category, setCategory] = useState(service?.category ||"Waxing")
+ const [categoryId, setCategoryId] = useState(service?.categoryId ||"")
  const [imageUrl, setImageUrl] = useState(service?.imageUrl ||"")
  const [active, setActive] = useState(service?.active ?? true)
+
+ // Fetch categories from the API (linked to Service Categories page)
+ const { data: catData } = useQuery({
+ queryKey: ["service-categories"],
+ queryFn: () => apiGet<{ categories: ServiceCategory[] }>("/api/service-categories"),
+ })
+ const categories = catData?.categories || []
 
  const handleSubmit = () => {
  if (!name) {
@@ -290,12 +323,18 @@ function ServiceFormDialog({
  toast.error("Invalid duration")
  return
  }
+ if (!categoryId) {
+ toast.error("Please select a category")
+ return
+ }
+ const selectedCat = categories.find((c) => c.id === categoryId)
  onSubmit({
  name,
  description: description || null,
  price: p,
  durationMin: d,
- category,
+ category: selectedCat?.name ||"Other",
+ categoryId,
  imageUrl: imageUrl || null,
  active,
  })
@@ -305,20 +344,21 @@ function ServiceFormDialog({
  <Dialog open={open} onOpenChange={onOpenChange}>
  <DialogContent className="sm:max-w-md">
  <DialogHeader>
- <DialogTitle>{service ?"Edit Service" :"New Service"}</DialogTitle>
+ <DialogTitle className="font-serif text-xl font-bold">{service ?"Edit Service" :"New Service"}</DialogTitle>
  </DialogHeader>
- <div className="space-y-3">
+ <div className="space-y-4">
  <div className="space-y-2">
- <Label>Name *</Label>
- <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Underarm Laser Waxing" />
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Name <span className="text-primary">*</span></Label>
+ <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Underarm Laser Waxing" className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card" />
  </div>
  <div className="space-y-2">
- <Label>Description</Label>
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Description</Label>
  <Textarea
  rows={3}
  value={description}
  onChange={(e) => setDescription(e.target.value)}
  placeholder="Brief description of the treatment..."
+ className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card"
  />
  </div>
  {/* Service Image */}
@@ -327,30 +367,65 @@ function ServiceFormDialog({
  onChange={setImageUrl}
  label="Service Image"
  />
- <div className="grid grid-cols-3 gap-3">
+ <div className="grid grid-cols-2 gap-3">
  <div className="space-y-2">
- <Label>Price ($)</Label>
- <Input type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} />
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Price ($)</Label>
+ <Input type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card" />
  </div>
  <div className="space-y-2">
- <Label>Duration (min)</Label>
- <Input type="number" min="1" value={durationMin} onChange={(e) => setDurationMin(e.target.value)} />
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Duration (min)</Label>
+ <Input type="number" min="1" value={durationMin} onChange={(e) => setDurationMin(e.target.value)} className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card" />
  </div>
+ </div>
+ {/* Category - fetched from Service Categories page */}
  <div className="space-y-2">
- <Label>Category</Label>
- <Select value={category} onValueChange={setCategory}>
- <SelectTrigger><SelectValue /></SelectTrigger>
+ <div className="flex items-center justify-between">
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">
+ Category <span className="text-primary">*</span>
+ </Label>
+ <button
+ type="button"
+ onClick={() => { onOpenChange(false); navigate({ name: "admin_service_categories" }) }}
+ className="text-[10px] font-semibold uppercase tracking-wider text-primary hover:text-secondary"
+ >
+ + Manage
+ </button>
+ </div>
+ {categories.length === 0 ? (
+ <div className="rounded-lg border border-dashed border-outline-variant/70 bg-blush p-4 text-center">
+ <p className="text-xs text-muted-foreground">No categories yet.</p>
+ <Button
+ type="button"
+ variant="outline"
+ size="sm"
+ className="press-feedback mt-2 border-primary text-primary hover:bg-primary hover:text-white"
+ onClick={() => { onOpenChange(false); navigate({ name: "admin_service_categories" }) }}
+ >
+ Create Categories First
+ <ArrowRight className="arrow-slide ml-1.5 h-3 w-3" />
+ </Button>
+ </div>
+ ) : (
+ <Select value={categoryId} onValueChange={setCategoryId}>
+ <SelectTrigger className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card"><SelectValue placeholder="Select a category..." /></SelectTrigger>
  <SelectContent>
- {SERVICE_CATEGORIES.map((c) => (
- <SelectItem key={c} value={c}>{c}</SelectItem>
+ {categories.map((c) => (
+ <SelectItem key={c.id} value={c.id}>
+ <div className="flex items-center gap-2">
+ {c.color && (
+ <div className="h-2.5 w-2.5 rounded-full" style={{ background: c.color }} />
+ )}
+ <span>{c.name}</span>
+ </div>
+ </SelectItem>
  ))}
  </SelectContent>
  </Select>
+ )}
  </div>
- </div>
- <div className="flex items-center justify-between rounded-lg border p-3">
+ <div className="flex items-center justify-between rounded-lg border border-outline-variant/60 bg-blush/30 p-3">
  <div>
- <div className="text-sm font-medium">Active</div>
+ <div className="text-sm font-medium text-foreground">Active</div>
  <div className="text-xs text-muted-foreground">Inactive services are hidden from customers</div>
  </div>
  <Switch checked={active} onCheckedChange={setActive} />
@@ -358,7 +433,7 @@ function ServiceFormDialog({
  </div>
  <DialogFooter>
  <Button variant="outline" className="press-feedback" onClick={() => onOpenChange(false)}>Cancel</Button>
- <Button className="btn-press bg-primary hover:bg-primary/90" onClick={handleSubmit}>
+ <Button className="btn-press bg-primary hover:bg-primary/90" onClick={handleSubmit} disabled={categories.length === 0}>
  {service ?"Save changes" :"Create service"}
  </Button>
  </DialogFooter>
