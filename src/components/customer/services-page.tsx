@@ -17,7 +17,9 @@ import { Reveal } from "@/components/shared/reveal"
 interface Service {
   id: string
   name: string
+  nameAr: string | null
   description: string | null
+  descriptionAr: string | null
   price: number
   durationMin: number
   category: string
@@ -41,6 +43,7 @@ const SECTION_ORDER = ["Waxing", "Laser", "Skincare", "Facials", "Injectables", 
 export function ServicesPage() {
   const navigate = useNav((s) => s.navigate)
   const t = useLang((s) => s.t)
+  const lang = useLang((s) => s.lang)
   const [q, setQ] = useState("")
   const [cat, setCat] = useState<string>("All")
 
@@ -278,7 +281,7 @@ export function ServicesPage() {
                               {svc.imageUrl ? (
                                 <img
                                   src={svc.imageUrl}
-                                  alt={svc.name}
+                                  alt={lang === "ar" && svc.nameAr ? svc.nameAr : svc.name}
                                   className="img-zoom h-full w-full object-cover"
                                   loading="lazy"
                                 />
@@ -305,11 +308,11 @@ export function ServicesPage() {
                             {/* Content */}
                             <CardHeader className="p-6 pb-3">
                               <CardTitle className="font-serif text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-secondary">
-                                {svc.name}
+                                {lang === "ar" && svc.nameAr ? svc.nameAr : svc.name}
                               </CardTitle>
-                              {svc.description && (
+                              {(lang === "ar" && svc.descriptionAr ? svc.descriptionAr : svc.description) && (
                                 <CardDescription className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-                                  {svc.description}
+                                  {lang === "ar" && svc.descriptionAr ? svc.descriptionAr : svc.description}
                                 </CardDescription>
                               )}
                             </CardHeader>

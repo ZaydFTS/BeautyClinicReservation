@@ -22,7 +22,9 @@ import { Reveal } from "@/components/shared/reveal"
 interface Service {
   id: string
   name: string
+  nameAr: string | null
   description: string | null
+  descriptionAr: string | null
   price: number
   durationMin: number
   category: string
@@ -297,13 +299,13 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
 
                         {/* Title */}
                         <h3 className="font-serif text-lg font-bold leading-snug tracking-tight text-foreground">
-                          {svc.name}
+                          {lang === "ar" && svc.nameAr ? svc.nameAr : svc.name}
                         </h3>
 
                         {/* Description */}
-                        {svc.description && (
+                        {(lang === "ar" && svc.descriptionAr ? svc.descriptionAr : svc.description) && (
                           <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-                            {svc.description}
+                            {lang === "ar" && svc.descriptionAr ? svc.descriptionAr : svc.description}
                           </p>
                         )}
 
@@ -448,7 +450,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                             <div key={sid}>
                               {svc && (
                                 <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                                  {svc.name}
+                                  {lang === "ar" && svc.nameAr ? svc.nameAr : svc.name}
                                 </div>
                               )}
                               <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
@@ -613,7 +615,7 @@ export function BookingPage({ route }: { route: Extract<Route, { name: "booking"
                     {currentService ? (
                       <>
                         <div className="mt-1.5 font-serif text-base font-bold text-foreground">
-                          {currentService.name}
+                          {lang === "ar" && currentService.nameAr ? currentService.nameAr : currentService.name}
                         </div>
                         <div className="mt-1 flex items-center justify-between">
                           <span className="flex items-center gap-1 text-xs text-secondary">
