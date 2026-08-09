@@ -4,6 +4,7 @@ import { useNav } from "@/store/nav"
 import { useLang } from "@/store/lang"
 import { useCart } from "@/store/cart"
 import { formatMoney } from "@/lib/format"
+import { useDiscount, calculateDiscountedPrice, getDiscount, type DiscountConfig } from "@/lib/discount"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -16,7 +17,27 @@ import { Reveal } from "@/components/shared/reveal"
 export function CartPage() {
   const navigate = useNav((s) => s.navigate)
   const t = useLang((s) => s.t)
-  const { items, removeItem, updateQty, totalPrice, totalItems } = useCart()
+  const { items, removeItem, updateQty, totalItems } = useCart()
+  const { data: discountData } = useDiscount()
+  const discount: DiscountConfig = getDiscount(discountData?.discount)
+
+  // Calculate discounted prices for each item
+  const itemsWithDiscount = items.map((item) => {
+    const priceInfo = calculateDiscountedPrice(item.price, discount, "product", item.categoryId || null)
+    return {
+      ...item,
+      originalPrice: item.price,
+      discountedPrice: priceInfo.discounted,
+      hasDiscount: priceInfo.hasDiscount,
+      percent: priceInfo.percent,
+    }
+  })
+
+  // Calculate totals based on discounted prices
+  const subtotal = itemsWithDiscount.reduce((sum, i) => sum + i.discountedPrice * i.quantity, 0)
+  const originalSubtotal = itemsWithDiscount.reduce((sum, i) => sum + i.originalPrice * i.quantity, 0)
+  const totalDiscount = originalSubtotal - subtotal
+  const total = subtotal
 
   if (items.length === 0) {
     return (
@@ -50,9 +71,6 @@ export function CartPage() {
       </div>
     )
   }
-
-  const subtotal = totalPrice()
-  const total = subtotal
 
   return (
     <div className="flex flex-col">
@@ -92,7 +110,7 @@ export function CartPage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Cart items */}
           <div className="space-y-4 lg:col-span-2">
-            {items.map((item, i) => (
+            {itemsWithDiscount.map((item, i) => (
               <Reveal key={item.productId} delay={i * 80}>
                 <Card className="card-lift overflow-hidden rounded-2xl border-outline-variant/70 bg-card py-0 shadow-none transition-all duration-300 hover:border-primary">
                   <CardContent className="p-4 sm:p-5">
@@ -114,8 +132,15 @@ export function CartPage() {
                         <div className="truncate font-serif text-base font-bold tracking-tight text-foreground sm:text-lg">
                           {item.name}
                         </div>
-                        <div className="mt-0.5 text-sm text-primary font-semibold">
-                          {formatMoney(item.price)}
+                        <div className="mt-0.5 flex items-center gap-2">
+                          <span className="text-sm text-primary font-semibold">
+                            {formatMoney(item.discountedPrice)}
+                          </span>
+                          {item.hasDiscount && (
+                            <span className="text-xs text-muted-foreground line-through">
+                              {formatMoney(item.originalPrice)}
+                            </span>
+                          )}
                         </div>
                         {item.stock <= 5 && (
                           <div className="mt-1 text-xs text-secondary">
@@ -178,7 +203,7 @@ export function CartPage() {
 
                       {/* Line total */}
                       <div className="flex-1 text-end text-sm font-bold text-foreground sm:flex-none sm:w-20 sm:text-base">
-                        {formatMoney(item.price * item.quantity)}
+                        {formatMoney(item.discountedPrice * item.quantity)}
                       </div>
 
                       {/* Remove button - mobile only */}
@@ -223,6 +248,14 @@ export function CartPage() {
                       <span className="text-muted-foreground">{t("cart.subtotal")}</span>
                       <span className="font-medium text-foreground">{formatMoney(subtotal)}</span>
                     </div>
+                    {totalDiscount > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-primary font-medium">
+                          Discount ({discount.percent}% off)
+                        </span>
+                        <span className="font-medium text-primary">-{formatMoney(totalDiscount)}</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Total */}

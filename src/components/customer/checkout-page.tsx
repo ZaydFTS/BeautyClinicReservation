@@ -3,8 +3,9 @@
 import { useNav } from"@/store/nav"
 import { useLang } from"@/store/lang"
 import { useCart } from"@/store/cart"
-import { apiPost } from"@/lib/api-client"
-import { formatMoney } from"@/lib/format"
+import { apiPost } from "@/lib/api-client"
+import { formatMoney } from "@/lib/format"
+import { useDiscount, calculateDiscountedPrice, getDiscount, type DiscountConfig } from "@/lib/discount"
 import { Button } from"@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from"@/components/ui/card"
 import { Input } from"@/components/ui/input"
@@ -36,7 +37,16 @@ export function CheckoutPage() {
  paymentMethod:"CASH_IN_CLINIC",
  })
 
- const subtotal = totalPrice()
+ const { data: discountData } = useDiscount()
+ const discount: DiscountConfig = getDiscount(discountData?.discount)
+
+ const itemsWithDiscount = items.map((item) => {
+   const priceInfo = calculateDiscountedPrice(item.price, discount, "product", item.categoryId || null)
+   return { ...item, discountedPrice: priceInfo.discounted, hasDiscount: priceInfo.hasDiscount }
+ })
+ const subtotal = itemsWithDiscount.reduce((sum, i) => sum + i.discountedPrice * i.quantity, 0)
+ const originalSubtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0)
+ const totalDiscount = originalSubtotal - subtotal
  const total = subtotal
 
  const mutation = useMutation({
@@ -227,6 +237,12 @@ export function CheckoutPage() {
  <span className="text-muted-foreground">{t("cart.subtotal")}</span>
  <span className="font-medium">{formatMoney(subtotal)}</span>
  </div>
+ {totalDiscount > 0 && (
+ <div className="flex justify-between">
+ <span className="text-primary font-medium">Discount ({discount.percent}% off)</span>
+ <span className="font-medium text-primary">-{formatMoney(totalDiscount)}</span>
+ </div>
+ )}
  <div className="flex items-end justify-between border-t border-outline-variant pt-2">
  <span className="font-semibold">{t("cart.total")}</span>
  <span className="text-primary text-2xl font-bold tracking-tight">{formatMoney(total)}</span>
