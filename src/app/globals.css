@@ -396,13 +396,15 @@ input[type="number"] {
   transform: scale(0.97);
 }
 
-/* Card lift - subtle translateY + shadow on hover for cards */
+/* Card lift - subtle translateY + soft neutral shadow on hover for cards.
+   No resting shadow (cards are flat by default). */
 .card-lift {
   transition: transform 240ms var(--ease-out), box-shadow 240ms var(--ease-out), border-color 240ms ease;
   will-change: transform;
 }
 .card-lift:hover {
   transform: translateY(-4px);
+  box-shadow: 0 12px 32px -12px rgba(32, 26, 30, 0.15);
 }
 
 /* Image zoom - image scales inside its clipped container on hover.
