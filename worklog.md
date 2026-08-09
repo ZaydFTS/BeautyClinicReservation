@@ -704,3 +704,28 @@ Stage Summary:
 - Zero gradients in rendered HTML (was 101 in source).
 - Velvet Bloom palette active: primary #a42c82, secondary #943e7e, surface #fff7f9.
 - Typography: Playfair Display for h1-h6 + dialog/sheet titles, Be Vietnam Pro for body/buttons/inputs.
+
+---
+Task ID: velvet-bloom-page-redesign
+Agent: main + frontend-styling-expert subagent
+Task: Rebuild home, services, booking, and contact pages with full Velvet Bloom design (not just regex color swap) - asymmetric hero with floating stats card, 3rd service card solid primary, sticky booking sidebar, premium contact layout.
+
+Work Log:
+- VLM analysis of initial regex-migrated screenshots revealed the home page hero was broken (used removed .hero-gradient class, was centered single-column instead of asymmetric two-column, 3rd card not solid primary).
+- Delegated full page rewrites to frontend-styling-expert subagent with detailed Velvet Bloom spec:
+  1. home-page.tsx: Asymmetric two-column hero (left=text+CTAs, right=solid bg-primary visual card with floating white stats card showing "2,400+ Happy Clients" and "4.9★ Rating"), solid bg-blush background, 3rd service card solid bg-primary with white text + inverted badge/button, final CTA section solid bg-primary.
+  2. services-page.tsx: Filter pills (rounded-full), search input, service cards with card-lift+img-zoom, consultation CTA card at end (solid bg-secondary text-white).
+  3. booking-page.tsx: Sticky right sidebar "Your Journey" (bg-blush, live-updating, disabled Confirm button until all 3 steps complete), 3 numbered step cards with auto-scroll on selection.
+  4. contact-page.tsx: Two-column layout (left=solid bg-primary "We're Here to Help" panel + 4 contact info cards with bg-blush icon circles, right=form card), map section with Get Directions button.
+- All 4 files rewritten, lint clean, all existing logic preserved (data fetching, i18n, navigation, mutations).
+
+Stage Summary - VLM-verified results:
+- Home page (desktop + mobile): asymmetric two-column hero with floating stats card ✓, 3rd service card solid primary with white text ✓ (verified on both desktop and mobile 390px), trust badges, popular treatments grid, shop preview, final CTA.
+- Services page: header with badge+title+subtitle ✓, filter pills ✓, search input ✓, service cards in grid with all elements ✓, consultation CTA card with solid secondary purple background ✓.
+- Booking page: header ✓, 3-step layout with numbered circles ✓ (Choose Service / Select Date & Time / Your Details), sticky "Your Journey" sidebar with Confirm Booking button ✓, date chips + time slots styled correctly ✓, auto-scroll on service/slot selection ✓, full booking flow tested end-to-end (selected Hydrafacial Treatment → date navigation worked → Confirm button enabled correctly).
+- Contact page: header ✓, two-column layout ✓, solid bg-primary "We're Here to Help" decorative panel ✓, 4 contact info cards with bg-blush icon circles ✓, form with all fields ✓, map section with Get Directions button ✓.
+- Admin pages (all 8): dashboard, slots, products, calendar, orders, customers, financials, settings - all verified zero rose-/gradients/amber-, all functional.
+- Admin services dialog: ImageUpload component intact (New Service + Edit dialogs both show "Service Image" label + drag-drop area + Upload/URL toggle).
+- Mobile (390x844): customer hamburger menu visible, admin hamburger menu visible, single-column responsive layout, 3rd card solid primary on mobile too.
+- Lint clean. Zero rose-/gradients/amber-/emerald- in source and rendered HTML.
+- Screenshots: velvet-bloom-home-v2.png, velvet-bloom-services-v2.png, velvet-bloom-booking-v2.png, velvet-bloom-contact-v2.png, velvet-bloom-admin-services-v2.png, velvet-bloom-home-mobile.png, velvet-bloom-home-mobile-services.png, velvet-bloom-booking-flow.png.
