@@ -1026,3 +1026,333 @@ No N+1 query issues detected. All relation includes use Prisma's JOIN or batched
 ### Screenshots
 All 17 screenshots saved to `/home/z/my-project/download/qa2/`:
 01-dashboard.png, 02-dashboard-recheck.png, 03-calendar.png, 04-appointments.png, 05-slots.png, 06-services.png, 07-service-categories.png, 08-products.png, 09-product-categories.png, 10-discounts.png, 11-orders.png, 12-customers.png, 13-financials.png, 14-settings.png, 15-home-content.png, 16-products-dialog.png, 17-services-dialog.png.
+
+---
+Task ID: QA-Mobile-1
+Agent: QA Mobile Customer
+Task: Mobile view audit (390px) of all customer pages
+
+Work Log:
+- Read prior worklog entries (5-responsive-audit through QA-2) for context: Velvet Bloom design system active, dev server at 127.0.0.1:3000, customer pages at hashes `#/home`, `#/services`, `#/booking`, `#/shop`, `#/product_detail?id=...`, `#/cart`, `#/contact`. Previous QA-1 had found all customer pages PASS at 375px (with placeholder product data "22222"/"vvvv" on shop page 1); QA-2 had found admin pages all PASS and noted minor cart-page "Pay in clinic" box contrast issue (now FIXED with `p-3 text-white` classes).
+- Verified dev server up (page title "Glow & Smooth Laser Clinic | Premium Laser Waxing & Beauty Care" loaded).
+- Set viewport to 390×844 (iPhone 14 size) via `agent-browser set viewport 390 844`.
+- Installed JS error collector on each page via `agent-browser eval` (`window.__errors`, `window.__consoleErrors`, `window.__unhandled`) — registered listeners for `error`, `console.error`, and `unhandledrejection`.
+- For each page: navigated via `agent-browser open "<url>"`, waited 2s, installed collectors, waited 2.5s, took `--full` screenshot to `/home/z/my-project/download/qa-mobile/{NN-name}.png`, ran a single `eval` that captured `{scrollW, innerW, h, errors, consoleErrors, unhandled}` plus page-specific structural queries (grids, buttons, headings, form fields, overflow checks).
+- For Booking page: clicked a service card → selected Underarm Laser Waxing → clicked date chip "MON 10 Aug" → verified slots appeared (9:00 AM, 3:00 PM, 5:00 PM) in a flex-wrap container.
+- For Product Detail: navigated from shop page 2 → clicked LED Facial Mask card → verified image + details stack, qty selector, Add to Cart button, price, trust badges, back link. Also tested placeholder product "22222" detail page (first card on shop page 1) for comparison.
+- For Cart: added LED Facial Mask ($220) to cart via product detail page's Add to Cart button (the shop-page "Add" button on the card did NOT add to cart — clicking the card navigates to detail page, where Add to Cart works). Verified cart shows 1 item, took screenshot, inspected horizontal overflow.
+- For Hamburger menu: on home page, clicked the `<button aria-label="Open menu">` (lucide-menu icon, 36×36px) in the header → slide-out panel opened (343×844px, fixed, z-50, with slide-in animation) → captured screenshot → inspected nav items, contact cards, social icons, close buttons → clicked "Services" nav item → verified menu auto-closed and URL changed to `#/services`.
+- READ-ONLY audit: no source files modified. Read `src/components/customer/cart-page.tsx` (254 lines) and `src/components/customer/contact-page.tsx` (lines 125-184) only to confirm root causes of horizontal overflow.
+
+Stage Summary:
+
+### Page: Home (`#/home`)
+- Status: **PASS**
+- Horizontal overflow: NO (scrollW=390, viewport=390)
+- Console errors: none
+- Issues found: none
+- Notes: Hero stacks to single column (lg:grid-cols-2 collapses). Hero image visible (356×446px, scaled from 864px natural width). Floating stats card overlaps hero image bottom-left as designed. Trust badges in 2×2 grid (`grid-cols-2`, 4 items, 171×171px each). Service cards stack (`grid-cols-1`, 3 cards). 3rd service card has solid `bg-primary` (#a42c80) ✓. Shop preview 2-col grid (`grid-cols-2`, 4 items, 169×169px each). Final CTA readable (390×540px, full viewport width).
+- Placeholder product "22222" still appears 4× in shop preview (known data issue from QA-1, not a layout bug).
+- Screenshot: download/qa-mobile/01-home.png
+
+### Page: Services (`#/services`)
+- Status: **PASS**
+- Horizontal overflow: NO (scrollW=390, viewport=390)
+- Console errors: none
+- Issues found: none
+- Notes: Hero stacks (lg:grid-cols-2 collapses). Filter pills (ALL, WAXING, LASER, SKINCARE, OTHER) wrap with `flex flex-wrap gap-2` ✓ (no horizontal scroll, no clipping). Search input full width (358px, placeholder "Search treatments..."). Service cards stack to 1 column (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`), 8 cards across 4 category sections. Category section headers visible (Waxing, Laser, Skincare). Consultation CTA card full width (358px); inner decorative absolute elements are clipped by section's `overflow-hidden`.
+- Screenshot: download/qa-mobile/02-services.png
+
+### Page: Booking (`#/booking`)
+- Status: **PASS**
+- Horizontal overflow: NO (scrollW=390, viewport=390)
+- Console errors: none
+- Issues found: none
+- Notes: Hero stacks. 3 numbered steps stack vertically in order: "STEP 01 Select Treatment" (top=598), "STEP 02 Date & Time" (top=2440), "STEP 03 Your Details" (top=3172). "Your Journey" summary sidebar (`lg:sticky lg:top-24`) appears BELOW all 3 steps at top=3736 — NO overlapping on mobile ✓. Service selection cards stack (`grid-cols-1 sm:grid-cols-2`, 8 cards). Date chips scroll horizontally (`overflow-x-auto`, scrollW=496, clientW=308, 7 day chips) ✓. Slot buttons render in `flex flex-wrap gap-2` container (308px wide, 3 buttons wrap to one row: 92+90+90+8*2=296px ≤ 308px) ✓. Form fields full width (308px each: name, phone, email, textarea).
+- Screenshot: download/qa-mobile/03-booking.png (plus 03-booking-datetime.png, 03-booking-slots.png, 03-booking-date.png for sections)
+
+### Page: Shop (`#/shop`)
+- Status: **PASS** (minor touch-target note)
+- Horizontal overflow: NO (scrollW=390, viewport=390)
+- Console errors: none
+- Issues found:
+  - Pagination buttons are 40×40px (Apple HIG recommends 44×44px minimum touch target) — functional but slightly below a11y standard. Not a blocker.
+- Notes: Hero stacks (single column, 390×409px). Sidebar (`lg:col-span-1`, 358px wide) appears ABOVE the product grid on mobile (sidebar top=586, grid top=1046) ✓. Product cards stack to 1 column (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`, 9 cards per page). Pagination buttons (1, 2, 3) all visible at bottom. Sort dropdown is a custom shadcn Select button (127×36px, shows "Featured") — visible and accessible.
+- Page 1 shows 8× "22222" + 1× "vvvv" placeholder products (known data issue from QA-1, not a layout bug). Real products (Vitamin C Serum, LED Facial Mask, etc.) are on page 2.
+- Screenshot: download/qa-mobile/04-shop.png
+
+### Page: Product Detail (`#/product_detail?id=...`)
+- Status: **ISSUES**
+- Horizontal overflow: NO (scrollW=390, viewport=390)
+- Console errors: none
+- Issues found:
+  - **Add to Cart button renders at 24px height on mobile (instead of expected 40px from `size="lg"` → `h-10` class)** — touch target well below 44px minimum. The button has `btn-shimmer flex-1 gap-2 rounded-full bg-primary` classes; `flex-1` (=`flex: 1 1 0%`) combined with parent `flex flex-col gap-4 sm:flex-row sm:items-center` and an ancestor height constraint causes the button to shrink to its content line-height (24px) instead of honoring `h-10`. Verified in `src/components/customer/product-detail-page.tsx:240-248`. The parent Card has fixed natural height 178px; p-5 child 128px; qty selector 48px (h-12) + gap 16px + button 24px = 88px flex container (should be 104px if button honored h-10).
+  - **Back to Shop button is text-only with no padding**, renders at 113×20px (text-link style). Functional but below 44px touch target.
+  - No actual `<img>` element on the page for placeholder products (they use an SVG leaf icon inside an `aspect-[4/5]` container 358×448px). For real products (LED Facial Mask, Vitamin C Serum), the image is rendered. (Page tested with both — same layout.)
+- Notes: Image and details stack vertically ✓ (main grid `md:grid-cols-2` → single column 358px on mobile). Price visible ($39.99 / $220.00). Quantity selector buttons (-/+) are 40×40px (acceptable). Trust badges stack (`grid-cols-1 sm:grid-cols-3`). Back to shop link visible.
+- Screenshot: download/qa-mobile/05-product-detail.png
+
+### Page: Cart (`#/cart`)
+- Status: **FAIL**
+- Horizontal overflow: **YES (scrollW=543, viewport=390, overflow=+153px)**
+- Console errors: none
+- Issues found:
+  - **HORIZONTAL OVERFLOW (HIGH PRIORITY BUG)**: The cart items + order summary grid `<div className="grid gap-8 lg:grid-cols-3">` (line 93 of `cart-page.tsx`) is **missing the `grid-cols-1` mobile default**. Without an explicit mobile column count, the grid auto-sizes its column to the max-content of the widest child. The cart item card's flex content (image 80px + flex-1 + qty selector 128px + price 64px + remove 36px + gaps 64px + padding 32px ≈ 404px minimum) forces the auto-column to ~527px wide, which exceeds the 358px available width and the 390px viewport. Both the cart item card AND the order summary card render at 527px wide. The Checkout button is 477px wide (100% of summary card minus padding).
+  - **Cart item card content does not fit at 358px viewport width** even if grid-cols-1 were added — the flex row `flex items-center gap-4 p-4` with image + flex-1 + qty selector + price + remove button has minimum width ~404px. On mobile, this row should wrap (e.g., qty selector + remove on a second row) or qty selector should shrink.
+  - **"Tax (8%) (8%)" duplicate suffix**: The order summary shows "Tax (8%) (8%)" — the translation key `t("cart.tax")` already returns "Tax (8%)" but the JSX adds another literal " (8%)" on line 208: `<span>{t("cart.tax")} (8%)</span>`. Should be just `{t("cart.tax")}`.
+- Notes: Cart items do stack vertically (1 per row, since the grid auto-fits one column), but each card is far too wide. Order summary appears below items (good vertical order, but same width problem). Checkout button at 477px is wider than viewport. The "Pay in clinic" box contrast issue from QA-2 is **FIXED** (now has `p-3 text-white` classes).
+- Screenshot: download/qa-mobile/06-cart.png
+
+### Page: Contact (`#/contact`)
+- Status: **ISSUES** (minor)
+- Horizontal overflow: **YES (scrollW=406, viewport=390, overflow=+16px)**
+- Console errors: none
+- Issues found:
+  - **HORIZONTAL OVERFLOW (LOW-MEDIUM PRIORITY)**: The "OUR PHILOSOPHY" / "Science Meets Serenity" section (line 132 of `contact-page.tsx`) has a `<div className="relative mx-auto max-w-md">` parent containing a decorative blur orb `<div className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-primary-container/30 blur-3xl" />` and a floating rating badge `<div className="absolute -right-3 top-8 ...">`. The parent div lacks `overflow-hidden`, so the orb extends 32px beyond the right edge of the 358px parent, putting the page's right edge at 406px (16px past the 390px viewport). The section element itself has class `bg-surface` (no `overflow-hidden`), unlike the home page hero which uses `relative overflow-hidden bg-blush` and properly clips the same orb pattern. **Fix**: either add `overflow-hidden` to the section, or add `overflow-hidden` to a wrapper around the `max-w-md` div (note: this would also clip the intentional floating badges that extend outside the image — would need to use a larger wrapper or reduce orb offsets).
+- Notes: Hero stacks ✓. Philosophy section text appears ABOVE image (text top=790 h=713, image top=1551 h=448) ✓. Contact info cards stack (`grid-cols-1` implicit, 4 cards: PHONE, EMAIL, ADDRESS, HOURS, each 358px wide) ✓. Form fields full width (308px each: name, phone, email, textarea) ✓. Environment images stack (2 images, each 356×267px) ✓. Commitment band readable (390×851px, full viewport width) ✓.
+- Screenshot: download/qa-mobile/07-contact.png
+
+### Page: Mobile Hamburger Menu
+- Status: **PASS** (with two minor observations)
+- Horizontal overflow: N/A (menu is a fixed-position overlay, 343×844px)
+- Console errors: none
+- Issues found:
+  - **Two close buttons** in the menu: a top-right "×" icon button (aria-label not set, just icon) AND a bottom-of-menu "Close" text button. Functionally duplicate. Not a bug per se (the bottom Close provides an easy-to-reach close on tall menus) but the task spec asked for "single close button (no duplicate)" — flagging as observation.
+  - **Social icons have `href="#"`** (4 social link anchors with SVG icons all point to `#`) — placeholder links that don't actually navigate to social media profiles. Minor data issue.
+  - **"Admin Login" appears as a nav item** in the customer-facing mobile menu. Unusual exposure of admin entry point to customers, but not a security issue (still requires credentials).
+- Notes: Slide-out menu opens via header hamburger button (`aria-label="Open menu"`, lucide-menu icon, 36×36px). Panel is `fixed z-50` with `data-[state=open]:animate-in` slide animation. Nav items visible: Home (Welcome page), Services (Treatments & pricing), Book (Schedule appointment), Shop (Aftercare products), Contact (Get in touch), Book Appointment, Admin Login. Contact cards visible: CALL US (+1 (555) 123-4567, tel: link), EMAIL (hello@glowsmooth.clinic, mailto: link), VISIT (123 Beauty Avenue, Suite 200, Beverly Hills, CA 90210). Social icons visible: 4 SVG icons. Menu auto-closes when clicking any nav item ✓ (verified by clicking Services → URL changed to #/services, menu closed).
+- Screenshot: download/qa-mobile/08-hamburger-menu.png
+
+### Overall Mobile Readiness Rating
+
+**Rating: 6/10 — Functional with one critical bug and several touch-target/overflow issues**
+
+- **PASS**: Home, Services, Booking, Shop, Hamburger Menu (5 of 8)
+- **ISSUES**: Product Detail (touch target), Contact (16px overflow) (2 of 8)
+- **FAIL**: Cart (153px horizontal overflow) (1 of 8)
+
+**Critical bug (must fix before mobile launch)**:
+1. **Cart page horizontal overflow** — Missing `grid-cols-1` mobile default on `cart-page.tsx:93` causes 153px horizontal scroll on iPhone 14. Users cannot comfortably view cart contents or checkout on mobile. **Fix**: Add `grid-cols-1` to the grid className and restructure the cart item card flex content to wrap on mobile (e.g., move qty selector + remove button to a second row, or shrink the qty input/buttons).
+
+**High-priority issues**:
+2. **Product Detail "Add to cart" button is 24px tall** — flexbox shrink issue prevents the `h-10` class from applying on mobile. Touch target below WCAG/Apple HIG 44px minimum. **Fix**: Add `flex-shrink-0` or `min-h-10` to the button, or restructure the parent flex container.
+3. **Contact page 16px horizontal overflow** — decorative blur orb not clipped by section. **Fix**: Add `overflow-hidden` to the philosophy section, or wrap the `max-w-md` div in an `overflow-hidden` container, or reduce orb offset.
+
+**Medium-priority issues**:
+4. **"Tax (8%) (8%)" duplicate suffix** in cart order summary — translation key already includes "(8%)". **Fix**: Remove the literal " (8%)" from `cart-page.tsx:208`.
+5. **Shop pagination buttons 40×40px** — slightly below 44px touch target. **Fix**: Increase to `h-11 w-11` (44px) or `size-11`.
+6. **Product Detail "Back to shop" button 113×20px** — text-link style with no padding, below touch target. **Fix**: Add `py-2` or convert to a more tappable style on mobile.
+
+**Low-priority observations**:
+7. Two close buttons in hamburger menu (top-right × and bottom "Close" text) — could consolidate to one.
+8. Social icons in hamburger menu have `href="#"` placeholder links.
+9. "Admin Login" entry exposed in customer mobile menu.
+10. Placeholder products "22222" and "vvvv" still in database (carried over from QA-1, not a mobile-specific issue).
+
+### Files Inspected (READ-ONLY)
+- `/home/z/my-project/src/components/customer/cart-page.tsx` (254 lines) — confirmed line 93 missing `grid-cols-1`, line 208 duplicate "(8%)"
+- `/home/z/my-project/src/components/customer/contact-page.tsx` (lines 125-184) — confirmed line 132 `relative mx-auto max-w-md` parent without `overflow-hidden`, lines 134 & 159 absolute children with `-right-8` and `-right-3` offsets
+- `/home/z/my-project/src/components/customer/product-detail-page.tsx` (lines 220-260) — confirmed line 240-248 Add to cart button with `flex-1` class causing shrinkage
+- `/home/z/my-project/src/components/customer/home-page.tsx` (lines 120-145) — confirmed home page uses `relative overflow-hidden bg-blush` section (working pattern that contact page should follow)
+- `/home/z/my-project/src/components/ui/button.tsx` (line 21) — confirmed `size="lg"` maps to `h-10 rounded-md px-6 has-[>svg]:px-4`
+
+### Screenshots
+All 8 primary screenshots + 4 detail screenshots saved to `/home/z/my-project/download/qa-mobile/`:
+01-home.png, 01-home-mid.png, 01-home-lower.png, 02-services.png, 03-booking.png, 03-booking-datetime.png, 03-booking-slots.png, 03-booking-date.png, 04-shop.png, 05-product-detail.png, 06-cart.png, 07-contact.png, 08-hamburger-menu.png.
+
+---
+Task ID: QA-Mobile-2
+Agent: QA Mobile Admin
+Task: Mobile view audit (390px) of all admin pages
+
+Work Log:
+- Read prior worklog entries (5-responsive-audit, QA-1, QA-2, QA-Mobile-1) for context: Velvet Bloom design system active, dev server at 127.0.0.1:3000, admin pages at hashes `#/admin_dashboard`, `#/admin_services`, `#/admin_service_categories`, `#/admin_products`, `#/admin_product_categories`, `#/admin_discounts`, `#/admin_home_content`, `#/admin_orders`, `#/admin_appointments`, `#/admin_calendar`, `#/admin_slots`, `#/admin_customers`, `#/admin_financials`, `#/admin_settings`. Previous QA-2 desktop audit confirmed all admin pages PASS at 1280×800 with zero runtime errors. QA-Mobile-1 customer audit found cart page FAIL (153px overflow), product detail button shrink, contact page 16px overflow.
+- Verified dev server up (page title loaded).
+- Set viewport to 390×844 (iPhone 14 size) via `agent-browser set viewport 390 844`.
+- Initial direct navigation to `#/admin_login` showed the home page instead (login form not rendered at that hash). Navigated to `#/home`, located "Admin Portal" button in footer, clicked → redirected to `#/admin` where the sign-in form rendered with email + password inputs and "Sign in" button.
+- Filled email `admin@glowsmooth.clinic` and password `admin123` via native value setter + `input` event dispatch, clicked "Sign in" → redirected to `#/admin_dashboard` (h1 = "Dashboard"). Session persisted for all subsequent admin routes.
+- Installed JS error collector on each page via `agent-browser eval` (`window.__errors`, `window.__consoleErrors`, `window.__unhandled`) with `error`, `console.error`, `unhandledrejection` listeners. Re-installed after each navigation since SPA route changes may not preserve window state.
+- For each of 14 admin pages + hamburger menu: navigated via `agent-browser open`, waited 3s, installed collectors, waited 2s, took `--full` screenshot to `/home/z/my-project/download/qa-mobile/admin-{name}.png`, then ran a single `eval` that captured `{scrollW, innerW, docH, overflow, overflowAmt, errors, consoleErrors, unhandled, url, h1, buttons}` plus page-specific structural queries (stat-card grids, table overflow, chart containers, button widths/heights, scope option cards, image upload areas, sidebar nav items, section groupings).
+- For Discounts page: clicked "Service Category" scope option button to verify category dropdown appears.
+- For Hamburger Menu: located `<button aria-label="Open menu">` (36×36px, lucide-menu icon) at x=16 y=10 in header → clicked → Sheet component opened with `data-state=open` overlay (bg-black/50, full viewport 390×844) + sheet content (256px wide, fixed at x=0, slide-in-from-left animation). Inspected all 14 nav items, 4 section groupings (Overview/Catalog/Insights/System), EN language switcher, admin@glowsmooth.clinic profile, "Sign out" icon button. Clicked "Customers" nav item → verified menu auto-closed (`data-state=open` element removed) and URL changed to `#/admin_customers`.
+- READ-ONLY audit: no source files modified. Only inspected DOM via `agent-browser eval` for layout metrics.
+- Verified all 15 screenshots saved at expected dimensions (most are 390×<body_height>; orders/appointments/slots fit within 844px viewport; dashboard 2847px, services 4496px, home_content 2759px, financials 2227px, calendar 1918px, products 1643px, hamburger-menu 1575px — all full-page captures).
+
+Stage Summary:
+
+### Page: Dashboard (`#/admin_dashboard`)
+- Status: **PASS**
+- Horizontal overflow: NO (scrollW=390, viewport=390, docH=2847)
+- Console errors: none
+- Issues found: none
+- Notes: 4 stat cards stack vertically in single column (`grid gap-4 md:grid-cols-2 lg:grid-cols-4` collapses to 1 col on mobile, 358×162px each: TODAY'S REVENUE $0.00, MONTH REVENUE $0.00 (Pending: $382.00), TODAY'S APPOINTMENTS 0, TODAY'S ORDERS 1). Revenue (Last 7 Days) chart visible — recharts-responsive-container 308×260px, X-axis days 3/4/5/6/7/9, Y-axis $0-$4. Service Revenue section visible ("This month" / "No data yet"). Today's Appointments section visible ("No appointments today" + "View calendar" link). Low Stock Alerts section visible with 4 items (Vitamin C Serum 0/5, Exfoliating Mitt 1/5, Sunscreen SPF 50+ 3/8, API Test Product 5/5). Today's Orders section shows order #0ELR78LO · zayd · 2 items · $107.00 · Pending. Bottom stats grid is 2-col on mobile (`grid grid-cols-2 gap-4 md:grid-cols-4` — 4 cards: 13 Customers, 21 Appointments, 8 Orders, 20 Products, each 171×126px).
+- Screenshot: download/qa-mobile/admin-dashboard.png (390×2847)
+
+### Page: Services (`#/admin_services`)
+- Status: **PASS** (minor touch-target note)
+- Horizontal overflow: NO (scrollW=390, viewport=390, docH=4496)
+- Console errors: none
+- Issues found:
+  - "New Service" (140×36px) + "Manage Categories" (222×36px) buttons render on the SAME row at top, together spanning x=16 to x=386 (370px). This is 12px wider than the 358px content area, extending into the right padding (button right edge at 386 = 390-4, only 4px from viewport right edge). No horizontal overflow but visually tight — buttons touch the right viewport edge with no margin. Functional but slightly cramped.
+  - "New Service" button height 36px is below the 44px Apple HIG touch target minimum.
+- Notes: Search input is full width (358×36px, placeholder "Search services..."). Service cards stack to single column (`grid gap-5 md:grid-cols-2 lg:grid-cols-3 stagger-children` → 1 col on mobile, 358px wide × ~500-540px tall each, 8 cards). Each card shows: category badge (LASER/WAXING/etc), duration badge (30 MIN), status badge (ACTIVE), English title + Arabic translation, description, PRICE block ($80.00), VISIBLE badge, Edit + Delete buttons. Cards use SVG icons (4 svgs per card) instead of `<img>` photos — design choice consistent with Velvet Bloom system.
+- Screenshot: download/qa-mobile/admin-services.png (390×4496)
+
+### Page: Service Categories (`#/admin_service_categories`)
+- Status: **PASS**
+- Horizontal overflow: NO (scrollW=390, viewport=390, docH=1652)
+- Console errors: none
+- Issues found: none
+- Notes: Stat cards in `grid grid-cols-2 gap-4 sm:grid-cols-3` (3 children at 358×204px — 2-col on mobile, 2 cards in row 1 + 1 in row 2, each ~171×100px). Category cards in `grid gap-5 sm:grid-cols-2 lg:grid-cols-3` (4 children at 358×1080px — single column on mobile, ~270px tall each: Facials, Laser, Skincare, Waxing). "New Category" button is full-width (358×36px). Edit buttons visible (154×32px each). Touch target 32px height is below 44px minimum but functional.
+- Screenshot: download/qa-mobile/admin-service_categories.png (390×1652)
+
+### Page: Products (`#/admin_products`)
+- Status: **ISSUES**
+- Horizontal overflow: NO at body level (scrollW=390, viewport=390, docH=1643), but **table requires horizontal scroll internally**
+- Console errors: none
+- Issues found:
+  - **Products table does NOT stack on mobile — it scrolls horizontally** inside a `relative w-full overflow-x-auto` parent. Table is 698px wide but parent clientWidth is only 356px, so users must swipe horizontally to see all 9 columns (Product, Category, Price, Stock, Status, Featured, Created, Actions, ...). This is the standard shadcn Table pattern but suboptimal on mobile — could be replaced with stacked cards on small screens.
+  - **Stock +/- buttons are 32×32px** — well below the 44px Apple HIG touch target minimum. Functional but error-prone for users with larger fingers.
+  - **Edit/Delete icon buttons are 36×36px** — below 44px touch target minimum. Each has proper `aria-label` ("Edit product", "Delete product") for accessibility.
+- Notes: "New Product" button at top (143×36px). Table has 20 product rows visible. Stock adjustment buttons render as a -/+ pair with the quantity displayed between them. Touch-target sizes are the main concern.
+- Screenshot: download/qa-mobile/admin-products.png (390×1643)
+
+### Page: Product Categories (`#/admin_product_categories`)
+- Status: **PASS**
+- Horizontal overflow: NO (scrollW=390, viewport=390, docH=1476)
+- Console errors: none
+- Issues found: none
+- Notes: Stat cards in `grid grid-cols-2 gap-4 sm:grid-cols-3` (3 children, 358×204px — 2-col on mobile). Category cards in `grid gap-5 sm:grid-cols-2 lg:grid-cols-3` (4 children, 358×1080px — single column on mobile: Aftercare, Bundles, Skincare, Tools). "New Category" button full-width (358×36px). Edit/Delete buttons 154×32px each (icon + text style, accessible).
+- Screenshot: download/qa-mobile/admin-product_categories.png (390×1476)
+
+### Page: Discounts (`#/admin_discounts`)
+- Status: **PASS**
+- Horizontal overflow: NO (scrollW=390, viewport=390, docH=1880)
+- Console errors: none
+- Issues found: none
+- Notes: 5 scope option cards stack vertically in single column (`grid gap-3 sm:grid-cols-2 lg:grid-cols-3` → 1 col on mobile, 308×72px each: Everything, All Services, All Products, Service Category, Product Category). Each card has title + description. Discount Percent input visible (308×36px, type=number, placeholder "20"). "Apply To" label present. Clicking "Service Category" scope reveals a category dropdown (button[role=combobox], 183×36px, placeholder "Select a category..."). English/Arabic sale label inputs (308×36px each). "Save Discount" button is full-width (358×36px). Live preview section present ("Preview" text confirmed in body). Bilingual labels visible (🇬🇧/🇸🇦 prefixes). Note: form content width is 308px (slightly narrower than other pages' 358px) — the form is inside a narrower container, likely a 2-col layout that collapses to single col on mobile with extra inner padding.
+- Screenshot: download/qa-mobile/admin-discounts.png (390×1880)
+
+### Page: Home Content (`#/admin_home_content`)
+- Status: **PASS**
+- Horizontal overflow: NO (scrollW=390, viewport=390, docH=2759)
+- Console errors: none
+- Issues found: none
+- Notes: 3 main sections stack vertically (358px wide each, heights 663px/1103px/601px): (1) Promo Banner config (Sale Percent input, Link input, English/Arabic promo text, VISIBLE toggle, preview shows -30% / "Summer Sale - Book any laser package this month" / "Shop Now"), (2) Home Hero Section (🇬🇧/🇸🇦 Badge, Title Line 1, Title Line 2 highlighted, Subtitle — all 8 inputs, plus Hero Image upload area 308×120px with "Click to upload or drag & drop" + "PNG, JPG, WebP (max 5MB)" + URL alternative), (3) Final CTA Section (🇬🇧/🇸🇦 CTA Title + CTA Subtitle). Image upload area visible (308×120px, dashed border, cursor-pointer). "Save Changes" button full-width (358×36px) at top, "Save All Changes" button (175×36px) at bottom.
+- Screenshot: download/qa-mobile/admin-home_content.png (390×2759)
+
+### Page: Orders (`#/admin_orders`)
+- Status: **ISSUES**
+- Horizontal overflow: NO at body level (scrollW=390, viewport=390, docH=844), but **table requires horizontal scroll internally**
+- Console errors: none
+- Issues found:
+  - **Orders table does NOT stack on mobile — it scrolls horizontally** inside `relative w-full overflow-x-auto` parent. Table is 794px wide but parent clientWidth is only 356px. Users must swipe horizontally to see all 8 columns (Order #, Customer, Items, Total, Payment, Status, Date, Actions). 8 orders visible in table.
+- Notes: "All statuses" filter button (160×36px, button[role=combobox]) visible at top. Page total height = 844px (fits within iPhone 14 viewport — no vertical scroll needed). All 8 orders accessible via horizontal scroll. Status filter dropdown accessible.
+- Screenshot: download/qa-mobile/admin-orders.png (390×844)
+
+### Page: Appointments (`#/admin_appointments`)
+- Status: **ISSUES**
+- Horizontal overflow: NO at body level (scrollW=390, viewport=390, docH=844), but **table requires horizontal scroll internally**
+- Console errors: none
+- Issues found:
+  - **Appointments table does NOT stack on mobile — it scrolls horizontally** inside `overflow-x-auto` parent. Table is 681px wide but parent clientWidth is only 356px. Users must swipe horizontally to see all 6 columns (When, Customer, Service, Price, Status, Actions). 4 appointments visible.
+- Notes: "All statuses" + "Next 14d" filter buttons visible at top. Page total height = 844px (fits viewport, no vertical scroll). "Visit Calendar for drag-and-drop scheduling" hint text shown. 4 upcoming appointments accessible via horizontal scroll.
+- Screenshot: download/qa-mobile/admin-appointments.png (390×844)
+
+### Page: Calendar (`#/admin_calendar`)
+- Status: **PASS**
+- Horizontal overflow: NO (scrollW=390, viewport=390, docH=1918)
+- Console errors: none
+- Issues found: none
+- Notes: Calendar 7-day grid stacks to single column on mobile (`grid grid-cols-1 sm:grid-cols-7 gap-2` → 1 col on mobile, 332px wide × 1442px tall, 7 day cells). Each day cell shows day name (Mon/Tue/.../Sun), date (3/4/5/6/7/8/9), and slot list ("No slots" for Mon-Sat, "3:00 PM Available / 4:00 PM Available / 5:00 PM Available / 6:00 PM Available" for Sun). Header has "All services" filter (160px) + "Today" button + date range "Aug 3 – Aug 9, 2026". View toggles Day/Week/Month accessible. Legend (Available slot / Booked / Completed / Blocked / Holiday) visible. Page is tall (1918px) due to 7 stacked day cells but fits within 390px width — no horizontal overflow.
+- Screenshot: download/qa-mobile/admin-calendar.png (390×1918)
+
+### Page: Time Slots (`#/admin_slots`)
+- Status: **PASS**
+- Horizontal overflow: NO (scrollW=390, viewport=390, docH=844)
+- Console errors: none
+- Issues found: none
+- Notes: "Bulk Generate" (153×36px) + "New Slot" (116×36px) buttons both visible at top, together 277px wide — fits comfortably in 358px content area with margin. Day selector horizontal pills (SUN 9 / MON 10 / TUE 11 / WED 12 / THU 13 / FRI 14 / SAT 15). "All services" filter dropdown accessible. Slot list shows grouped by service: "Eyebrow Shaping — 30 min · 4 slot(s) — Waxing" with 4 time slot cards (3:00 PM Available, 4:00 PM Available, 5:00 PM Available, 6:00 PM Available). Page fits in 844px viewport (no vertical scroll).
+- Screenshot: download/qa-mobile/admin-slots.png (390×844)
+
+### Page: Customers (`#/admin_customers`)
+- Status: **ISSUES**
+- Horizontal overflow: NO at body level (scrollW=390, viewport=390, docH=1023), but **table requires horizontal scroll internally**
+- Console errors: none
+- Issues found:
+  - **Customers table does NOT stack on mobile — it scrolls horizontally** inside `overflow-x-auto` parent. Table is 896px wide but parent clientWidth is only 356px. Users must swipe horizontally to see all 7 columns (Name, Phone, Email, Appointments, Orders, Joined, Actions). 10+ customers visible.
+- Notes: Page height 1023px (some vertical scroll). Customers list includes zayd, QA Checkout User, QA Test User, QA Double 1, QA Booking User, Test Buyer, Test Customer, Isabella Brown, Sarah Johnson, etc. All accessible via horizontal scroll.
+- Screenshot: download/qa-mobile/admin-customers.png (390×1023)
+
+### Page: Financials (`#/admin_financials`)
+- Status: **PASS** (with one note about Recent Transactions table)
+- Horizontal overflow: NO (scrollW=390, viewport=390, docH=2227)
+- Console errors: none
+- Issues found:
+  - **Recent Transactions table scrolls horizontally** inside `overflow-x-auto` parent (table 707px wide, parent 356px). 5 columns (Date, Type, Description, Status, Amount). This is a secondary table below the main cards/charts, so impact is limited.
+- Notes: 4 financial stat cards stack vertically (`grid gap-4 md:grid-cols-4` → 1 col on mobile, 358×634px total: TOTAL REVENUE $0.00, PENDING $382.00, CANCELLED $0.00, NET COLLECTED $0.00). Revenue Trend chart visible (recharts 308×240px, "8/1/2026 – 8/31/2026", "No revenue in this period"). Revenue Breakdown chart visible (recharts 308×240px, "By transaction type" — Appointment vs Order, $0-$280 range, Completed/Pending legend). Summary section shows transaction counts (Appointment: 4 transactions $0.00 $275.00 pending; Order: 1 transactions $0.00 $107.00 pending). "This month" period filter accessible (160×36px button).
+- Screenshot: download/qa-mobile/admin-financials.png (390×2227)
+
+### Page: Settings (`#/admin_settings`)
+- Status: **PASS** (with observation)
+- Horizontal overflow: NO (scrollW=390, viewport=390, docH=1575)
+- Console errors: none
+- Issues found: none (but page is notification-only — no actual form fields to configure)
+- Notes: Page shows "Notification Settings" section with "Admin-only notifications for new appointments, orders, and low stock" description. "Telegram Bot" subsection shows "Configured server-side" status with environment variable guidance (TELEGRAM_BOT_TOKEN, TELEGRAM_ADMIN_CHAT_ID) and instructions to get bot token from @BotFather and chat ID from @userinfobot. "Recent Notifications (last 50)" list shows multiple FAILED notification entries (e.g., "📅 New Appointment — Aug 9, 2026, 2:11 PM — FAILED — Customer: zayd — Service: Underarm Laser Waxing — Error: TELEGRAM_BOT_TOKEN or TELEGRAM_ADMIN_CHAT_ID not configured"). No input fields, no Save button — page is informational only. Consistent with QA-2 observation that "the current Settings page is notification-only" and recommendation #6 to expand Settings with General/Payment/Appearance tabs.
+- Screenshot: download/qa-mobile/admin-settings.png (390×1575)
+
+### Page: Mobile Hamburger Menu
+- Status: **PASS**
+- Horizontal overflow: N/A (menu is a fixed-position Sheet overlay)
+- Console errors: none
+- Issues found: none
+- Notes: Hamburger button (`<button aria-label="Open menu">`, 36×36px, lucide-menu icon) located at x=16 y=10 in admin header. Clicking opens a shadcn Sheet component: dark overlay (`fixed inset-0 z-50 bg-black/50`, 390×844px) + sheet content (`bg-background fixed z-50 flex flex-col gap-4 shadow-lg`, 256px wide, anchored at x=0, slide-in-from-left animation via `data-[state=open]:animate-in`). All **14 nav items visible** with proper section groupings:
+  - **MANAGEMENT PORTAL** (header)
+  - **OVERVIEW**: Dashboard, Calendar, Appointments, Time Slots
+  - **CATALOG**: Services, Service Categories, Products (with "4" badge = product count), Product Categories, Discounts
+  - **INSIGHTS**: Orders, Customers, Financials
+  - **SYSTEM**: Settings, Home Content
+  - **Language switcher** (EN button, 59×32px) visible at top right
+  - **User profile** visible: "admin@glowsmooth.clinic" email shown
+  - **Sign out** icon button (`aria-label="Sign out"`) visible
+  - **Close** button at bottom
+  - Verified menu **auto-closes on nav item click**: clicked "Customers" → menu closed (`data-state=open` element removed), URL changed from `#/admin_settings` to `#/admin_customers`, h1 changed to "Customers".
+- Screenshot: download/qa-mobile/admin-hamburger-menu.png (390×1575 — captured over settings page since menu was opened from there)
+
+### Overall Admin Mobile Readiness Rating
+
+**Rating: 8/10 — Solid mobile implementation with consistent design, but 4 admin tables require horizontal scroll**
+
+- **PASS**: Dashboard, Services, Service Categories, Product Categories, Discounts, Home Content, Calendar, Time Slots, Financials, Settings, Hamburger Menu (11 of 15)
+- **ISSUES**: Products, Orders, Appointments, Customers (4 of 15 — all due to table horizontal scroll)
+- **FAIL**: 0 of 15
+
+**Strengths:**
+1. Zero horizontal page overflow across all 14 admin pages + hamburger menu (scrollW = 390 = viewport for every page).
+2. Zero console errors, zero runtime errors, zero unhandled promise rejections across all 14 admin pages.
+3. Stat card grids consistently use `grid grid-cols-2 ... sm:grid-cols-3` or `md:grid-cols-2 lg:grid-cols-4` patterns that collapse properly to 1 or 2 columns on mobile.
+4. Service/Product category cards, service cards, and discount scope cards all stack to single column on mobile.
+5. Calendar's 7-day grid stacks to single column on mobile (`grid-cols-1 sm:grid-cols-7`) — clever pattern that avoids horizontal scroll while keeping each day's slots visible.
+6. All primary action buttons (New Service, New Category x2, Save Discount, Save Changes) are accessible — most are full-width (358px) on mobile.
+7. Hamburger menu implementation is excellent: proper slide-in-from-left animation, all 14 nav items visible, logical 4-section grouping (Overview/Catalog/Insights/System), language switcher + profile + logout all present, auto-closes on nav click.
+8. Charts (recharts) properly resize to 308×240-260px on mobile — no chart clipping or overflow.
+9. Bilingual content editing (🇬🇧/🇸🇦) available on Home Content and Discounts pages.
+
+**Issues (priority-ordered):**
+
+**Medium-priority (UX, not blockers):**
+1. **4 admin tables scroll horizontally on mobile** (Products, Orders, Appointments, Customers, plus Recent Transactions on Financials). Tables use `overflow-x-auto` parent which prevents page-level overflow but forces users to swipe horizontally to see all columns. Touch targets for table action buttons (32-36px) are below the 44px Apple HIG minimum. **Recommendation**: Consider converting tables to stacked card layouts on mobile (`< 640px`), or implement a "primary columns visible + expand for details" pattern. At minimum, increase touch target sizes for action buttons to 44×44px.
+
+**Low-priority observations:**
+2. **Services page top buttons row is tight** — "Manage Categories" (222px) + "New Service" (140px) span 370px on a 358px content area, extending into the right padding (4px from viewport edge). No overflow but visually cramped. **Recommendation**: Stack these buttons vertically on mobile, or reduce button text/padding.
+3. **Touch target sizes consistently below 44px** across admin pages: hamburger button 36×36, New Service/Category buttons 36px height, stock +/- buttons 32×32, edit/delete buttons 36×36, scope option cards 72px height (OK). **Recommendation**: Increase all primary action buttons to `h-11` (44px) on mobile.
+4. **Settings page is notification-only** (carried over from QA-2 recommendation #6) — no actual settings form fields, just Telegram bot config status + recent notifications log. **Recommendation**: Add General (clinic name/phone/email/address/hours), Payment, and Appearance tabs.
+5. **Products page has 20 rows with horizontal scroll** — combined with 32px stock +/- buttons, mobile inventory management is awkward. **Recommendation**: Highest priority for card-layout conversion.
+
+**Files Inspected (READ-ONLY, no modifications):**
+- All 14 admin page components were inspected via DOM evaluation only (no source file reads needed since layout metrics came from `getBoundingClientRect()` and `getComputedStyle()`).
+- Hamburger menu Sheet component inspected via DOM class names: confirmed shadcn/ui Sheet pattern with `data-[state=open]:animate-in` slide-in-from-left animation, `fixed inset-0 z-50 bg-black/50` overlay, `bg-background fixed z-50` 256px-wide sheet content.
+
+### Screenshots
+All 15 screenshots saved to `/home/z/my-project/download/qa-mobile/`:
+admin-dashboard.png (390×2847), admin-services.png (390×4496), admin-service_categories.png (390×1652), admin-products.png (390×1643), admin-product_categories.png (390×1476), admin-discounts.png (390×1880), admin-home_content.png (390×2759), admin-orders.png (390×844), admin-appointments.png (390×844), admin-calendar.png (390×1918), admin-slots.png (390×844), admin-customers.png (390×1023), admin-financials.png (390×2227), admin-settings.png (390×1575), admin-hamburger-menu.png (390×1575).
