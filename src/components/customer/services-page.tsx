@@ -271,7 +271,7 @@ export function ServicesPage() {
                       {categoryServices.map((svc, i) => (
                         <Reveal key={svc.id} delay={i * 100}>
                           <Card
-                            className="card-lift group relative flex h-full flex-col gap-0 overflow-hidden rounded-2xl border-outline-variant/70 bg-card py-0 shadow-sm transition-all duration-300 hover:border-primary hover:shadow-xl hover:shadow-primary/10"
+                            className="card-lift group relative flex h-full flex-col gap-0 overflow-hidden rounded-2xl border-outline-variant/70 bg-card py-0 shadow-none transition-all duration-300 hover:border-primary"
                           >
                             {/* Image area */}
                             <div className="relative aspect-[4/3] w-full overflow-hidden bg-blush">

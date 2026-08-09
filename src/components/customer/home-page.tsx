@@ -251,10 +251,10 @@ export function HomePage() {
               return (
                 <Reveal key={svc.id} delay={i * 120}>
                   <Card
-                    className={`card-lift group relative flex h-full flex-col gap-0 overflow-hidden rounded-2xl border py-0 shadow-sm transition-all duration-300 hover:shadow-2xl ${
+                    className={`card-lift group relative flex h-full flex-col gap-0 overflow-hidden rounded-2xl border py-0 shadow-none transition-all duration-300 ${
                       isFeatured
-                        ? "border-primary bg-primary text-white hover:shadow-primary/30"
-                        : "border-outline-variant/70 bg-card hover:border-primary hover:shadow-primary/10"
+                        ? "border-primary bg-primary text-white"
+                        : "border-outline-variant/70 bg-card hover:border-primary"
                     }`}
                     onClick={() => navigate({ name: "service_detail", serviceId: svc.id })}
                   >
@@ -403,7 +403,7 @@ export function HomePage() {
               products.map((p, i) => (
                 <Reveal key={p.id} delay={i * 100}>
                   <Card
-                    className="card-lift group relative cursor-pointer overflow-hidden rounded-2xl border-outline-variant/70 bg-card py-0 shadow-sm transition-all hover:border-primary hover:shadow-xl hover:shadow-primary/10"
+                    className="card-lift group relative cursor-pointer overflow-hidden rounded-2xl border-outline-variant/70 bg-card py-0 shadow-none transition-all hover:border-primary"
                     onClick={() => navigate({ name: "product_detail", productId: p.id })}
                   >
                     <div className="relative aspect-square overflow-hidden bg-blush">
