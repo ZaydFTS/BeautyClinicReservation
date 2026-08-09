@@ -293,8 +293,6 @@ export function HomePage() {
                           {svc.category}
                         </span>
                       </div>
-                      {/* Subtle bottom overlay for text legibility (solid, no gradient) */}
-                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-black/15" aria-hidden />
                     </div>
 
                     {/* Content area */}
