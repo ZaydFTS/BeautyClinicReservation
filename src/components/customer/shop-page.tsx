@@ -84,6 +84,7 @@ export function ShopPage() {
       price: p.price,
       imageUrl: p.imageUrl,
       stock: p.stock,
+      categoryId: p.categoryId,
     })
     toast.success(t("shop.addedToCart", { name: p.name }))
   }

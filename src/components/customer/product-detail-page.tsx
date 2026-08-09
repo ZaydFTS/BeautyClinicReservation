@@ -50,6 +50,7 @@ export function ProductDetailPage({ route }: { route: Extract<Route, { name: "pr
       price: product.price,
       imageUrl: product.imageUrl,
       stock: product.stock,
+      categoryId: product.categoryId,
     }, qty)
     toast.success(t("productDetail.addedToCart", { qty, name: product.name }))
   }
