@@ -239,7 +239,7 @@ export function ProductDetailPage({ route }: { route: Extract<Route, { name: "pr
                       {/* Add to cart button */}
                       <Button
                         size="lg"
-                        className="btn-press btn-shimmer flex-1 gap-2 rounded-full bg-primary text-base font-semibold shadow-lg shadow-primary/25 hover:bg-primary/90"
+                        className="btn-press btn-shimmer h-12 w-full gap-2 rounded-full bg-primary text-base font-semibold shadow-lg shadow-primary/25 hover:bg-primary/90 sm:w-auto sm:flex-1"
                         onClick={handleAdd}
                         disabled={product.stock === 0}
                       >
