@@ -90,92 +90,112 @@ export function CartPage() {
 
       {/* Cart items + summary */}
       <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Cart items */}
           <div className="space-y-4 lg:col-span-2">
             {items.map((item, i) => (
               <Reveal key={item.productId} delay={i * 80}>
                 <Card className="card-lift overflow-hidden rounded-2xl border-outline-variant/70 bg-card py-0 shadow-none transition-all duration-300 hover:border-primary">
-                  <CardContent className="flex items-center gap-4 p-4 sm:gap-5 sm:p-5">
-                    {/* Product image */}
-                    <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl bg-blush sm:h-24 sm:w-24">
-                      {item.imageUrl ? (
-                        <img src={item.imageUrl} alt={item.name} className="img-zoom h-full w-full object-cover" />
-                      ) : (
-                        <div className="flex h-full items-center justify-center">
-                          <Leaf className="h-8 w-8 text-primary/25" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Product info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="truncate font-serif text-base font-bold tracking-tight text-foreground sm:text-lg">
-                        {item.name}
+                  <CardContent className="p-4 sm:p-5">
+                    {/* Top row: image + info (always horizontal) */}
+                    <div className="flex items-start gap-3 sm:gap-5">
+                      {/* Product image */}
+                      <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-blush sm:h-24 sm:w-24">
+                        {item.imageUrl ? (
+                          <img src={item.imageUrl} alt={item.name} className="img-zoom h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full items-center justify-center">
+                            <Leaf className="h-8 w-8 text-primary/25" />
+                          </div>
+                        )}
                       </div>
-                      <div className="mt-0.5 text-sm text-primary font-semibold">
-                        {formatMoney(item.price)}
-                      </div>
-                      {item.stock <= 5 && (
-                        <div className="mt-1 text-xs text-secondary">
-                          Only {item.stock} left in stock
-                        </div>
-                      )}
-                    </div>
 
-                    {/* Quantity selector */}
-                    <div className="flex items-center gap-1">
+                      {/* Product info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="truncate font-serif text-base font-bold tracking-tight text-foreground sm:text-lg">
+                          {item.name}
+                        </div>
+                        <div className="mt-0.5 text-sm text-primary font-semibold">
+                          {formatMoney(item.price)}
+                        </div>
+                        {item.stock <= 5 && (
+                          <div className="mt-1 text-xs text-secondary">
+                            Only {item.stock} left in stock
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Remove button - top right (desktop only in this row) */}
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="icon"
-                        className="press-feedback h-9 w-9 rounded-full border-outline-variant text-secondary hover:border-primary hover:bg-primary hover:text-white"
-                        onClick={() => updateQty(item.productId, item.quantity - 1)}
-                        disabled={item.quantity <= 1}
-                        aria-label={t("productDetail.decreaseQty")}
-                      >
-                        <Minus className="h-3 w-3" />
-                      </Button>
-                      <Input
-                        type="number"
-                        value={item.quantity}
-                        onChange={(e) => {
-                          const n = parseInt(e.target.value) || 1
-                          updateQty(item.productId, Math.min(n, item.stock))
+                        className="press-feedback hidden h-9 w-9 flex-shrink-0 text-muted-foreground hover:bg-primary hover:text-white sm:flex"
+                        onClick={() => {
+                          removeItem(item.productId)
+                          toast(t("cart.itemRemoved"))
                         }}
-                        className="h-9 w-12 border-outline-variant bg-blush/50 text-center text-sm font-semibold focus:border-primary sm:w-14"
-                        min={1}
-                        max={item.stock}
-                      />
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="press-feedback h-9 w-9 rounded-full border-outline-variant text-secondary hover:border-primary hover:bg-primary hover:text-white"
-                        onClick={() => updateQty(item.productId, item.quantity + 1)}
-                        disabled={item.quantity >= item.stock}
-                        aria-label={t("productDetail.increaseQty")}
+                        aria-label={t("cart.removeItem")}
                       >
-                        <Plus className="h-3 w-3" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
 
-                    {/* Line total */}
-                    <div className="w-16 text-end text-sm font-bold text-foreground sm:w-20 sm:text-base">
-                      {formatMoney(item.price * item.quantity)}
-                    </div>
+                    {/* Bottom row: quantity + line total + remove (mobile) */}
+                    <div className="mt-3 flex items-center justify-between gap-2 border-t border-outline-variant/60 pt-3 sm:mt-0 sm:justify-end sm:gap-4 sm:border-0 sm:pt-0">
+                      {/* Quantity selector */}
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="press-feedback h-9 w-9 rounded-full border-outline-variant text-secondary hover:border-primary hover:bg-primary hover:text-white"
+                          onClick={() => updateQty(item.productId, item.quantity - 1)}
+                          disabled={item.quantity <= 1}
+                          aria-label={t("productDetail.decreaseQty")}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <Input
+                          type="number"
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const n = parseInt(e.target.value) || 1
+                            updateQty(item.productId, Math.min(n, item.stock))
+                          }}
+                          className="h-9 w-12 border-outline-variant bg-blush/50 text-center text-sm font-semibold focus:border-primary sm:w-14"
+                          min={1}
+                          max={item.stock}
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="press-feedback h-9 w-9 rounded-full border-outline-variant text-secondary hover:border-primary hover:bg-primary hover:text-white"
+                          onClick={() => updateQty(item.productId, item.quantity + 1)}
+                          disabled={item.quantity >= item.stock}
+                          aria-label={t("productDetail.increaseQty")}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
 
-                    {/* Remove button */}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="press-feedback h-9 w-9 text-muted-foreground hover:bg-primary hover:text-white"
-                      onClick={() => {
-                        removeItem(item.productId)
-                        toast(t("cart.itemRemoved"))
-                      }}
-                      aria-label={t("cart.removeItem")}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                      {/* Line total */}
+                      <div className="flex-1 text-end text-sm font-bold text-foreground sm:flex-none sm:w-20 sm:text-base">
+                        {formatMoney(item.price * item.quantity)}
+                      </div>
+
+                      {/* Remove button - mobile only */}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="press-feedback h-9 w-9 flex-shrink-0 text-muted-foreground hover:bg-primary hover:text-white sm:hidden"
+                        onClick={() => {
+                          removeItem(item.productId)
+                          toast(t("cart.itemRemoved"))
+                        }}
+                        aria-label={t("cart.removeItem")}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </Reveal>
@@ -205,7 +225,7 @@ export function CartPage() {
                       <span className="font-medium text-foreground">{formatMoney(subtotal)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">{t("cart.tax")} (8%)</span>
+                      <span className="text-muted-foreground">{t("cart.tax")}</span>
                       <span className="font-medium text-foreground">{formatMoney(tax)}</span>
                     </div>
                   </div>

@@ -7,8 +7,8 @@ import { CLINIC_NAME, CLINIC_PHONE, CLINIC_EMAIL, CLINIC_ADDRESS } from"@/lib/co
 import {
  Sparkles, Menu, ShoppingCart, Calendar, Phone, MapPin,
  Instagram, Facebook, Mail, Home, Scissors, CalendarCheck,
- ShoppingBag, MessageCircle, ChevronRight, Shield, Clock,
-} from"lucide-react"
+ ShoppingBag, MessageCircle, ChevronRight, Clock,
+} from "lucide-react"
 import { Button } from"@/components/ui/button"
 import { Badge } from"@/components/ui/badge"
 import {
@@ -230,16 +230,6 @@ export function CustomerHeader() {
  >
  <CalendarCheck className="mr-2 h-5 w-5" />
  {t("nav.bookAppointment")}
- </Button>
- </SheetClose>
- <SheetClose asChild>
- <Button
- variant="ghost"
- className="mt-1.5 h-10 w-full text-xs text-muted-foreground hover:text-primary"
- onClick={() => navigate({ name:"admin_login" })}
- >
- <Shield className="mr-1.5 h-3.5 w-3.5" />
- {t("nav.adminLogin")}
  </Button>
  </SheetClose>
  </div>

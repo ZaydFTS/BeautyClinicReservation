@@ -78,7 +78,7 @@ export function ContactPage() {
           PHILOSOPHY SECTION - "Science Meets Serenity"
           Two-column: text + feature cards left, image grid right
           ============================================================ */}
-      <section className="bg-surface">
+      <section className="bg-surface overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             {/* Left - text + feature cards */}
@@ -331,7 +331,7 @@ export function ContactPage() {
           ENVIRONMENT SECTION - "Step Into Sanctuary"
           Two large images side by side
           ============================================================ */}
-      <section className="bg-surface">
+      <section className="bg-surface overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
           <Reveal className="mx-auto mb-12 max-w-2xl text-center">
             <div className="mb-3 flex items-center justify-center gap-2">
