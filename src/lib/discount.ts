@@ -46,9 +46,8 @@ export function getDiscountPercent(
 ): number {
   if (!discount.enabled || discount.percent <= 0) return 0
 
-  // Check if this item type is targeted
-  if (discount.targetType !== "all" && discount.targetType !== itemType) return 0
-
+  // Derive target type from scope — the scope alone determines what gets discounted.
+  // targetType field is kept for backward compat but no longer used as a filter.
   // Check scope
   if (discount.scope === "all") return discount.percent
   if (discount.scope === "all_services" && itemType === "service") return discount.percent

@@ -84,7 +84,12 @@ export function AdminDiscountsPage() {
       toast.error("Please select a category for category-specific discounts")
       return
     }
-    updateMutation.mutate(form)
+    // Auto-set targetType based on scope to prevent conflicts
+    const targetType = form.scope === "all" ? "all"
+      : form.scope === "all_services" || form.scope === "service_category" ? "service"
+      : form.scope === "all_products" || form.scope === "product_category" ? "product"
+      : "all"
+    updateMutation.mutate({ ...form, targetType })
   }
 
   const set = <K extends keyof DiscountConfig>(key: K, value: DiscountConfig[K]) => {
