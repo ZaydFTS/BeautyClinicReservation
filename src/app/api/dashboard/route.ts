@@ -86,9 +86,12 @@ export async function GET() {
     })
   }
 
-  // Pending revenue (not yet completed)
+  // Pending revenue (not yet completed) — scoped to current month
   const pendingRows = await db.transaction.findMany({
-    where: { status: "PENDING" },
+    where: {
+      status: "PENDING",
+      createdAt: { gte: monthStart, lte: monthEnd },
+    },
   })
   const pendingRevenue = pendingRows.reduce((s, t) => s + t.amount, 0)
 

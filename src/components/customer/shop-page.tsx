@@ -45,9 +45,19 @@ export function ShopPage() {
   const [page, setPage] = useState(1)
   const pageSize = 9
 
+  // Build query URL with server-side pagination, filtering, and sorting
+  const queryParams = new URLSearchParams({
+    active: "true",
+    page: String(page),
+    limit: String(pageSize),
+    sort,
+  })
+  if (cat !== "All") queryParams.set("categoryId", cat)
+  if (q) queryParams.set("q", q)
+
   const { data: productsData, isLoading } = useQuery({
-    queryKey: ["products", "active"],
-    queryFn: () => apiGet<{ products: Product[] }>("/api/products?active=true"),
+    queryKey: ["products", "paginated", cat, q, sort, page],
+    queryFn: () => apiGet<{ products: Product[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>(`/api/products?${queryParams.toString()}`),
   })
   const { data: catData } = useQuery({
     queryKey: ["categories"],
@@ -56,19 +66,13 @@ export function ShopPage() {
   const { data: discountData } = useDiscount()
   const discount: DiscountConfig = getDiscount(discountData?.discount)
 
-  let products = productsData?.products || []
-  if (cat !== "All") products = products.filter((p) => p.category?.id === cat)
-  if (q) products = products.filter((p) => p.name.toLowerCase().includes(q.toLowerCase()))
-  if (sort === "price-asc") products = [...products].sort((a, b) => a.price - b.price)
-  if (sort === "price-desc") products = [...products].sort((a, b) => b.price - a.price)
-  if (sort === "name") products = [...products].sort((a, b) => a.name.localeCompare(b.name))
-
-  // Pagination
-  const totalPages = Math.max(1, Math.ceil(products.length / pageSize))
-  const currentPage = Math.min(page, totalPages)
+  const products = productsData?.products || []
+  const pagination = productsData?.pagination
+  const totalPages = pagination?.totalPages || 1
+  const currentPage = pagination?.page || 1
+  const totalCount = pagination?.total || 0
   const startIndex = (currentPage - 1) * pageSize
-  const endIndex = startIndex + pageSize
-  const pagedProducts = products.slice(startIndex, endIndex)
+  const endIndex = Math.min(startIndex + products.length, totalCount)
 
   // Reset to page 1 when filters/search/sort change
   const resetPage = () => setPage(1)
@@ -85,7 +89,6 @@ export function ShopPage() {
   }
 
   const categories = catData?.categories || []
-  const totalCount = productsData?.products?.length || 0
 
   return (
     <div className="flex flex-col">
@@ -179,7 +182,7 @@ export function ShopPage() {
             {/* Sort bar */}
             <div className="mb-6 flex items-center justify-between rounded-xl border border-outline-variant/60 bg-card px-4 py-3">
               <div className="text-sm text-muted-foreground">
-                Showing <span className="font-semibold text-foreground">{products.length === 0 ? 0 : startIndex + 1}–{Math.min(endIndex, products.length)}</span> of {products.length} products
+                Showing <span className="font-semibold text-foreground">{products.length === 0 ? 0 : startIndex + 1}–{endIndex}</span> of {totalCount} products
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Sort by:</span>
@@ -231,7 +234,7 @@ export function ShopPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {pagedProducts.map((p, i) => {
+                {products.map((p, i) => {
                   const priceInfo = calculateDiscountedPrice(p.price, discount, "product", p.categoryId)
                   return (
                     <Reveal key={p.id} delay={i * 80}>
