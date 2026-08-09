@@ -18,7 +18,9 @@ import {
 interface Service {
   id: string
   name: string
+  nameAr: string | null
   description: string | null
+  descriptionAr: string | null
   price: number
   durationMin: number
   category: string
@@ -38,6 +40,7 @@ interface Product {
 export function HomePage() {
   const navigate = useNav((s) => s.navigate)
   const t = useLang((s) => s.t)
+  const lang = useLang((s) => s.lang)
 
   const { data: servicesData } = useQuery({
     queryKey: ["services", "active"],
@@ -263,7 +266,7 @@ export function HomePage() {
                       {svc.imageUrl ? (
                         <img
                           src={svc.imageUrl}
-                          alt={svc.name}
+                          alt={lang === "ar" && svc.nameAr ? svc.nameAr : svc.name}
                           className="img-zoom h-full w-full object-cover"
                           loading="lazy"
                         />
@@ -276,7 +279,7 @@ export function HomePage() {
                               ? "/hero/treatment-facial.png"
                               : "/hero/treatment-laser.png"
                           }
-                          alt={svc.name}
+                          alt={lang === "ar" && svc.nameAr ? svc.nameAr : svc.name}
                           className="img-zoom h-full w-full object-cover"
                           loading="lazy"
                         />
@@ -302,15 +305,15 @@ export function HomePage() {
                           isFeatured ? "text-white" : "text-foreground"
                         }`}
                       >
-                        {svc.name}
+                        {lang === "ar" && svc.nameAr ? svc.nameAr : svc.name}
                       </CardTitle>
-                      {svc.description && (
+                      {(lang === "ar" && svc.descriptionAr ? svc.descriptionAr : svc.description) && (
                         <CardDescription
                           className={`mt-2 line-clamp-2 text-sm leading-relaxed ${
                             isFeatured ? "text-white/80" : "text-muted-foreground"
                           }`}
                         >
-                          {svc.description}
+                          {lang === "ar" && svc.descriptionAr ? svc.descriptionAr : svc.description}
                         </CardDescription>
                       )}
 

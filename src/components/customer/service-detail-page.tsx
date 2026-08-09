@@ -13,7 +13,9 @@ import { Calendar, Clock, ChevronLeft, Check, ShieldCheck, Sparkles, HelpCircle 
 interface Service {
  id: string
  name: string
+ nameAr: string | null
  description: string | null
+ descriptionAr: string | null
  price: number
  durationMin: number
  category: string
@@ -23,6 +25,7 @@ interface Service {
 export function ServiceDetailPage({ route }: { route: Extract<Route, { name:"service_detail" }> }) {
  const navigate = useNav((s) => s.navigate)
  const t = useLang((s) => s.t)
+ const lang = useLang((s) => s.lang)
  const { data, isLoading } = useQuery({
  queryKey: ["service", route.serviceId],
  queryFn: () => apiGet<{ service: Service }>(`/api/services/${route.serviceId}`),
@@ -114,7 +117,7 @@ export function ServiceDetailPage({ route }: { route: Extract<Route, { name:"ser
  >
  {svc.category}
  </Badge>
- <h2 className="text-balance text-2xl font-bold tracking-tight">{svc.name}</h2>
+ <h2 className="text-balance text-2xl font-bold tracking-tight">{lang ==="ar" && svc.nameAr ? svc.nameAr : svc.name}</h2>
  <div className="text-primary mt-4 text-5xl font-bold tracking-tight">
  {formatMoney(svc.price)}
  </div>
@@ -132,8 +135,8 @@ export function ServiceDetailPage({ route }: { route: Extract<Route, { name:"ser
  <CardTitle className="text-xl">{t("serviceDetail.aboutTreatment")}</CardTitle>
  </CardHeader>
  <CardContent className="space-y-4">
- {svc.description && (
- <p className="text-sm text-muted-foreground">{svc.description}</p>
+ {(lang ==="ar" && svc.descriptionAr ? svc.descriptionAr : svc.description) && (
+ <p className="text-sm text-muted-foreground">{lang ==="ar" && svc.descriptionAr ? svc.descriptionAr : svc.description}</p>
  )}
  <div className="space-y-2 border-t pt-4">
  {[

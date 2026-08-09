@@ -35,7 +35,9 @@ interface ServiceCategory {
 interface Service {
  id: string
  name: string
+ nameAr: string | null
  description: string | null
+ descriptionAr: string | null
  price: number
  durationMin: number
  category: string
@@ -187,6 +189,13 @@ export function AdminServicesPage() {
  <CardTitle className="font-serif text-lg font-bold tracking-tight text-foreground transition-colors group-hover:text-secondary">
  {svc.name}
  </CardTitle>
+ {/* Arabic name indicator (if exists) */}
+ {svc.nameAr && (
+ <div className="flex items-center gap-1 text-xs text-muted-foreground" dir="rtl">
+ <span className="text-[9px] font-semibold uppercase tracking-wider text-primary">AR</span>
+ <span>{svc.nameAr}</span>
+ </div>
+ )}
  {svc.description && (
  <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{svc.description}</p>
  )}
@@ -293,13 +302,16 @@ function ServiceFormDialog({
  onSubmit: (body: Record<string, unknown>) => void
 }) {
  const navigate = useNav((s) => s.navigate)
- const [name, setName] = useState(service?.name ||"")
- const [description, setDescription] = useState(service?.description ||"")
- const [price, setPrice] = useState(service?.price.toString() ||"")
- const [durationMin, setDurationMin] = useState(service?.durationMin.toString() ||"30")
- const [categoryId, setCategoryId] = useState(service?.categoryId ||"")
- const [imageUrl, setImageUrl] = useState(service?.imageUrl ||"")
+ const [name, setName] = useState(service?.name || "")
+ const [nameAr, setNameAr] = useState(service?.nameAr || "")
+ const [description, setDescription] = useState(service?.description || "")
+ const [descriptionAr, setDescriptionAr] = useState(service?.descriptionAr || "")
+ const [price, setPrice] = useState(service?.price.toString() || "")
+ const [durationMin, setDurationMin] = useState(service?.durationMin.toString() || "30")
+ const [categoryId, setCategoryId] = useState(service?.categoryId || "")
+ const [imageUrl, setImageUrl] = useState(service?.imageUrl || "")
  const [active, setActive] = useState(service?.active ?? true)
+ const [langTab, setLangTab] = useState<"en" | "ar">("en")
 
  // Fetch categories from the API (linked to Service Categories page)
  const { data: catData } = useQuery({
@@ -310,7 +322,7 @@ function ServiceFormDialog({
 
  const handleSubmit = () => {
  if (!name) {
- toast.error("Name is required")
+ toast.error("English name is required")
  return
  }
  const p = parseFloat(price)
@@ -330,10 +342,12 @@ function ServiceFormDialog({
  const selectedCat = categories.find((c) => c.id === categoryId)
  onSubmit({
  name,
+ nameAr: nameAr.trim() || null,
  description: description || null,
+ descriptionAr: descriptionAr || null,
  price: p,
  durationMin: d,
- category: selectedCat?.name ||"Other",
+ category: selectedCat?.name || "Other",
  categoryId,
  imageUrl: imageUrl || null,
  active,
@@ -344,23 +358,98 @@ function ServiceFormDialog({
  <Dialog open={open} onOpenChange={onOpenChange}>
  <DialogContent className="sm:max-w-md">
  <DialogHeader>
- <DialogTitle className="font-serif text-xl font-bold">{service ?"Edit Service" :"New Service"}</DialogTitle>
+ <DialogTitle className="font-serif text-xl font-bold">{service ? "Edit Service" : "New Service"}</DialogTitle>
  </DialogHeader>
  <div className="space-y-4">
- <div className="space-y-2">
- <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Name <span className="text-primary">*</span></Label>
- <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Underarm Laser Waxing" className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card" />
+ {/* Language toggle */}
+ <div className="flex items-center gap-2">
+ <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Language:</span>
+ <div className="flex gap-1 rounded-lg border border-outline-variant p-0.5">
+ <button
+ type="button"
+ onClick={() => setLangTab("en")}
+ className={`flex items-center gap-1 rounded px-3 py-1 text-xs font-semibold transition ${
+ langTab === "en" ? "bg-primary text-white" : "text-muted-foreground hover:text-foreground"
+ }`}
+ >
+ 🇬🇧 English
+ </button>
+ <button
+ type="button"
+ onClick={() => setLangTab("ar")}
+ className={`flex items-center gap-1 rounded px-3 py-1 text-xs font-semibold transition ${
+ langTab === "ar" ? "bg-primary text-white" : "text-muted-foreground hover:text-foreground"
+ }`}
+ >
+ 🇸🇦 العربية
+ </button>
  </div>
+ </div>
+
+ {/* Name field - bilingual */}
  <div className="space-y-2">
- <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">Description</Label>
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">
+ Name {langTab === "en" ? "(English)" : "(العربية)"} <span className="text-primary">*</span>
+ {langTab === "ar" && <span className="text-muted-foreground">(optional)</span>}
+ </Label>
+ {langTab === "en" ? (
+ <Input
+ value={name}
+ onChange={(e) => setName(e.target.value)}
+ placeholder="e.g. Underarm Laser Waxing"
+ className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card"
+ dir="ltr"
+ />
+ ) : (
+ <Input
+ value={nameAr}
+ onChange={(e) => setNameAr(e.target.value)}
+ placeholder="مثال: إزالة الشعر بالليزر"
+ className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card text-right"
+ dir="rtl"
+ />
+ )}
+ {/* Show the other language as a hint */}
+ {langTab === "en" && nameAr && (
+ <p className="text-xs text-muted-foreground">🇸🇦 {nameAr}</p>
+ )}
+ {langTab === "ar" && name && (
+ <p className="text-xs text-muted-foreground">🇬🇧 {name}</p>
+ )}
+ </div>
+
+ {/* Description field - bilingual */}
+ <div className="space-y-2">
+ <Label className="text-xs font-semibold uppercase tracking-wider text-secondary">
+ Description {langTab === "en" ? "(English)" : "(العربية)"}
+ </Label>
+ {langTab === "en" ? (
  <Textarea
  rows={3}
  value={description}
  onChange={(e) => setDescription(e.target.value)}
  placeholder="Brief description of the treatment..."
  className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card"
+ dir="ltr"
  />
+ ) : (
+ <Textarea
+ rows={3}
+ value={descriptionAr}
+ onChange={(e) => setDescriptionAr(e.target.value)}
+ placeholder="وصف موجز للعلاج..."
+ className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card text-right"
+ dir="rtl"
+ />
+ )}
+ {langTab === "en" && descriptionAr && (
+ <p className="text-xs text-muted-foreground">🇸🇦 {descriptionAr}</p>
+ )}
+ {langTab === "ar" && description && (
+ <p className="text-xs text-muted-foreground">🇬🇧 {description}</p>
+ )}
  </div>
+
  {/* Service Image */}
  <ImageUpload
  value={imageUrl}
@@ -434,7 +523,7 @@ function ServiceFormDialog({
  <DialogFooter>
  <Button variant="outline" className="press-feedback" onClick={() => onOpenChange(false)}>Cancel</Button>
  <Button className="btn-press bg-primary hover:bg-primary/90" onClick={handleSubmit} disabled={categories.length === 0}>
- {service ?"Save changes" :"Create service"}
+ {service ? "Save changes" : "Create service"}
  </Button>
  </DialogFooter>
  </DialogContent>
