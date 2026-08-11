@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
       service: true,
       appointments: {
         where: { status: "BOOKED" },
-        include: { customer: true, service: true },
+        include: { customer: true, service: true, slot: true },
       },
     },
     orderBy: { startTime: "asc" },

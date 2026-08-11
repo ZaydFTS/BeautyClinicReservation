@@ -326,7 +326,14 @@ export function AdminCalendarPage() {
  currentDate={currentDate}
  slotsByDate={slotsByDate}
  onSlotClick={(slot) => {
- if (slot.appointments[0]) setSelectedAppt(slot.appointments[0])
+ const appt = slot.appointments[0]
+ if (appt) {
+ // Ensure slot data is available on the appointment (fallback to parent slot)
+ if (!appt.slot) {
+ appt.slot = { id: slot.id, startTime: slot.startTime, endTime: slot.endTime, status: slot.status }
+ }
+ setSelectedAppt(appt)
+ }
  }}
  onDragStart={handleDragStart}
  onDragOver={handleDragOver}
@@ -339,7 +346,14 @@ export function AdminCalendarPage() {
  days={days}
  slotsByDate={slotsByDate}
  onSlotClick={(slot) => {
- if (slot.appointments[0]) setSelectedAppt(slot.appointments[0])
+ const appt = slot.appointments[0]
+ if (appt) {
+ // Ensure slot data is available on the appointment (fallback to parent slot)
+ if (!appt.slot) {
+ appt.slot = { id: slot.id, startTime: slot.startTime, endTime: slot.endTime, status: slot.status }
+ }
+ setSelectedAppt(appt)
+ }
  }}
  onDragStart={handleDragStart}
  onDragOver={handleDragOver}
@@ -352,7 +366,14 @@ export function AdminCalendarPage() {
  day={currentDate}
  slots={slotsByDate.get(toISODate(currentDate)) || []}
  onSlotClick={(slot) => {
- if (slot.appointments[0]) setSelectedAppt(slot.appointments[0])
+ const appt = slot.appointments[0]
+ if (appt) {
+ // Ensure slot data is available on the appointment (fallback to parent slot)
+ if (!appt.slot) {
+ appt.slot = { id: slot.id, startTime: slot.startTime, endTime: slot.endTime, status: slot.status }
+ }
+ setSelectedAppt(appt)
+ }
  }}
  onDragStart={handleDragStart}
  onDragOver={handleDragOver}
@@ -370,7 +391,7 @@ export function AdminCalendarPage() {
  <DialogHeader>
  <DialogTitle>Appointment Details</DialogTitle>
  <DialogDescription>
- {selectedAppt && formatDateTime(selectedAppt.slot.startTime)}
+ {selectedAppt && selectedAppt.slot && formatDateTime(selectedAppt.slot.startTime)}
  </DialogDescription>
  </DialogHeader>
  {selectedAppt && (
@@ -380,27 +401,27 @@ export function AdminCalendarPage() {
  {APPOINTMENT_STATUS_LABEL[selectedAppt.status]}
  </Badge>
  <span className="text-lg font-bold text-primary">
- {new Intl.NumberFormat("en-US", { style:"currency", currency:"USD" }).format(selectedAppt.price)}
+ {new Intl.NumberFormat("en-US", { style:"currency", currency:"USD" }).format(selectedAppt.price ?? selectedAppt.service?.price ?? 0)}
  </span>
  </div>
 
  <div className="space-y-2 rounded-lg bg-muted/30 p-3 text-sm">
  <div className="flex items-center gap-2">
  <Sparkles className="h-4 w-4 text-primary" />
- <span className="font-medium">{selectedAppt.service.name}</span>
- <span className="text-muted-foreground">· {selectedAppt.service.durationMin}min</span>
+ <span className="font-medium">{selectedAppt.service?.name || "Unknown service"}</span>
+ <span className="text-muted-foreground">· {selectedAppt.service?.durationMin || 0}min</span>
  </div>
  <div className="flex items-center gap-2">
  <Clock className="h-4 w-4 text-primary" />
- <span>{formatTime(selectedAppt.slot.startTime)} – {formatTime(selectedAppt.slot.endTime)}</span>
+ <span>{selectedAppt.slot ? `${formatTime(selectedAppt.slot.startTime)} – ${formatTime(selectedAppt.slot.endTime)}` : "Time unavailable"}</span>
  </div>
  <div className="flex items-center gap-2">
  <User className="h-4 w-4 text-primary" />
- <span>{selectedAppt.customer.name}</span>
+ <span>{selectedAppt.customer?.name || "Unknown"}</span>
  </div>
  <div className="flex items-center gap-2">
  <Phone className="h-4 w-4 text-primary" />
- <span>{selectedAppt.customer.phone}</span>
+ <span>{selectedAppt.customer?.phone || "N/A"}</span>
  </div>
  {selectedAppt.note && (
  <div className="border-t pt-2 text-muted-foreground">
