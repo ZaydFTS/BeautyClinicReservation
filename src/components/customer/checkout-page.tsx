@@ -217,7 +217,7 @@ export function CheckoutPage() {
  <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-md bg-blush">
  {item.imageUrl ? (
  
- <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+ <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" className="h-full w-full object-cover" />
  ) : null}
  </div>
  <div className="flex-1 min-w-0">

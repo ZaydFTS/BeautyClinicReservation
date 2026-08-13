@@ -119,7 +119,7 @@ export function CartPage() {
                       {/* Product image */}
                       <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-blush sm:h-24 sm:w-24">
                         {item.imageUrl ? (
-                          <img src={item.imageUrl} alt={item.name} className="img-zoom h-full w-full object-cover" />
+                          <img src={item.imageUrl} alt={item.name} loading="lazy" decoding="async" className="img-zoom h-full w-full object-cover" />
                         ) : (
                           <div className="flex h-full items-center justify-center">
                             <Leaf className="h-8 w-8 text-primary/25" />

@@ -250,7 +250,7 @@ export function ShopPage() {
                               src={p.imageUrl}
                               alt={p.name}
                               className="img-zoom h-full w-full object-cover"
-                              loading="lazy"
+                              loading="lazy" decoding="async"
                             />
                           ) : (
                             <div className="flex h-full items-center justify-center">

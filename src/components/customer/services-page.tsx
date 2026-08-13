@@ -287,7 +287,7 @@ export function ServicesPage() {
                                   src={svc.imageUrl}
                                   alt={lang === "ar" && svc.nameAr ? svc.nameAr : svc.name}
                                   className="img-zoom h-full w-full object-cover"
-                                  loading="lazy"
+                                  loading="lazy" decoding="async"
                                 />
                               ) : (
                                 <div className="flex h-full items-center justify-center">

@@ -137,7 +137,10 @@ export function HomePage() {
                   <img
                     src="/hero/hero-spa.png"
                     alt="Elegant woman in luxury spa setting"
+                    width={460}
+                    height={575}
                     className="img-zoom h-full w-full object-cover"
+                    fetchPriority="high" decoding="async"
                   />
                   {/* Subtle bottom overlay for depth (solid color, no gradient) */}
                   <div className="pointer-events-none absolute inset-0 bg-black/10" aria-hidden />
@@ -272,7 +275,7 @@ export function HomePage() {
                           src={svc.imageUrl}
                           alt={lang === "ar" && svc.nameAr ? svc.nameAr : svc.name}
                           className="img-zoom h-full w-full object-cover"
-                          loading="lazy"
+                          loading="lazy" decoding="async"
                         />
                       ) : (
                         <img
@@ -285,7 +288,7 @@ export function HomePage() {
                           }
                           alt={lang === "ar" && svc.nameAr ? svc.nameAr : svc.name}
                           className="img-zoom h-full w-full object-cover"
-                          loading="lazy"
+                          loading="lazy" decoding="async"
                         />
                       )}
                       {/* Badge on image */}
@@ -429,7 +432,7 @@ export function HomePage() {
                           src={p.imageUrl}
                           alt={p.name}
                           className="img-zoom h-full w-full object-cover"
-                          loading="lazy"
+                          loading="lazy" decoding="async"
                         />
                       ) : (
                         <div className="flex h-full items-center justify-center">
