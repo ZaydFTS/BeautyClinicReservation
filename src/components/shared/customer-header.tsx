@@ -126,177 +126,111 @@ export function CustomerHeader() {
  <Menu className="h-5 w-5" />
  </Button>
  </SheetTrigger>
- <SheetContent side="right" className="hide-auto-close w-[88vw] max-w-sm border-0 p-0">
+ <SheetContent side="right" className="hide-auto-close w-[88vw] max-w-sm border-0 bg-white p-0">
  <SheetTitle className="sr-only">{t("nav.menu")}</SheetTitle>
 
- {/* Branded gradient header */}
- <div className="relative overflow-hidden bg-primary">
- {/* Decorative orbs */}
- <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
- <div className="pointer-events-none absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-primary/20 blur-3xl" />
-
- <div className="relative flex items-center justify-between">
- <div className="flex items-center gap-3">
- <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm ring-1 ring-white/30">
- <Sparkles className="h-5 w-5" />
- </div>
- <div>
- <div className="text-base font-bold leading-tight">
- {CLINIC_NAME.split("")[0]} <span className="text-primary-container">&</span> Smooth
- </div>
- <div className="text-[10px] font-medium uppercase tracking-wider text-on-primary/80">
- {t("nav.book") ==="حجز" ?"ليزر وتجميل" :"Laser & Beauty Clinic"}
- </div>
- </div>
- </div>
+ {/* Top bar — close button only, clean white */}
+ <div className="flex items-center justify-end p-5">
  <SheetClose asChild>
- <Button
- variant="ghost"
- size="icon"
- className="h-9 w-9 rounded-full bg-white/10 text-white hover:bg-white/20 hover:text-white"
+ <button
+ className="press-feedback flex h-10 w-10 items-center justify-center rounded-full bg-blush text-secondary transition-all hover:bg-primary hover:text-white"
  aria-label={t("nav.closeMenu")}
  >
- <span className="text-lg leading-none">×</span>
- </Button>
+ <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+ </svg>
+ </button>
  </SheetClose>
  </div>
 
- {/* Mini stats row */}
- <div className="relative mt-5 flex items-center gap-4 text-xs">
- <div className="flex items-center gap-1.5">
- <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15">
- <Clock className="h-3.5 w-3.5" />
- </div>
- <span className="text-on-primary">{t("mobileMenu.openToday")}</span>
- </div>
- <div className="h-3 w-px bg-white/20" />
- <div className="flex items-center gap-1.5">
- <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold">
- 4.9
- </div>
- <span className="text-on-primary">{t("mobileMenu.clients")}</span>
- </div>
- </div>
- </div>
-
- {/* Scrollable nav body */}
- <div className="flex flex-1 flex-col overflow-y-auto px-4 py-5">
- {/* Nav items - modern card style with icons */}
- <div className="space-y-1.5">
+ {/* Scrollable body */}
+ <div className="flex flex-1 flex-col overflow-y-auto px-6 pb-6">
+ {/* Navigation items — serif font, icon in soft lavender box */}
+ <div className="space-y-1">
  {NAV_LINKS.map((link) => {
  const isActive = currentRoute.name === link.route.name
  return (
  <SheetClose asChild key={link.labelKey}>
  <button
  onClick={() => navigate(link.route)}
- className={`press-feedback group flex w-full items-center gap-3 rounded-2xl p-3 transition-all ${
- isActive
- ?"bg-blush"
- :"hover:bg-muted/60"
+ className={`press-feedback group flex w-full items-center gap-4 rounded-2xl py-3 transition-all ${
+ isActive ? "bg-blush" : "hover:bg-blush/50"
  }`}
  >
- <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl transition-all ${
+ <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl transition-all ${
  isActive
- ?"bg-primary"
- :"bg-muted text-muted-foreground group-hover:bg-blush group-hover:text-primary"
+ ? "bg-primary text-white"
+ : "bg-blush text-primary group-hover:bg-primary group-hover:text-white"
  }`}>
- <link.icon className="h-5 w-5" />
+ <link.icon className="h-5 w-5" strokeWidth={1.5} />
  </div>
- <div className="flex-1 min-w-0 text-start">
- <div className={`text-sm font-semibold ${
- isActive ?"text-secondary" :"text-foreground"
+ <span className={`font-serif text-2xl tracking-tight transition-colors ${
+ isActive ? "text-primary" : "text-foreground group-hover:text-primary"
  }`}>
  {t(link.labelKey)}
- </div>
- <div className="truncate text-xs text-muted-foreground">
- {t(link.descKey)}
- </div>
- </div>
- <ChevronRight className={`arrow-slide h-4 w-4 flex-shrink-0 ${
- isActive ?"text-primary" :"text-muted-foreground/40"
- }`} />
+ </span>
  </button>
  </SheetClose>
  )
  })}
  </div>
 
- {/* Primary CTA */}
- <div className="mt-5">
+ {/* CTA button */}
+ <div className="mt-8">
  <SheetClose asChild>
  <Button
- className="btn-press btn-shimmer h-12 w-full rounded-2xl bg-primary"
- onClick={() => navigate({ name:"booking" })}
+ className="btn-press h-13 w-full rounded-2xl bg-primary text-base font-semibold shadow-lg shadow-primary/25 hover:bg-primary/90"
+ onClick={() => navigate({ name: "booking" })}
  >
- <CalendarCheck className="mr-2 h-5 w-5" />
+ <CalendarCheck className="mr-2 h-5 w-5" strokeWidth={1.5} />
  {t("nav.bookAppointment")}
  </Button>
  </SheetClose>
  </div>
 
- {/* Contact cards */}
- <div className="mt-6">
- <div className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
- {t("footer.contact")}
+ {/* Spacer to push contact to bottom */}
+ <div className="flex-1" />
+
+ {/* Contact info — pinned to bottom */}
+ <div className="mt-8 space-y-3">
+ <div className="flex items-center gap-3 text-sm text-muted-foreground">
+ <MapPin className="h-4 w-4 flex-shrink-0 text-primary" strokeWidth={1.5} />
+ <span>{CLINIC_ADDRESS}</span>
  </div>
- <div className="space-y-1.5">
- <a
- href={`tel:${CLINIC_PHONE.replace(/[^\d+]/g,"")}`}
- className="press-feedback flex items-center gap-3 rounded-xl border border-border/60 bg-card p-3 transition-all hover:border-outline-variant hover:bg-blush/50"
- >
- <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-blush text-primary">
- <Phone className="h-4 w-4" />
- </div>
- <div className="min-w-0 flex-1">
- <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("mobileMenu.callUs")}</div>
- <div className="truncate text-sm font-medium">{CLINIC_PHONE}</div>
- </div>
- </a>
- <a
- href={`mailto:${CLINIC_EMAIL}`}
- className="press-feedback flex items-center gap-3 rounded-xl border border-border/60 bg-card p-3 transition-all hover:border-outline-variant hover:bg-blush/50"
- >
- <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-blush text-primary">
- <Mail className="h-4 w-4" />
- </div>
- <div className="min-w-0 flex-1">
- <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("mobileMenu.emailLabel")}</div>
- <div className="truncate text-sm font-medium">{CLINIC_EMAIL}</div>
- </div>
- </a>
- <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-card p-3">
- <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-blush text-primary">
- <MapPin className="h-4 w-4" />
- </div>
- <div className="min-w-0 flex-1">
- <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("mobileMenu.visit")}</div>
- <div className="truncate text-sm font-medium">{CLINIC_ADDRESS}</div>
- </div>
- </div>
+ <div className="flex items-center gap-3 text-sm text-muted-foreground">
+ <Phone className="h-4 w-4 flex-shrink-0 text-primary" strokeWidth={1.5} />
+ <span>{CLINIC_PHONE}</span>
  </div>
  </div>
 
- {/* Social + copyright */}
- <div className="mt-6 flex items-center justify-between border-t border-border/60 pt-5">
- <div className="flex gap-2">
+ {/* Social icons */}
+ <div className="mt-6 flex gap-3">
  <a
  href="#"
- className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground transition-all hover:bg-blush hover:text-primary hover:scale-110"
+ className="press-feedback flex h-10 w-10 items-center justify-center rounded-xl bg-blush text-primary transition-all hover:bg-primary hover:text-white"
  aria-label="Instagram"
  >
- <Instagram className="h-4 w-4" />
+ <Instagram className="h-4 w-4" strokeWidth={1.5} />
  </a>
  <a
  href="#"
- className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground transition-all hover:bg-blush hover:text-primary hover:scale-110"
+ className="press-feedback flex h-10 w-10 items-center justify-center rounded-xl bg-blush text-primary transition-all hover:bg-primary hover:text-white"
  aria-label="Facebook"
  >
- <Facebook className="h-4 w-4" />
+ <Facebook className="h-4 w-4" strokeWidth={1.5} />
+ </a>
+ <a
+ href="#"
+ className="press-feedback flex h-10 w-10 items-center justify-center rounded-xl bg-blush text-primary transition-all hover:bg-primary hover:text-white"
+ aria-label="Twitter"
+ >
+ <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
  </a>
  </div>
- <div className="text-[10px] text-muted-foreground/60">
- © {new Date().getFullYear()} {CLINIC_NAME.split("")[0]}
- </div>
+
+ {/* Copyright */}
+ <div className="mt-4 text-xs text-muted-foreground/60">
+ © {new Date().getFullYear()} {CLINIC_NAME.split("")[0]} & Smooth
  </div>
  </div>
  </SheetContent>
