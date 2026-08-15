@@ -46,13 +46,10 @@ export function CustomerHeader() {
  className="flex items-center gap-2 transition-transform hover:scale-[1.02]"
  aria-label={t("nav.home")}
  >
- <div className="relative flex h-9 w-9 items-center justify-center rounded-full bg-primary">
- <Sparkles className="h-5 w-5" />
- <span className="absolute inset-0 rounded-full bg-primary" />
- </div>
+ <img src="/logo.png" alt="R&R Beauty Clinic" className="h-10 w-10 rounded-full object-cover" />
  <div className="hidden sm:block">
- <div className="text-base font-semibold leading-tight text-foreground">
- {CLINIC_NAME.split("")[0]} <span className="text-primary">&</span> Smooth
+ <div className="font-serif text-lg font-bold leading-tight text-foreground">
+ R<span className="text-primary">&</span>R Beauty Clinic
  </div>
  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
  {t("nav.book") ==="حجز" ?"ليزر وتجميل" :"Laser & Beauty Clinic"}
@@ -230,7 +227,7 @@ export function CustomerHeader() {
 
  {/* Copyright */}
  <div className="mt-4 text-xs text-muted-foreground/60">
- © {new Date().getFullYear()} {CLINIC_NAME.split("")[0]} & Smooth
+ © {new Date().getFullYear()} R&R Beauty Clinic
  </div>
  </div>
  </SheetContent>

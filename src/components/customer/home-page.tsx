@@ -161,7 +161,7 @@ export function HomePage() {
                       ))}
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm font-bold text-foreground">500+ Glowing Clients</div>
+                      <div className="text-sm font-bold text-foreground">500+ Happy Clients</div>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Star className="h-3 w-3 fill-primary text-primary" />
                         <span className="font-semibold text-foreground">5.0</span>

@@ -68,7 +68,7 @@ export function ContactPage() {
             <span className="italic text-primary">Enhancing Radiance.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-balance text-lg leading-relaxed text-muted-foreground">
-            At {`Glow & Smooth`}, we blend clinical precision with the luxuriousness of a premium spa.
+            At {`R&R Beauty Clinic`}, we blend clinical precision with the luxuriousness of a premium spa.
             Our mission is to elevate your natural beauty in a space designed for total relaxation and profound renewal.
           </p>
         </div>
