@@ -38,7 +38,7 @@ const DEFAULTS: SiteSettings = {
   heroTitle2: "Most Confident Self",
   heroTitle1Ar: "",
   heroTitle2Ar: "",
-  heroSubtitle: "Premium Laser Waxing & Beauty Care. Professional laser waxing, advanced skincare treatments, and premium aftercare products — all in one tranquil Beverly Hills studio.",
+  heroSubtitle: "Premium Laser Waxing & Beauty Care. Professional laser waxing, advanced skincare treatments, and premium aftercare products — all in one tranquil Nablus studio.",
   heroSubtitleAr: "",
   heroBadge: "Premium Laser & Beauty Clinic",
   heroBadgeAr: "",
