@@ -83,7 +83,7 @@ export const translations = {
       badge: "Premium Laser & Beauty Clinic",
       heroTitle1: "Reveal Your Smoothest,",
       heroTitle2: "Most Confident Self",
-      heroSubtitle: "Premium Laser Waxing & Beauty Care. Professional laser waxing, advanced skincare treatments, and premium aftercare products — all in one tranquil Beverly Hills studio.",
+      heroSubtitle: "Premium Laser Waxing & Beauty Care. Professional laser waxing, advanced skincare treatments, and premium aftercare products — all in one tranquil Nablus studio.",
       exploreServices: "Explore Services",
       rating: "4.9",
       happyClients: "2,400+ happy clients",
@@ -298,7 +298,7 @@ export const translations = {
       messageSent: "Message sent! We'll get back to you shortly.",
       failedToast: "Failed to send message",
       required: "*",
-      cityState: "Beverly Hills, California",
+      cityState: "Nablus, Palestine",
     },
 
     // Footer
@@ -739,7 +739,7 @@ export const translations = {
       messageSent: "تم إرسال الرسالة! سنعود إليك قريباً.",
       failedToast: "فشل إرسال الرسالة",
       required: "*",
-      cityState: "بيفرلي هيلز، كاليفورنيا",
+      cityState: "نابلس، فلسطين",
     },
 
     footer: {

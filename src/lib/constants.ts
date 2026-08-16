@@ -2,10 +2,10 @@
 
 export const CLINIC_NAME ="R&R Beauty Clinic"
 export const CLINIC_TAGLINE ="Premium Laser Waxing & Beauty Care"
-export const CLINIC_PHONE ="+1 (555) 123-4567"
+export const CLINIC_PHONE ="+972 595718422"
 export const CLINIC_EMAIL ="hello@rrbeauty.clinic"
-export const CLINIC_ADDRESS ="123 Beauty Avenue, Suite 200, Beverly Hills, CA 90210"
-export const CLINIC_HOURS ="Mon–Sat: 9:00 AM – 7:00 PM · Sun: Closed"
+export const CLINIC_ADDRESS ="Nablus - Haifa Street - Near Jamal Abdul Naser Park"
+export const CLINIC_HOURS ="Sat–Thu: 8:00 AM – 5:00 PM · Fri: Closed"
 
 export const APPOINTMENT_STATUS = {
  BOOKED:"BOOKED",

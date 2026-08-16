@@ -156,7 +156,7 @@ export function CheckoutPage() {
  rows={2}
  value={form.address}
  onChange={(e) => setForm({ ...form, address: e.target.value })}
- placeholder="123 Main St, Apt 4B, Beverly Hills, CA 90210"
+ placeholder="Nablus - Haifa Street"
  />
  </div>
  <div className="space-y-2 sm:col-span-2">
