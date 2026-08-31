@@ -68,7 +68,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
  <div className="flex h-full flex-col bg-sidebar">
  {/* Logo / Brand */}
  <div className="flex h-16 items-center gap-2.5 border-b border-sidebar-border px-4">
- <img src="/logo.png" alt="Glow & Smooth Laser Clinic" className="h-9 w-9 rounded-lg object-cover" />
+ <img src="/logo.png" alt="Glow Beauty Clinic" className="h-9 w-9 rounded-lg object-cover" />
  <div className="flex-1 min-w-0">
  <div className="truncate font-serif text-sm font-bold tracking-tight">{CLINIC_NAME.split("")[0]} {t("nav.book") ==="حجز" ?"إدارة" :"Admin"}</div>
  <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/80">

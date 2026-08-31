@@ -1,6 +1,6 @@
 // Beauty Clinic - shared constants and types
 
-export const CLINIC_NAME ="Glow & Smooth Laser Clinic"
+export const CLINIC_NAME ="Glow Beauty Clinic"
 export const CLINIC_TAGLINE ="Premium Laser Waxing & Beauty Care"
 export const CLINIC_PHONE ="+972 0569101036"
 export const CLINIC_EMAIL ="glow@gmail.com"
@@ -79,7 +79,7 @@ export const SLOT_STATUS_COLOR: Record<string, string> = {
 
 // Default admin credentials (seeded into DB)
 export const DEFAULT_ADMIN = {
- email:"admin@glowsmooth.clinic",
+ email:"admin@glowbeauty.clinic",
  password:"admin123",
  name:"Clinic Admin",
 }
