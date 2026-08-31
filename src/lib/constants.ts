@@ -2,9 +2,9 @@
 
 export const CLINIC_NAME ="Glow & Smooth Laser Clinic"
 export const CLINIC_TAGLINE ="Premium Laser Waxing & Beauty Care"
-export const CLINIC_PHONE ="+972 595718422"
-export const CLINIC_EMAIL ="hello@glowsmooth.clinic"
-export const CLINIC_ADDRESS ="Nablus - Haifa Street - Near Jamal Abdul Naser Park"
+export const CLINIC_PHONE ="+972 0569101036"
+export const CLINIC_EMAIL ="glow@gmail.com"
+export const CLINIC_ADDRESS ="Nablus - Nablus - Nablus"
 export const CLINIC_HOURS ="Sat–Thu: 8:00 AM – 5:00 PM · Fri: Closed"
 
 export const APPOINTMENT_STATUS = {
