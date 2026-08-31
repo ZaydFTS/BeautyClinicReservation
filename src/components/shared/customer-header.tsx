@@ -46,7 +46,7 @@ export function CustomerHeader() {
  className="flex items-center gap-2 transition-transform hover:scale-[1.02]"
  aria-label={t("nav.home")}
  >
- <img src="/logo.png" alt="R&R Beauty Clinic" className="h-10 w-10 rounded-full object-cover" />
+ <img src="/logo.png" alt="Glow & Smooth Laser Clinic" className="h-10 w-10 rounded-full object-cover" />
  <div className="hidden sm:block">
  <div className="font-serif text-lg font-bold leading-tight text-foreground">
  R<span className="text-primary">&</span>R Beauty Clinic
@@ -227,7 +227,7 @@ export function CustomerHeader() {
 
  {/* Copyright */}
  <div className="mt-4 text-xs text-muted-foreground/60">
- © {new Date().getFullYear()} R&R Beauty Clinic
+ © {new Date().getFullYear()} {CLINIC_NAME}
  </div>
  </div>
  </SheetContent>

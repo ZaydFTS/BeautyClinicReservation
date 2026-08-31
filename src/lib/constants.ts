@@ -1,9 +1,9 @@
 // Beauty Clinic - shared constants and types
 
-export const CLINIC_NAME ="R&R Beauty Clinic"
+export const CLINIC_NAME ="Glow & Smooth Laser Clinic"
 export const CLINIC_TAGLINE ="Premium Laser Waxing & Beauty Care"
 export const CLINIC_PHONE ="+972 595718422"
-export const CLINIC_EMAIL ="hello@rrbeauty.clinic"
+export const CLINIC_EMAIL ="hello@glowsmooth.clinic"
 export const CLINIC_ADDRESS ="Nablus - Haifa Street - Near Jamal Abdul Naser Park"
 export const CLINIC_HOURS ="Sat–Thu: 8:00 AM – 5:00 PM · Fri: Closed"
 
@@ -79,7 +79,7 @@ export const SLOT_STATUS_COLOR: Record<string, string> = {
 
 // Default admin credentials (seeded into DB)
 export const DEFAULT_ADMIN = {
- email:"admin@rrbeauty.clinic",
+ email:"admin@glowsmooth.clinic",
  password:"admin123",
  name:"Clinic Admin",
 }

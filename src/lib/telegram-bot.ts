@@ -76,7 +76,7 @@ export async function handleCommand(
   try {
     switch (cmd) {
       case "start":
-        await sendHelp(chatId, "Welcome to R&R Beauty Clinic Bot! 🌸")
+        await sendHelp(chatId, "Welcome to Glow & Smooth Clinic Bot! 🌸")
         return { ok: true }
       case "help":
         await sendHelp(chatId)
