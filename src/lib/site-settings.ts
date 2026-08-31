@@ -40,7 +40,7 @@ const DEFAULTS: SiteSettings = {
   heroTitle2Ar: "",
   heroSubtitle: "Premium Laser Waxing & Beauty Care. Professional laser waxing, advanced skincare treatments, and premium aftercare products — all in one tranquil Nablus studio.",
   heroSubtitleAr: "",
-  heroBadge: "Premium Laser & Beauty Clinic",
+  heroBadge: "Premium Beauty & Laser Clinic",
   heroBadgeAr: "",
   heroImage: "",
   ctaTitle: "Ready to Begin Your Beauty Journey?",

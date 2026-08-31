@@ -39,7 +39,7 @@ export function AdminHomeContentPage() {
       heroTitle2Ar: "",
       heroSubtitle: "",
       heroSubtitleAr: "",
-      heroBadge: "Premium Laser & Beauty Clinic",
+      heroBadge: "Premium Beauty & Laser Clinic",
       heroBadgeAr: "",
       heroImage: "",
       ctaTitle: "Ready to Begin Your Beauty Journey?",
@@ -238,7 +238,7 @@ export function AdminHomeContentPage() {
               <Input
                 value={form.heroBadge || ""}
                 onChange={(e) => set("heroBadge", e.target.value)}
-                placeholder="Premium Laser & Beauty Clinic"
+                placeholder="Premium Beauty & Laser Clinic"
                 className="border-outline-variant bg-blush/50 focus:border-primary focus:bg-card"
               />
             </div>

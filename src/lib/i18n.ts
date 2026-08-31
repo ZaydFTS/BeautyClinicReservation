@@ -80,7 +80,7 @@ export const translations = {
 
     // Home page
     home: {
-      badge: "Premium Laser & Beauty Clinic",
+      badge: "Premium Beauty & Laser Clinic",
       heroTitle1: "Reveal Your Smoothest,",
       heroTitle2: "Most Confident Self",
       heroSubtitle: "Premium Laser Waxing & Beauty Care. Professional laser waxing, advanced skincare treatments, and premium aftercare products — all in one tranquil Nablus studio.",

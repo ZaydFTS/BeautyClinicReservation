@@ -52,7 +52,7 @@ export function CustomerHeader() {
  R<span className="text-primary">&</span>R Beauty Clinic
  </div>
  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
- {t("nav.book") ==="حجز" ?"ليزر وتجميل" :"Laser & Beauty Clinic"}
+ {t("nav.book") ==="حجز" ?"ليزر وتجميل" :"Beauty & Laser Clinic"}
  </div>
  </div>
  </button>
