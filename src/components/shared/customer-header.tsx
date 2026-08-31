@@ -49,7 +49,7 @@ export function CustomerHeader() {
  <img src="/logo.png" alt="Glow Beauty Clinic" className="h-10 w-10 rounded-full object-cover" />
  <div className="hidden sm:block">
  <div className="font-serif text-lg font-bold leading-tight text-foreground">
- R<span className="text-primary">&</span>R Beauty Clinic
+ Glow Beauty Clinic
  </div>
  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
  {t("nav.book") ==="حجز" ?"ليزر وتجميل" :"Beauty & Laser Clinic"}
